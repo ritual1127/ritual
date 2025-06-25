@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>성적 계산기</title>
+  <style>
+    body { font-family: Arial; max-width: 700px; margin: auto; padding: 20px; }
+    input { width: 80px; margin: 5px; }
+    .score-box { margin-bottom: 15px; }
+    h2 { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <h1>📊 성적 계산기</h1>
+
+  <h2>수행평가</h2>
+  <div class="score-box">
+    수행1 점수: <input type="number" id="s1" /> 비중(%): <input type="number" id="sw1" /><br />
+    수행2 점수: <input type="number" id="s2" /> 비중(%): <input type="number" id="sw2" />
+  </div>
+
+  <h2>지필평가</h2>
+  <div class="score-box">
+    지필1 점수: <input type="number" id="t1" /> 비중(%): <input type="number" id="tw1" /><br />
+    지필2 점수: <input type="number" id="t2" /> 비중(%): <input type="number" id="tw2" />
+  </div>
+
+  <button onclick="calculate()">계산하기</button>
+
+  <h2>결과</h2>
+  <div id="result"></div>
+
+  <script>
+    function calculate() {
+      const s1 = parseFloat(document.getElementById("s1").value) || 0;
+      const sw1 = parseFloat(document.getElementById("sw1").value) || 0;
+      const s2 = parseFloat(document.getElementById("s2").value) || 0;
+      const sw2 = parseFloat(document.getElementById("sw2").value) || 0;
+      const t1 = parseFloat(document.getElementById("t1").value) || 0;
+      const tw1 = parseFloat(document.getElementById("tw1").value) || 0;
+      const t2 = parseFloat(document.getElementById("t2").value) || 0;
+      const tw2 = parseFloat(document.getElementById("tw2").value) || 0;
+
+      const totalWeight = sw1 + sw2 + tw1 + tw2;
+      if (totalWeight !== 100) {
+        document.getElementById("result").innerHTML = `❗ 총 비중이 100%가 아닙니다. 현재: ${totalWeight}%`;
+        return;
+      }
+
+      const s_total = s1 * (sw1 / 100) + s2 * (sw2 / 100);
+      const t_total = t1 * (tw1 / 100) + t2 * (tw2 / 100);
+      const final = s_total + t_total;
+
+      let grade = "";
+      if (final >= 90) grade = "A";
+      else if (final >= 80) grade = "B";
+      else if (final >= 70) grade = "C";
+      else if (final >= 60) grade = "D";
+      else grade = "F";
+
+      const next = final >= 90 ? null : final >= 80 ? 90 : final >= 70 ? 80 : final >= 60 ? 70 : 60;
+      const current = final >= 90 ? 90 : final >= 80 ? 80 : final >= 70 ? 70 : final >= 60 ? 60 : 0;
+      const t_weight = (tw1 + tw2) / 100;
+
+      let nextMsg = "", downMsg = "";
+      if (next) {
+        const needed = ((next - s_total) / t_weight).toFixed(2);
+        nextMsg = `📈 다음 등급(${String.fromCharCode(grade.charCodeAt(0) - 1)})을 위해 필요한 지필 점수 총합: ${needed}점 이상`;
+      } else {
+        nextMsg = "🎉 이미 최고 등급입니다!";
+      }
+
+      const drop = ((current - 0.01 - s_total) / t_weight).toFixed(2);
+      downMsg = `⚠️ 지필 점수가 총 ${drop}점 미만이면 등급이 떨어질 수 있습니다.`;
+
+      document.getElementById("result").innerHTML =
+        `최종 점수: <strong>${final.toFixed(2)}점</strong><br/>
+         등급: <strong>${grade}</strong><br/>${nextMsg}<br/>${downMsg}`;
+    }
+  </script>
+</body>
+</html>
