@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f5f7fa;
+      background: #f8f9fa;
       max-width: 800px;
       margin: auto;
       padding: 30px;
@@ -20,25 +20,34 @@
       background: white;
       padding: 20px;
       border-radius: 10px;
-      margin-bottom: 30px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
     label {
       display: inline-block;
-      width: 120px;
+      width: 110px;
+      margin-right: 10px;
     }
-    input {
+    input[type="number"],
+    input[type="text"] {
       padding: 5px;
       margin: 5px 0;
       width: 80px;
     }
     .entry {
-      margin-bottom: 10px;
+      margin-bottom: 8px;
+    }
+    .inline {
+      display: inline-block;
+      margin-right: 15px;
+    }
+    .small-input {
+      width: 50px;
     }
     button {
       display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
+      margin: 25px auto;
+      padding: 10px 24px;
       font-size: 16px;
       border: none;
       border-radius: 5px;
@@ -61,11 +70,14 @@
   <h1>📊 성적 계산기</h1>
 
   <div class="box">
-    <h2>수행평가 개수</h2>
-    <input type="number" id="sCount" value="2" min="1" onchange="generateInputs()" />
-
-    <h2>지필평가 개수</h2>
-    <input type="number" id="tCount" value="2" min="1" onchange="generateInputs()" />
+    <div class="entry">
+      <label>과목명:</label>
+      <input type="text" id="subject" placeholder="예: 수학" />
+    </div>
+    <div class="entry">
+      <span class="inline">수행평가 개수: <input type="number" id="sCount" value="2" min="1" class="small-input" onchange="generateInputs()" /></span>
+      <span class="inline">지필평가 개수: <input type="number" id="tCount" value="2" min="1" class="small-input" onchange="generateInputs()" /></span>
+    </div>
   </div>
 
   <div id="inputs" class="box"></div>
@@ -100,6 +112,7 @@
     }
 
     function calculate() {
+      const subject = document.getElementById("subject").value || "과목";
       const sCount = parseInt(document.getElementById('sCount').value);
       const tCount = parseInt(document.getElementById('tCount').value);
       let sTotal = 0, tTotal = 0, totalWeight = 0;
@@ -144,7 +157,7 @@
       dropMsg = `⚠️ 지필 점수가 총 ${drop}점 미만이면 등급이 떨어질 수 있습니다.`;
 
       document.getElementById("result").innerHTML =
-        `최종 점수: <strong>${final.toFixed(2)}점</strong><br/>
+        `<strong>${subject}</strong> 최종 점수: <strong>${final.toFixed(2)}점</strong><br/>
          등급: <strong>${grade}</strong><br/>${nextMsg}<br/>${dropMsg}`;
     }
 
