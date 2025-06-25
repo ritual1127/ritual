@@ -1,17 +1,23 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>성적 계산기</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
       font-family: 'Segoe UI', sans-serif;
       background: #f5f7fa;
-      max-width: 800px;
-      margin: auto;
-      padding: 30px;
+      margin: 0;
+      padding: 20px;
       color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
     }
     h1, h2 {
       text-align: center;
@@ -24,21 +30,33 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     label {
-      display: inline-block;
-      width: 120px;
+      display: block;
+      margin: 10px 0 5px;
     }
-    input {
-      padding: 5px;
-      margin: 5px 0;
-      width: 80px;
+    input[type="number"], input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
     }
     .entry {
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
-    button {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
+    .counter {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .counter button {
+      padding: 5px 10px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    button.calculate {
+      width: 100%;
+      padding: 15px;
       font-size: 16px;
       border: none;
       border-radius: 5px;
@@ -46,7 +64,7 @@
       color: white;
       cursor: pointer;
     }
-    button:hover {
+    button.calculate:hover {
       background: #0056b3;
     }
     #result {
@@ -57,44 +75,60 @@
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>📊 성적 계산기</h1>
+    <div class="box">
+      <label>과목명:</label>
+      <input type="text" id="subject" placeholder="예: 수학, 영어 등">
 
-  <h1>📊 성적 계산기</h1>
+      <h2>수행평가 개수</h2>
+      <div class="counter">
+        <button onclick="adjustCount('sCount', -1)">➖</button>
+        <input type="number" id="sCount" value="2" min="1" onchange="generateInputs()" />
+        <button onclick="adjustCount('sCount', 1)">➕</button>
+      </div>
 
-  <div class="box">
-    <h2>수행평가 개수</h2>
-    <input type="number" id="sCount" value="2" min="1" onchange="generateInputs()" />
+      <h2>지필평가 개수</h2>
+      <div class="counter">
+        <button onclick="adjustCount('tCount', -1)">➖</button>
+        <input type="number" id="tCount" value="2" min="1" onchange="generateInputs()" />
+        <button onclick="adjustCount('tCount', 1)">➕</button>
+      </div>
+    </div>
 
-    <h2>지필평가 개수</h2>
-    <input type="number" id="tCount" value="2" min="1" onchange="generateInputs()" />
+    <div id="inputs" class="box"></div>
+
+    <button class="calculate" onclick="calculate()">계산하기</button>
+    <div id="result" class="box"></div>
   </div>
 
-  <div id="inputs" class="box"></div>
-
-  <button onclick="calculate()">계산하기</button>
-
-  <div id="result" class="box"></div>
-
   <script>
+    function adjustCount(id, delta) {
+      const input = document.getElementById(id);
+      input.value = Math.max(1, parseInt(input.value) + delta);
+      generateInputs();
+    }
+
     function generateInputs() {
       const sCount = parseInt(document.getElementById('sCount').value);
       const tCount = parseInt(document.getElementById('tCount').value);
       let html = '<h2>수행평가</h2>';
       for (let i = 0; i < sCount; i++) {
-        html += `<div class="entry">
-                  <label>수행${i + 1} 점수:</label>
-                  <input type="number" id="s${i}" />
-                  <label>비중(%):</label>
-                  <input type="number" id="sw${i}" />
-                </div>`;
+        html += \`<div class="entry">
+                    <label>수행 \${i + 1} 점수:</label>
+                    <input type="number" id="s\${i}" />
+                    <label>비중(%):</label>
+                    <input type="number" id="sw\${i}" />
+                  </div>\`;
       }
       html += '<h2>지필평가</h2>';
       for (let i = 0; i < tCount; i++) {
-        html += `<div class="entry">
-                  <label>지필${i + 1} 점수:</label>
-                  <input type="number" id="t${i}" />
-                  <label>비중(%):</label>
-                  <input type="number" id="tw${i}" />
-                </div>`;
+        html += \`<div class="entry">
+                    <label>지필 \${i + 1} 점수:</label>
+                    <input type="number" id="t\${i}" />
+                    <label>비중(%):</label>
+                    <input type="number" id="tw\${i}" />
+                  </div>\`;
       }
       document.getElementById("inputs").innerHTML = html;
     }
@@ -105,20 +139,20 @@
       let sTotal = 0, tTotal = 0, totalWeight = 0;
 
       for (let i = 0; i < sCount; i++) {
-        const score = parseFloat(document.getElementById(`s${i}`).value) || 0;
-        const weight = parseFloat(document.getElementById(`sw${i}`).value) || 0;
+        const score = parseFloat(document.getElementById(\`s\${i}\`).value) || 0;
+        const weight = parseFloat(document.getElementById(\`sw\${i}\`).value) || 0;
         sTotal += score * (weight / 100);
         totalWeight += weight;
       }
       for (let i = 0; i < tCount; i++) {
-        const score = parseFloat(document.getElementById(`t${i}`).value) || 0;
-        const weight = parseFloat(document.getElementById(`tw${i}`).value) || 0;
+        const score = parseFloat(document.getElementById(\`t\${i}\`).value) || 0;
+        const weight = parseFloat(document.getElementById(\`tw\${i}\`).value) || 0;
         tTotal += score * (weight / 100);
         totalWeight += weight;
       }
 
       if (totalWeight !== 100) {
-        document.getElementById("result").innerHTML = `❗ 총 비중이 100%가 아닙니다. 현재: ${totalWeight}%`;
+        document.getElementById("result").innerHTML = \`❗ 총 비중이 100%가 아닙니다. 현재: \${totalWeight}%\`;
         return;
       }
 
@@ -128,28 +162,29 @@
       let current = final >= 90 ? 90 : final >= 80 ? 80 : final >= 70 ? 70 : final >= 60 ? 60 : 0;
       let tWeightOnly = 0;
       for (let i = 0; i < tCount; i++) {
-        tWeightOnly += parseFloat(document.getElementById(`tw${i}`).value) || 0;
+        tWeightOnly += parseFloat(document.getElementById(\`tw\${i}\`).value) || 0;
       }
       tWeightOnly /= 100;
 
       let nextMsg = '', dropMsg = '';
       if (next) {
         const needed = ((next - sTotal) / tWeightOnly).toFixed(2);
-        nextMsg = `📈 다음 등급(${String.fromCharCode(grade.charCodeAt(0) - 1)})을 받으려면 지필 점수 총합: ${needed}점 이상`;
+        nextMsg = \`📈 다음 등급(\${String.fromCharCode(grade.charCodeAt(0) - 1)})을 받으려면 지필 점수 총합: \${needed}점 이상\`;
       } else {
         nextMsg = "🎉 이미 최고 등급입니다!";
       }
 
       const drop = ((current - 0.01 - sTotal) / tWeightOnly).toFixed(2);
-      dropMsg = `⚠️ 지필 점수가 총 ${drop}점 미만이면 등급이 떨어질 수 있습니다.`;
+      dropMsg = \`⚠️ 지필 점수가 총 \${drop}점 미만이면 등급이 떨어질 수 있습니다.\`;
 
       document.getElementById("result").innerHTML =
-        `최종 점수: <strong>${final.toFixed(2)}점</strong><br/>
-         등급: <strong>${grade}</strong><br/>${nextMsg}<br/>${dropMsg}`;
+        \`과목: \${document.getElementById("subject").value || "미입력"}<br/>
+         최종 점수: <strong>\${final.toFixed(2)}점</strong><br/>
+         등급: <strong>\${grade}</strong><br/>\${nextMsg}<br/>\${dropMsg}\`;
     }
 
     window.onload = generateInputs;
   </script>
-
 </body>
 </html>
+
