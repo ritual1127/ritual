@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -13,28 +12,40 @@
       padding: 30px;
       color: #333;
     }
+
     h1, h2 {
       text-align: center;
     }
+
     .box {
       background: white;
       padding: 20px;
       border-radius: 10px;
       margin-bottom: 30px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
     }
+
     label {
       display: inline-block;
-      width: 120px;
-    }
-    input {
-      padding: 5px;
+      min-width: 80px;
       margin: 5px 0;
-      width: 80px;
     }
+
     .entry {
-      margin-bottom: 10px;
+      margin: 10px auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
     }
+
+    input {
+      padding: 8px;
+      width: 80px;
+      font-size: 16px;
+    }
+
     button {
       display: block;
       margin: 20px auto;
@@ -46,13 +57,31 @@
       color: white;
       cursor: pointer;
     }
+
     button:hover {
       background: #0056b3;
     }
+
     #result {
       font-size: 18px;
       text-align: center;
       margin-top: 20px;
+      word-break: keep-all;
+    }
+
+    @media (max-width: 600px) {
+      input {
+        width: 100px;
+      }
+      label {
+        min-width: auto;
+        width: 100%;
+        text-align: left;
+      }
+      .entry {
+        flex-direction: column;
+        align-items: center;
+      }
     }
   </style>
 </head>
@@ -62,10 +91,10 @@
 
   <div class="box">
     <h2>수행평가 개수</h2>
-    <input type="number" id="sCount" value="2" min="1" onchange="generateInputs()" />
+    <input type="number" inputmode="numeric" id="sCount" value="2" min="1" onchange="generateInputs()" />
 
     <h2>지필평가 개수</h2>
-    <input type="number" id="tCount" value="2" min="1" onchange="generateInputs()" />
+    <input type="number" inputmode="numeric" id="tCount" value="2" min="1" onchange="generateInputs()" />
   </div>
 
   <div id="inputs" class="box"></div>
@@ -82,18 +111,18 @@
       for (let i = 0; i < sCount; i++) {
         html += `<div class="entry">
                   <label>수행${i + 1} 점수:</label>
-                  <input type="number" id="s${i}" />
+                  <input type="number" inputmode="numeric" id="s${i}" />
                   <label>비중(%):</label>
-                  <input type="number" id="sw${i}" />
+                  <input type="number" inputmode="numeric" id="sw${i}" />
                 </div>`;
       }
       html += '<h2>지필평가</h2>';
       for (let i = 0; i < tCount; i++) {
         html += `<div class="entry">
                   <label>지필${i + 1} 점수:</label>
-                  <input type="number" id="t${i}" />
+                  <input type="number" inputmode="numeric" id="t${i}" />
                   <label>비중(%):</label>
-                  <input type="number" id="tw${i}" />
+                  <input type="number" inputmode="numeric" id="tw${i}" />
                 </div>`;
       }
       document.getElementById("inputs").innerHTML = html;
