@@ -5,79 +5,151 @@
   <meta charset="UTF-8">
   <title>성적 계산기</title>
   <style>
-    body { font-family: Arial; max-width: 700px; margin: auto; padding: 20px; }
-    input { width: 80px; margin: 5px; }
-    .score-box { margin-bottom: 15px; }
-    h2 { margin-top: 30px; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f7fa;
+      max-width: 800px;
+      margin: auto;
+      padding: 30px;
+      color: #333;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .box {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    label {
+      display: inline-block;
+      width: 120px;
+    }
+    input {
+      padding: 5px;
+      margin: 5px 0;
+      width: 80px;
+    }
+    .entry {
+      margin-bottom: 10px;
+    }
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    #result {
+      font-size: 18px;
+      text-align: center;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
+
   <h1>📊 성적 계산기</h1>
 
-  <h2>수행평가</h2>
-  <div class="score-box">
-    수행1 점수: <input type="number" id="s1" /> 비중(%): <input type="number" id="sw1" /><br />
-    수행2 점수: <input type="number" id="s2" /> 비중(%): <input type="number" id="sw2" />
+  <div class="box">
+    <h2>수행평가 개수</h2>
+    <input type="number" id="sCount" value="2" min="1" onchange="generateInputs()" />
+
+    <h2>지필평가 개수</h2>
+    <input type="number" id="tCount" value="2" min="1" onchange="generateInputs()" />
   </div>
 
-  <h2>지필평가</h2>
-  <div class="score-box">
-    지필1 점수: <input type="number" id="t1" /> 비중(%): <input type="number" id="tw1" /><br />
-    지필2 점수: <input type="number" id="t2" /> 비중(%): <input type="number" id="tw2" />
-  </div>
+  <div id="inputs" class="box"></div>
 
   <button onclick="calculate()">계산하기</button>
 
-  <h2>결과</h2>
-  <div id="result"></div>
+  <div id="result" class="box"></div>
 
   <script>
-    function calculate() {
-      const s1 = parseFloat(document.getElementById("s1").value) || 0;
-      const sw1 = parseFloat(document.getElementById("sw1").value) || 0;
-      const s2 = parseFloat(document.getElementById("s2").value) || 0;
-      const sw2 = parseFloat(document.getElementById("sw2").value) || 0;
-      const t1 = parseFloat(document.getElementById("t1").value) || 0;
-      const tw1 = parseFloat(document.getElementById("tw1").value) || 0;
-      const t2 = parseFloat(document.getElementById("t2").value) || 0;
-      const tw2 = parseFloat(document.getElementById("tw2").value) || 0;
+    function generateInputs() {
+      const sCount = parseInt(document.getElementById('sCount').value);
+      const tCount = parseInt(document.getElementById('tCount').value);
+      let html = '<h2>수행평가</h2>';
+      for (let i = 0; i < sCount; i++) {
+        html += `<div class="entry">
+                  <label>수행${i + 1} 점수:</label>
+                  <input type="number" id="s${i}" />
+                  <label>비중(%):</label>
+                  <input type="number" id="sw${i}" />
+                </div>`;
+      }
+      html += '<h2>지필평가</h2>';
+      for (let i = 0; i < tCount; i++) {
+        html += `<div class="entry">
+                  <label>지필${i + 1} 점수:</label>
+                  <input type="number" id="t${i}" />
+                  <label>비중(%):</label>
+                  <input type="number" id="tw${i}" />
+                </div>`;
+      }
+      document.getElementById("inputs").innerHTML = html;
+    }
 
-      const totalWeight = sw1 + sw2 + tw1 + tw2;
+    function calculate() {
+      const sCount = parseInt(document.getElementById('sCount').value);
+      const tCount = parseInt(document.getElementById('tCount').value);
+      let sTotal = 0, tTotal = 0, totalWeight = 0;
+
+      for (let i = 0; i < sCount; i++) {
+        const score = parseFloat(document.getElementById(`s${i}`).value) || 0;
+        const weight = parseFloat(document.getElementById(`sw${i}`).value) || 0;
+        sTotal += score * (weight / 100);
+        totalWeight += weight;
+      }
+      for (let i = 0; i < tCount; i++) {
+        const score = parseFloat(document.getElementById(`t${i}`).value) || 0;
+        const weight = parseFloat(document.getElementById(`tw${i}`).value) || 0;
+        tTotal += score * (weight / 100);
+        totalWeight += weight;
+      }
+
       if (totalWeight !== 100) {
         document.getElementById("result").innerHTML = `❗ 총 비중이 100%가 아닙니다. 현재: ${totalWeight}%`;
         return;
       }
 
-      const s_total = s1 * (sw1 / 100) + s2 * (sw2 / 100);
-      const t_total = t1 * (tw1 / 100) + t2 * (tw2 / 100);
-      const final = s_total + t_total;
+      const final = sTotal + tTotal;
+      let grade = final >= 90 ? 'A' : final >= 80 ? 'B' : final >= 70 ? 'C' : final >= 60 ? 'D' : 'F';
+      let next = final >= 90 ? null : final >= 80 ? 90 : final >= 70 ? 80 : final >= 60 ? 70 : 60;
+      let current = final >= 90 ? 90 : final >= 80 ? 80 : final >= 70 ? 70 : final >= 60 ? 60 : 0;
+      let tWeightOnly = 0;
+      for (let i = 0; i < tCount; i++) {
+        tWeightOnly += parseFloat(document.getElementById(`tw${i}`).value) || 0;
+      }
+      tWeightOnly /= 100;
 
-      let grade = "";
-      if (final >= 90) grade = "A";
-      else if (final >= 80) grade = "B";
-      else if (final >= 70) grade = "C";
-      else if (final >= 60) grade = "D";
-      else grade = "F";
-
-      const next = final >= 90 ? null : final >= 80 ? 90 : final >= 70 ? 80 : final >= 60 ? 70 : 60;
-      const current = final >= 90 ? 90 : final >= 80 ? 80 : final >= 70 ? 70 : final >= 60 ? 60 : 0;
-      const t_weight = (tw1 + tw2) / 100;
-
-      let nextMsg = "", downMsg = "";
+      let nextMsg = '', dropMsg = '';
       if (next) {
-        const needed = ((next - s_total) / t_weight).toFixed(2);
-        nextMsg = `📈 다음 등급(${String.fromCharCode(grade.charCodeAt(0) - 1)})을 위해 필요한 지필 점수 총합: ${needed}점 이상`;
+        const needed = ((next - sTotal) / tWeightOnly).toFixed(2);
+        nextMsg = `📈 다음 등급(${String.fromCharCode(grade.charCodeAt(0) - 1)})을 받으려면 지필 점수 총합: ${needed}점 이상`;
       } else {
         nextMsg = "🎉 이미 최고 등급입니다!";
       }
 
-      const drop = ((current - 0.01 - s_total) / t_weight).toFixed(2);
-      downMsg = `⚠️ 지필 점수가 총 ${drop}점 미만이면 등급이 떨어질 수 있습니다.`;
+      const drop = ((current - 0.01 - sTotal) / tWeightOnly).toFixed(2);
+      dropMsg = `⚠️ 지필 점수가 총 ${drop}점 미만이면 등급이 떨어질 수 있습니다.`;
 
       document.getElementById("result").innerHTML =
         `최종 점수: <strong>${final.toFixed(2)}점</strong><br/>
-         등급: <strong>${grade}</strong><br/>${nextMsg}<br/>${downMsg}`;
+         등급: <strong>${grade}</strong><br/>${nextMsg}<br/>${dropMsg}`;
     }
+
+    window.onload = generateInputs;
   </script>
+
 </body>
 </html>
