@@ -17,6 +17,14 @@
     h1 {
       text-align: center;
       font-size: 1.8em;
+      cursor: pointer;
+    }
+
+    #nowInfo {
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #007acc;
     }
 
     .search-box {
@@ -117,7 +125,8 @@
 </head>
 <body>
 
-  <h1>📘 메카 1학년 4반 시간표</h1>
+  <h1 onclick="resetToToday()">메카 1학년 4반 시간표</h1>
+  <div id="nowInfo"></div>
 
   <div class="search-box">
     <input type="text" id="subjectInput" placeholder="과목명 입력 (예: 수학)" />
@@ -137,48 +146,13 @@
   <div class="result" id="searchResult"></div>
 
   <div class="slider-container" id="slider">
-    <div class="slide">
-      <div class="card">
-        <h2>오늘 시간표</h2>
-        <ul id="todayList"></ul>
-      </div>
-    </div>
-    <div class="slide">
-      <div class="card">
-        <h2>내일 시간표</h2>
-        <ul id="tomorrowList"></ul>
-      </div>
-    </div>
-    <div class="slide">
-      <div class="card">
-        <h2>월요일 시간표</h2>
-        <ul id="monList"></ul>
-      </div>
-    </div>
-    <div class="slide">
-      <div class="card">
-        <h2>화요일 시간표</h2>
-        <ul id="tueList"></ul>
-      </div>
-    </div>
-    <div class="slide">
-      <div class="card">
-        <h2>수요일 시간표</h2>
-        <ul id="wedList"></ul>
-      </div>
-    </div>
-    <div class="slide">
-      <div class="card">
-        <h2>목요일 시간표</h2>
-        <ul id="thuList"></ul>
-      </div>
-    </div>
-    <div class="slide">
-      <div class="card">
-        <h2>금요일 시간표</h2>
-        <ul id="friList"></ul>
-      </div>
-    </div>
+    <div class="slide"><div class="card"><h2>오늘 시간표</h2><ul id="todayList"></ul></div></div>
+    <div class="slide"><div class="card"><h2>내일 시간표</h2><ul id="tomorrowList"></ul></div></div>
+    <div class="slide"><div class="card"><h2>월요일 시간표</h2><ul id="monList"></ul></div></div>
+    <div class="slide"><div class="card"><h2>화요일 시간표</h2><ul id="tueList"></ul></div></div>
+    <div class="slide"><div class="card"><h2>수요일 시간표</h2><ul id="wedList"></ul></div></div>
+    <div class="slide"><div class="card"><h2>목요일 시간표</h2><ul id="thuList"></ul></div></div>
+    <div class="slide"><div class="card"><h2>금요일 시간표</h2><ul id="friList"></ul></div></div>
   </div>
 
   <script>
@@ -252,7 +226,55 @@
       slider.scrollTo({ left: index * width, behavior: "smooth" });
     }
 
-    // 초기 렌더링
+    function resetToToday() {
+      goToSlide(0);
+      document.getElementById("subjectInput").value = "";
+      document.getElementById("searchResult").innerHTML = "";
+    }
+
+    function getCurrentPeriod() {
+      const now = new Date();
+      const hour = now.getHours();
+      const minute = now.getMinutes();
+      const time = hour * 60 + minute;
+
+      const periods = [
+        { start: 530, end: 580 },   // 08:50~09:40 → 1교시
+        { start: 590, end: 640 },   // 09:50~10:40 → 2교시
+        { start: 650, end: 700 },   // 10:50~11:40 → 3교시
+        { start: 710, end: 760 },   // 11:50~12:40 → 4교시
+        { start: 820, end: 870 },   // 13:40~14:30 → 5교시
+        { start: 880, end: 930 },   // 14:40~15:30 → 6교시
+        { start: 940, end: 990 }    // 15:40~16:30 → 7교시
+      ];
+
+      for (let i = 0; i < periods.length; i++) {
+        if (time >= periods[i].start && time <= periods[i].end) {
+          return i + 1;
+        }
+      }
+
+      return null;
+    }
+
+    function showNowClass() {
+      const today = getDayName(0);
+      const period = getCurrentPeriod();
+      const nowInfo = document.getElementById("nowInfo");
+
+      if (!timetable[today]) {
+        nowInfo.innerText = "오늘은 수업이 없습니다!";
+        return;
+      }
+
+      if (period) {
+        const subject = timetable[today][period - 1] || "없음";
+        nowInfo.innerText = `현재 ${period}교시 (${subject}) 수업 중입니다.`;
+      } else {
+        nowInfo.innerText = "현재 수업 시간 외입니다.";
+      }
+    }
+
     renderTimetable(getDayName(0), "todayList");
     renderTimetable(getDayName(1), "tomorrowList");
     renderTimetable("월", "monList");
@@ -260,6 +282,7 @@
     renderTimetable("수", "wedList");
     renderTimetable("목", "thuList");
     renderTimetable("금", "friList");
+    showNowClass();
   </script>
 </body>
 </html>
