@@ -5,32 +5,55 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>메카 1학년 4반</title>
   <style>
+    :root {
+      --bg-color: #f9f9f9;
+      --text-color: #333;
+      --card-bg: #fff;
+    }
+
+    body.dark {
+      --bg-color: #1e1e1e;
+      --text-color: #f0f0f0;
+      --card-bg: #2a2a2a;
+    }
+
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
-      background: #f9f9f9;
-      color: #333;
+      background: var(--bg-color);
+      color: var(--text-color);
+      transition: background 0.3s, color 0.3s;
     }
 
     nav {
       display: flex;
       justify-content: center;
-      background: #007acc;
+      background: #ccc;
+      flex-wrap: wrap;
     }
 
     nav button {
       flex: 1;
       padding: 15px;
       border: none;
-      background: #007acc;
-      color: white;
+      background: #bbb;
+      color: #000;
       font-size: 16px;
       cursor: pointer;
     }
 
     nav button.active {
-      background: #005fa3;
+      background: #999;
+      font-weight: bold;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      flex-wrap: wrap;
     }
 
     .section {
@@ -42,36 +65,147 @@
       display: block;
     }
 
-    /* 시간표 스타일 (간략화) */
-    .slider-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
-    .slide { flex: 0 0 100%; scroll-snap-align: start; padding: 20px; box-sizing: border-box; }
-    .card { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    .slider-container {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+    }
+
+    .slide {
+      flex: 0 0 100%;
+      scroll-snap-align: start;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
     ul { list-style: none; padding: 0; }
-    li { padding: 5px 0; border-bottom: 1px solid #eee; }
+    li { padding: 5px 0; border-bottom: 1px solid #ccc; }
 
-    /* 달력 스타일 */
-    .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; max-width: 700px; margin: auto; }
-    .day { background: white; border: 1px solid #ddd; min-height: 80px; padding: 10px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; }
+    .calendar-header {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .calendar-header button {
+      margin: 0 10px;
+      padding: 5px 10px;
+      font-size: 16px;
+    }
+
+    .calendar { 
+      display: grid; 
+      grid-template-columns: repeat(7, 1fr); 
+      gap: 5px; 
+      max-width: 700px; 
+      margin: auto; 
+    }
+
+    .day {
+      background: white;
+      border: 1px solid #ddd;
+      min-height: 80px;
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    body.dark .day {
+      background: #2a2a2a;
+      border-color: #555;
+    }
+
     .today { border: 2px solid #007acc; }
-    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; justify-content: center; align-items: center; z-index: 10; }
-    .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; }
-    .modal-content h2 { margin-top: 0; }
-    textarea { width: 100%; padding: 10px; box-sizing: border-box; margin-top: 10px; }
-    .note { font-size: 13px; color: #555; margin-top: 5px; white-space: pre-wrap; }
 
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      box-sizing: border-box;
+      background: #fff;
+    }
+
+    body.dark input, 
+    body.dark textarea, 
+    body.dark select {
+      background: #444;
+      color: #fff;
+    }
+
+    .note {
+      font-size: 13px;
+      color: #555;
+      margin-top: 5px;
+      white-space: pre-wrap;
+    }
+
+    .bg-yellow { background: #fff9c4 !important; }
+    .bg-green  { background: #e0f2f1 !important; }
+    .bg-blue   { background: #e3f2fd !important; }
+
+    h1, h2 {
+      margin: 10px 0;
+      text-align: center;
+    }
+
+    .backup-controls {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 600px) {
+      h1, h2 { font-size: 20px; }
+      .card { padding: 10px; }
+      .calendar { grid-template-columns: repeat(7, 1fr); gap: 2px; }
+      nav button { font-size: 14px; padding: 10px; }
+      .top-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
+    }
   </style>
 </head>
 <body>
 
+  <div class="top-bar">
+    <h1>메카 1학년 4반</h1>
+    <button onclick="toggleDarkMode()">다크모드</button>
+  </div>
+
   <nav>
     <button class="active" onclick="showSection('timetable')">시간표</button>
-    <button onclick="showSection('calendar')">달력 스케줄</button>
+    <button onclick="showSection('calendar')">달력</button>
   </nav>
 
-  <!-- 시간표 섹션 -->
+  <!-- 시간표 -->
   <div id="timetable" class="section active">
-    <h1 style="text-align:center;">📘 메카 1학년 4반 시간표</h1>
-    <div class="slider-container">
+    <h2 id="dayTitle">시간표</h2>
+    <div class="slider-container" id="slider">
       <div class="slide"><div class="card"><h2>월요일</h2><ul id="monList"></ul></div></div>
       <div class="slide"><div class="card"><h2>화요일</h2><ul id="tueList"></ul></div></div>
       <div class="slide"><div class="card"><h2>수요일</h2><ul id="wedList"></ul></div></div>
@@ -80,17 +214,32 @@
     </div>
   </div>
 
-  <!-- 달력 섹션 -->
+  <!-- 달력 -->
   <div id="calendar" class="section">
-    <h1 style="text-align:center;">📅 나의 스케줄 달력</h1>
+    <div class="calendar-header">
+      <button onclick="changeMonth(-1)">◀</button>
+      <span id="calendarTitle">6월 스케줄</span>
+      <button onclick="changeMonth(1)">▶</button>
+    </div>
+    <div class="backup-controls">
+      <button onclick="exportData()">백업하기</button>
+      <input type="file" accept=".json" onchange="importData(event)" />
+    </div>
     <div id="calendarGrid" class="calendar"></div>
   </div>
 
-  <!-- 모달창 -->
+  <!-- 모달 -->
   <div class="modal" id="modal">
     <div class="modal-content">
       <h2 id="modal-date">날짜</h2>
-      <textarea id="scheduleInput" rows="5" placeholder="이 날의 스케줄을 입력하세요"></textarea>
+      <input type="text" id="timeInput" placeholder="시간대 (예: 13:00~14:00)" />
+      <textarea id="scheduleInput" rows="4" placeholder="내용 입력"></textarea>
+      <select id="bgSelect">
+        <option value="">배경색 없음</option>
+        <option value="bg-yellow">노랑</option>
+        <option value="bg-green">연두</option>
+        <option value="bg-blue">파랑</option>
+      </select>
       <div style="text-align: right; margin-top:10px;">
         <button onclick="closeModal()">취소</button>
         <button onclick="saveSchedule()">저장</button>
@@ -99,7 +248,6 @@
   </div>
 
   <script>
-    // 시간표 데이터
     const timetable = {
       "월": ["독서", "통과1", "통과2", "체육2", "영어", "수학", "진로"],
       "화": ["수학", "한국사", "디논", "디논", "전자", "전자", "전자"],
@@ -119,7 +267,6 @@
       }
     }
 
-    // 섹션 전환
     function showSection(id) {
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
@@ -127,20 +274,31 @@
       event.target.classList.add('active');
     }
 
-    // ---------------- 달력 기능 ----------------
+    function autoScrollToToday() {
+      const today = new Date().getDay();
+      const index = today === 0 || today === 6 ? 0 : today - 1;
+      const slider = document.getElementById("slider");
+      const width = slider.clientWidth;
+      slider.scrollLeft = index * width;
+    }
+
+    let viewDate = new Date();
     const calendarGrid = document.getElementById('calendarGrid');
+    const calendarTitle = document.getElementById('calendarTitle');
     const modal = document.getElementById('modal');
     const modalDate = document.getElementById('modal-date');
+    const timeInput = document.getElementById('timeInput');
     const scheduleInput = document.getElementById('scheduleInput');
+    const bgSelect = document.getElementById('bgSelect');
     let selectedDate = "";
 
     function renderCalendar() {
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = today.getMonth();
-      const firstDay = new Date(year, month, 1);
+      const year = viewDate.getFullYear();
+      const month = viewDate.getMonth();
+      calendarTitle.innerText = `${month + 1}월 스케줄`;
+
+      const firstDay = new Date(year, month, 1).getDay();
       const lastDate = new Date(year, month + 1, 0).getDate();
-      const startDay = firstDay.getDay();
 
       calendarGrid.innerHTML = "";
       const daysKor = ['일', '월', '화', '수', '목', '금', '토'];
@@ -150,25 +308,35 @@
         calendarGrid.appendChild(dayEl);
       });
 
-      for (let i = 0; i < startDay; i++) {
+      for (let i = 0; i < firstDay; i++) {
         calendarGrid.appendChild(document.createElement('div'));
       }
 
       for (let d = 1; d <= lastDate; d++) {
-        const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
+        const dateStr = `${year}-${String(month+1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
         const box = document.createElement('div');
-        box.className = 'day';
+        const { text, color } = loadSchedule(dateStr);
+        box.className = `day ${color}`;
         if (dateStr === getTodayStr()) box.classList.add('today');
-        box.innerHTML = `<div><strong>${d}</strong></div><div class="note">${loadSchedule(dateStr)}</div>`;
+        box.innerHTML = `<div><strong>${d}</strong></div><div class="note">${text}</div>`;
         box.onclick = () => openModal(dateStr);
         calendarGrid.appendChild(box);
       }
     }
 
+    function changeMonth(offset) {
+      viewDate.setMonth(viewDate.getMonth() + offset);
+      renderCalendar();
+    }
+
     function openModal(date) {
       selectedDate = date;
-      modalDate.innerText = `📌 ${date} 스케줄`;
-      scheduleInput.value = loadSchedule(date);
+      modalDate.innerText = date + ' 스케줄';
+      const { text, color } = loadSchedule(date);
+      const [time, ...memo] = text.split('\n');
+      timeInput.value = time || "";
+      scheduleInput.value = memo.join('\n') || "";
+      bgSelect.value = color;
       modal.style.display = 'flex';
     }
 
@@ -177,22 +345,78 @@
     }
 
     function saveSchedule() {
-      localStorage.setItem(`schedule-${selectedDate}`, scheduleInput.value);
+      const text = `${timeInput.value}\n${scheduleInput.value}`.trim();
+      const color = bgSelect.value;
+      localStorage.setItem(`schedule-${selectedDate}`, JSON.stringify({ text, color }));
+      scheduleNotification(selectedDate, timeInput.value);
       closeModal();
       renderCalendar();
     }
 
     function loadSchedule(date) {
-      return localStorage.getItem(`schedule-${date}`) || '';
+      const data = localStorage.getItem(`schedule-${date}`);
+      if (!data) return { text: '', color: '' };
+      return JSON.parse(data);
     }
 
     function getTodayStr() {
       const t = new Date();
-      return `${t.getFullYear()}-${(t.getMonth() + 1).toString().padStart(2, '0')}-${t.getDate().toString().padStart(2, '0')}`;
+      return `${t.getFullYear()}-${(t.getMonth()+1).toString().padStart(2,'0')}-${t.getDate().toString().padStart(2,'0')}`;
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+    }
+
+    function scheduleNotification(date, timeStr) {
+      if (!("Notification" in window)) return;
+      Notification.requestPermission().then(permission => {
+        if (permission !== "granted") return;
+        const [h, m] = timeStr.split(":").map(Number);
+        if (isNaN(h) || isNaN(m)) return;
+        const notifyTime = new Date(date + 'T' + timeStr);
+        const delay = notifyTime - new Date();
+        if (delay > 0) {
+          setTimeout(() => {
+            new Notification("스케줄 알림", {
+              body: `${date} 스케줄 시간입니다.`,
+            });
+          }, delay);
+        }
+      });
+    }
+
+    function exportData() {
+      const data = {};
+      Object.keys(localStorage).forEach(k => {
+        if (k.startsWith("schedule-")) data[k] = localStorage.getItem(k);
+      });
+      const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "backup.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const data = JSON.parse(e.target.result);
+        for (const k in data) {
+          if (k.startsWith("schedule-")) localStorage.setItem(k, data[k]);
+        }
+        renderCalendar();
+      };
+      reader.readAsText(file);
     }
 
     renderTimetable();
     renderCalendar();
+    autoScrollToToday();
   </script>
 </body>
 </html>
