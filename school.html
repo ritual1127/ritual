@@ -2,175 +2,104 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>메카 1학년 4반 시간표</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>메카 1학년 4반</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #ffffff;
       margin: 0;
-      padding: 20px;
-      color: #333;
-      overflow-x: hidden;
-    }
-
-    h1 {
-      text-align: center;
-      font-size: 1.8em;
-      cursor: pointer;
-    }
-
-    #nowInfo {
-      text-align: center;
-      font-weight: bold;
-      margin-bottom: 10px;
-      color: #007acc;
-    }
-
-    .search-box {
-      text-align: center;
-      margin: 20px 0 10px;
-    }
-
-    input[type="text"], input[type="date"] {
-      padding: 10px;
-      width: 70%;
-      max-width: 240px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-      margin-bottom: 8px;
-    }
-
-    button {
-      padding: 10px 14px;
-      background-color: #333;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      cursor: pointer;
-      margin: 5px;
-      font-size: 14px;
-    }
-
-    .day-buttons {
-      text-align: center;
-      margin: 10px 0;
-    }
-
-    .day-buttons button {
-      background-color: #f0f0f0;
-      color: #333;
-      border: 1px solid #ccc;
-    }
-
-    .result {
-      text-align: center;
-      font-weight: bold;
-      white-space: pre-wrap;
-      line-height: 1.6;
-    }
-
-    .slider-container {
-      display: flex;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      scroll-behavior: smooth;
-      margin-top: 20px;
-    }
-
-    .slide {
-      flex: 0 0 100%;
-      scroll-snap-align: start;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    .card {
+      padding: 0;
       background: #f9f9f9;
-      padding: 15px 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      color: #333;
     }
 
-    .card h2 {
-      text-align: center;
-      font-size: 1.3em;
+    nav {
+      display: flex;
+      justify-content: center;
+      background: #007acc;
     }
 
-    ul {
-      list-style: none;
-      padding-left: 0;
+    nav button {
+      flex: 1;
+      padding: 15px;
+      border: none;
+      background: #007acc;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
     }
 
-    li {
-      padding: 8px 0;
-      border-bottom: 1px solid #eee;
-      font-size: 15px;
+    nav button.active {
+      background: #005fa3;
     }
 
-    #todoBox {
-      margin-top: 20px;
-      text-align: center;
+    .section {
+      display: none;
+      padding: 20px;
     }
 
-    .todo-item {
-      margin: 5px 0;
+    .section.active {
+      display: block;
     }
 
-    .todo-item input {
-      margin-right: 5px;
-    }
+    /* 시간표 스타일 (간략화) */
+    .slider-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
+    .slide { flex: 0 0 100%; scroll-snap-align: start; padding: 20px; box-sizing: border-box; }
+    .card { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    ul { list-style: none; padding: 0; }
+    li { padding: 5px 0; border-bottom: 1px solid #eee; }
 
-    @media (max-width: 480px) {
-      input[type="text"], input[type="date"] {
-        width: 65%;
-      }
-      button {
-        padding: 8px 12px;
-        font-size: 13px;
-      }
-      .card h2 {
-        font-size: 1.1em;
-      }
-    }
+    /* 달력 스타일 */
+    .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; max-width: 700px; margin: auto; }
+    .day { background: white; border: 1px solid #ddd; min-height: 80px; padding: 10px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; }
+    .today { border: 2px solid #007acc; }
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; justify-content: center; align-items: center; z-index: 10; }
+    .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; }
+    .modal-content h2 { margin-top: 0; }
+    textarea { width: 100%; padding: 10px; box-sizing: border-box; margin-top: 10px; }
+    .note { font-size: 13px; color: #555; margin-top: 5px; white-space: pre-wrap; }
+
   </style>
 </head>
 <body>
 
-  <h1 onclick="resetToToday()">메카 1학년 4반 시간표</h1>
-  <div id="nowInfo"></div>
+  <nav>
+    <button class="active" onclick="showSection('timetable')">시간표</button>
+    <button onclick="showSection('calendar')">달력 스케줄</button>
+  </nav>
 
-  <div class="search-box">
-    <input type="text" id="subjectInput" placeholder="과목명 입력 (예: 수학)" />
-    <button onclick="searchSubject()">검색</button><br>
-    <input type="date" id="calendar" onchange="handleDateChange()" />
+  <!-- 시간표 섹션 -->
+  <div id="timetable" class="section active">
+    <h1 style="text-align:center;">📘 메카 1학년 4반 시간표</h1>
+    <div class="slider-container">
+      <div class="slide"><div class="card"><h2>월요일</h2><ul id="monList"></ul></div></div>
+      <div class="slide"><div class="card"><h2>화요일</h2><ul id="tueList"></ul></div></div>
+      <div class="slide"><div class="card"><h2>수요일</h2><ul id="wedList"></ul></div></div>
+      <div class="slide"><div class="card"><h2>목요일</h2><ul id="thuList"></ul></div></div>
+      <div class="slide"><div class="card"><h2>금요일</h2><ul id="friList"></ul></div></div>
+    </div>
   </div>
 
-  <div class="day-buttons">
-    <button onclick="goToSlide(0)">오늘</button>
-    <button onclick="goToSlide(1)">내일</button>
-    <button onclick="goToSlide(2)">월</button>
-    <button onclick="goToSlide(3)">화</button>
-    <button onclick="goToSlide(4)">수</button>
-    <button onclick="goToSlide(5)">목</button>
-    <button onclick="goToSlide(6)">금</button>
+  <!-- 달력 섹션 -->
+  <div id="calendar" class="section">
+    <h1 style="text-align:center;">📅 나의 스케줄 달력</h1>
+    <div id="calendarGrid" class="calendar"></div>
   </div>
 
-  <div class="result" id="searchResult"></div>
-  <div class="result" id="todoBox"></div>
-
-  <div class="slider-container" id="slider">
-    <div class="slide"><div class="card"><h2>오늘 시간표</h2><ul id="todayList"></ul></div></div>
-    <div class="slide"><div class="card"><h2>내일 시간표</h2><ul id="tomorrowList"></ul></div></div>
-    <div class="slide"><div class="card"><h2>월요일 시간표</h2><ul id="monList"></ul></div></div>
-    <div class="slide"><div class="card"><h2>화요일 시간표</h2><ul id="tueList"></ul></div></div>
-    <div class="slide"><div class="card"><h2>수요일 시간표</h2><ul id="wedList"></ul></div></div>
-    <div class="slide"><div class="card"><h2>목요일 시간표</h2><ul id="thuList"></ul></div></div>
-    <div class="slide"><div class="card"><h2>금요일 시간표</h2><ul id="friList"></ul></div></div>
+  <!-- 모달창 -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h2 id="modal-date">날짜</h2>
+      <textarea id="scheduleInput" rows="5" placeholder="이 날의 스케줄을 입력하세요"></textarea>
+      <div style="text-align: right; margin-top:10px;">
+        <button onclick="closeModal()">취소</button>
+        <button onclick="saveSchedule()">저장</button>
+      </div>
+    </div>
   </div>
 
   <script>
+    // 시간표 데이터
     const timetable = {
       "월": ["독서", "통과1", "통과2", "체육2", "영어", "수학", "진로"],
       "화": ["수학", "한국사", "디논", "디논", "전자", "전자", "전자"],
@@ -179,170 +108,91 @@
       "금": ["한국사", "통과2", "체육1", "원어민", "수학", "통과1", ""]
     };
 
-    const days = ["일", "월", "화", "수", "목", "금", "토"];
-    let currentSubject = "";
-
-    function getDayName(offset) {
-      const date = new Date();
-      date.setDate(date.getDate() + offset);
-      return days[date.getDay()];
-    }
-
-    function renderTimetable(day, elementId) {
-      const list = document.getElementById(elementId);
-      list.innerHTML = "";
-      if (timetable[day]) {
-        timetable[day].forEach((subject, idx) => {
-          list.innerHTML += `<li>${idx + 1}교시: ${subject || "없음"}</li>`;
-        });
-      } else {
-        list.innerHTML = "<li>수업이 없습니다!</li>";
-      }
-    }
-
-    function searchSubject() {
-      const input = document.getElementById("subjectInput").value.trim();
-      const resultDiv = document.getElementById("searchResult");
-      const todoBox = document.getElementById("todoBox");
-      resultDiv.innerHTML = "";
-      todoBox.innerHTML = "";
-      currentSubject = input;
-
-      if (!input) {
-        resultDiv.innerText = "과목명을 입력해주세요.";
-        return;
-      }
-
-      const results = [];
-
-      for (const [day, subjects] of Object.entries(timetable)) {
-        subjects.forEach((subject, idx) => {
-          if (subject.includes(input)) {
-            results.push(`${day}요일 ${idx + 1}교시`);
-          }
+    function renderTimetable() {
+      const map = { "월":"monList", "화":"tueList", "수":"wedList", "목":"thuList", "금":"friList" };
+      for (const day in timetable) {
+        const ul = document.getElementById(map[day]);
+        ul.innerHTML = "";
+        timetable[day].forEach((subject, i) => {
+          ul.innerHTML += `<li>${i + 1}교시: ${subject || "없음"}</li>`;
         });
       }
+    }
 
-      if (results.length > 0) {
-        resultDiv.innerHTML = `
-          "<strong>${input}</strong>" 과목은 주 <strong>${results.length}</strong>회 있습니다.<br><br>
-          ${results.map(r => `<div><strong>${input}</strong> <span style="color: #777;">⎯⎯ ${r}</span></div>`).join("")}
-        `;
-        renderTodoList(input);
-      } else {
-        resultDiv.innerText = `"${input}" 과목은 시간표에 없습니다.`;
+    // 섹션 전환
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    // ---------------- 달력 기능 ----------------
+    const calendarGrid = document.getElementById('calendarGrid');
+    const modal = document.getElementById('modal');
+    const modalDate = document.getElementById('modal-date');
+    const scheduleInput = document.getElementById('scheduleInput');
+    let selectedDate = "";
+
+    function renderCalendar() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const lastDate = new Date(year, month + 1, 0).getDate();
+      const startDay = firstDay.getDay();
+
+      calendarGrid.innerHTML = "";
+      const daysKor = ['일', '월', '화', '수', '목', '금', '토'];
+      daysKor.forEach(d => {
+        const dayEl = document.createElement('div');
+        dayEl.innerHTML = `<strong>${d}</strong>`;
+        calendarGrid.appendChild(dayEl);
+      });
+
+      for (let i = 0; i < startDay; i++) {
+        calendarGrid.appendChild(document.createElement('div'));
+      }
+
+      for (let d = 1; d <= lastDate; d++) {
+        const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
+        const box = document.createElement('div');
+        box.className = 'day';
+        if (dateStr === getTodayStr()) box.classList.add('today');
+        box.innerHTML = `<div><strong>${d}</strong></div><div class="note">${loadSchedule(dateStr)}</div>`;
+        box.onclick = () => openModal(dateStr);
+        calendarGrid.appendChild(box);
       }
     }
 
-    function renderTodoList(subject) {
-      const todoBox = document.getElementById("todoBox");
-      const saved = JSON.parse(localStorage.getItem(`todo-${subject}`) || "[]");
-
-      todoBox.innerHTML = `
-        <h3>📋 "${subject}" 할 일 목록</h3>
-        <div>
-          <input type="text" id="todoInput" placeholder="할 일 추가하기" />
-          <button onclick="addTodo()">추가</button>
-        </div>
-        <div id="todoList">${saved.map((item, i) => `
-          <div class="todo-item">
-            <input type="checkbox" onclick="toggleTodo(${i})" ${item.done ? "checked" : ""}>
-            <span style="${item.done ? 'text-decoration: line-through; color: gray;' : ''}">${item.text}</span>
-            <button onclick="deleteTodo(${i})">삭제</button>
-          </div>`).join("")}
-        </div>
-      `;
+    function openModal(date) {
+      selectedDate = date;
+      modalDate.innerText = `📌 ${date} 스케줄`;
+      scheduleInput.value = loadSchedule(date);
+      modal.style.display = 'flex';
     }
 
-    function addTodo() {
-      const input = document.getElementById("todoInput");
-      const value = input.value.trim();
-      if (!value) return;
-      const saved = JSON.parse(localStorage.getItem(`todo-${currentSubject}`) || "[]");
-      saved.push({ text: value, done: false });
-      localStorage.setItem(`todo-${currentSubject}`, JSON.stringify(saved));
-      renderTodoList(currentSubject);
+    function closeModal() {
+      modal.style.display = 'none';
     }
 
-    function toggleTodo(index) {
-      const saved = JSON.parse(localStorage.getItem(`todo-${currentSubject}`) || "[]");
-      saved[index].done = !saved[index].done;
-      localStorage.setItem(`todo-${currentSubject}`, JSON.stringify(saved));
-      renderTodoList(currentSubject);
+    function saveSchedule() {
+      localStorage.setItem(`schedule-${selectedDate}`, scheduleInput.value);
+      closeModal();
+      renderCalendar();
     }
 
-    function deleteTodo(index) {
-      const saved = JSON.parse(localStorage.getItem(`todo-${currentSubject}`) || "[]");
-      saved.splice(index, 1);
-      localStorage.setItem(`todo-${currentSubject}`, JSON.stringify(saved));
-      renderTodoList(currentSubject);
+    function loadSchedule(date) {
+      return localStorage.getItem(`schedule-${date}`) || '';
     }
 
-    function goToSlide(index) {
-      const slider = document.getElementById("slider");
-      const width = slider.clientWidth;
-      slider.scrollTo({ left: index * width, behavior: "smooth" });
+    function getTodayStr() {
+      const t = new Date();
+      return `${t.getFullYear()}-${(t.getMonth() + 1).toString().padStart(2, '0')}-${t.getDate().toString().padStart(2, '0')}`;
     }
 
-    function resetToToday() {
-      goToSlide(0);
-      document.getElementById("subjectInput").value = "";
-      document.getElementById("searchResult").innerHTML = "";
-      document.getElementById("todoBox").innerHTML = "";
-    }
-
-    function handleDateChange() {
-      const dateStr = document.getElementById("calendar").value;
-      if (!dateStr) return;
-      const date = new Date(dateStr);
-      const day = date.getDay(); // 0~6 (일~토)
-      goToSlide(day === 0 ? 2 : (day === 6 ? 2 : day + 1)); // 일, 토 → 월로 고정
-    }
-
-    function getCurrentPeriod() {
-      const now = new Date();
-      const time = now.getHours() * 60 + now.getMinutes();
-      const periods = [
-        { start: 530, end: 580 },   // 08:50~09:40
-        { start: 590, end: 640 },   // 09:50~10:40
-        { start: 650, end: 700 },   // 10:50~11:40
-        { start: 710, end: 760 },   // 11:50~12:40
-        { start: 820, end: 870 },   // 13:40~14:30
-        { start: 880, end: 930 },   // 14:40~15:30
-        { start: 940, end: 990 }    // 15:40~16:30
-      ];
-      for (let i = 0; i < periods.length; i++) {
-        if (time >= periods[i].start && time <= periods[i].end) {
-          return i + 1;
-        }
-      }
-      return null;
-    }
-
-    function showNowClass() {
-      const today = getDayName(0);
-      const period = getCurrentPeriod();
-      const nowInfo = document.getElementById("nowInfo");
-      if (!timetable[today]) {
-        nowInfo.innerText = "오늘은 수업이 없습니다!";
-        return;
-      }
-      if (period) {
-        const subject = timetable[today][period - 1] || "없음";
-        nowInfo.innerText = `현재 ${period}교시 (${subject}) 수업 중입니다.`;
-      } else {
-        nowInfo.innerText = "현재 수업 시간 외입니다.";
-      }
-    }
-
-    renderTimetable(getDayName(0), "todayList");
-    renderTimetable(getDayName(1), "tomorrowList");
-    renderTimetable("월", "monList");
-    renderTimetable("화", "tueList");
-    renderTimetable("수", "wedList");
-    renderTimetable("목", "thuList");
-    renderTimetable("금", "friList");
-    showNowClass();
+    renderTimetable();
+    renderCalendar();
   </script>
 </body>
 </html>
