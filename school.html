@@ -32,13 +32,14 @@
       margin: 20px 0 10px;
     }
 
-    input[type="text"] {
+    input[type="text"], input[type="date"] {
       padding: 10px;
       width: 70%;
       max-width: 240px;
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 14px;
+      margin-bottom: 8px;
     }
 
     button {
@@ -108,8 +109,21 @@
       font-size: 15px;
     }
 
+    #todoBox {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .todo-item {
+      margin: 5px 0;
+    }
+
+    .todo-item input {
+      margin-right: 5px;
+    }
+
     @media (max-width: 480px) {
-      input[type="text"] {
+      input[type="text"], input[type="date"] {
         width: 65%;
       }
       button {
@@ -129,7 +143,8 @@
 
   <div class="search-box">
     <input type="text" id="subjectInput" placeholder="과목명 입력 (예: 수학)" />
-    <button onclick="searchSubject()">검색</button>
+    <button onclick="searchSubject()">검색</button><br>
+    <input type="date" id="calendar" onchange="handleDateChange()" />
   </div>
 
   <div class="day-buttons">
@@ -143,6 +158,7 @@
   </div>
 
   <div class="result" id="searchResult"></div>
+  <div class="result" id="todoBox"></div>
 
   <div class="slider-container" id="slider">
     <div class="slide"><div class="card"><h2>오늘 시간표</h2><ul id="todayList"></ul></div></div>
@@ -164,6 +180,7 @@
     };
 
     const days = ["일", "월", "화", "수", "목", "금", "토"];
+    let currentSubject = "";
 
     function getDayName(offset) {
       const date = new Date();
@@ -174,7 +191,6 @@
     function renderTimetable(day, elementId) {
       const list = document.getElementById(elementId);
       list.innerHTML = "";
-
       if (timetable[day]) {
         timetable[day].forEach((subject, idx) => {
           list.innerHTML += `<li>${idx + 1}교시: ${subject || "없음"}</li>`;
@@ -187,7 +203,10 @@
     function searchSubject() {
       const input = document.getElementById("subjectInput").value.trim();
       const resultDiv = document.getElementById("searchResult");
+      const todoBox = document.getElementById("todoBox");
       resultDiv.innerHTML = "";
+      todoBox.innerHTML = "";
+      currentSubject = input;
 
       if (!input) {
         resultDiv.innerText = "과목명을 입력해주세요.";
@@ -205,18 +224,58 @@
       }
 
       if (results.length > 0) {
-        let listHtml = results.map(r => {
-          const [day, period] = r.split("요일 ");
-          return `<div><strong>${input}</strong> <span style="color: #777;">⎯⎯ ${day}요일 ${period}</span></div>`;
-        }).join("");
-
         resultDiv.innerHTML = `
           "<strong>${input}</strong>" 과목은 주 <strong>${results.length}</strong>회 있습니다.<br><br>
-          ${listHtml}
+          ${results.map(r => `<div><strong>${input}</strong> <span style="color: #777;">⎯⎯ ${r}</span></div>`).join("")}
         `;
+        renderTodoList(input);
       } else {
         resultDiv.innerText = `"${input}" 과목은 시간표에 없습니다.`;
       }
+    }
+
+    function renderTodoList(subject) {
+      const todoBox = document.getElementById("todoBox");
+      const saved = JSON.parse(localStorage.getItem(`todo-${subject}`) || "[]");
+
+      todoBox.innerHTML = `
+        <h3>📋 "${subject}" 할 일 목록</h3>
+        <div>
+          <input type="text" id="todoInput" placeholder="할 일 추가하기" />
+          <button onclick="addTodo()">추가</button>
+        </div>
+        <div id="todoList">${saved.map((item, i) => `
+          <div class="todo-item">
+            <input type="checkbox" onclick="toggleTodo(${i})" ${item.done ? "checked" : ""}>
+            <span style="${item.done ? 'text-decoration: line-through; color: gray;' : ''}">${item.text}</span>
+            <button onclick="deleteTodo(${i})">삭제</button>
+          </div>`).join("")}
+        </div>
+      `;
+    }
+
+    function addTodo() {
+      const input = document.getElementById("todoInput");
+      const value = input.value.trim();
+      if (!value) return;
+      const saved = JSON.parse(localStorage.getItem(`todo-${currentSubject}`) || "[]");
+      saved.push({ text: value, done: false });
+      localStorage.setItem(`todo-${currentSubject}`, JSON.stringify(saved));
+      renderTodoList(currentSubject);
+    }
+
+    function toggleTodo(index) {
+      const saved = JSON.parse(localStorage.getItem(`todo-${currentSubject}`) || "[]");
+      saved[index].done = !saved[index].done;
+      localStorage.setItem(`todo-${currentSubject}`, JSON.stringify(saved));
+      renderTodoList(currentSubject);
+    }
+
+    function deleteTodo(index) {
+      const saved = JSON.parse(localStorage.getItem(`todo-${currentSubject}`) || "[]");
+      saved.splice(index, 1);
+      localStorage.setItem(`todo-${currentSubject}`, JSON.stringify(saved));
+      renderTodoList(currentSubject);
     }
 
     function goToSlide(index) {
@@ -229,22 +288,29 @@
       goToSlide(0);
       document.getElementById("subjectInput").value = "";
       document.getElementById("searchResult").innerHTML = "";
+      document.getElementById("todoBox").innerHTML = "";
+    }
+
+    function handleDateChange() {
+      const dateStr = document.getElementById("calendar").value;
+      if (!dateStr) return;
+      const date = new Date(dateStr);
+      const day = date.getDay(); // 0~6 (일~토)
+      goToSlide(day === 0 ? 2 : (day === 6 ? 2 : day + 1)); // 일, 토 → 월로 고정
     }
 
     function getCurrentPeriod() {
       const now = new Date();
       const time = now.getHours() * 60 + now.getMinutes();
-
       const periods = [
-        { start: 530, end: 580 },   // 08:50~09:40 → 1교시
-        { start: 590, end: 640 },   // 09:50~10:40 → 2교시
-        { start: 650, end: 700 },   // 10:50~11:40 → 3교시
-        { start: 710, end: 760 },   // 11:50~12:40 → 4교시
-        { start: 820, end: 870 },   // 13:40~14:30 → 5교시
-        { start: 880, end: 930 },   // 14:40~15:30 → 6교시
-        { start: 940, end: 990 }    // 15:40~16:30 → 7교시
+        { start: 530, end: 580 },   // 08:50~09:40
+        { start: 590, end: 640 },   // 09:50~10:40
+        { start: 650, end: 700 },   // 10:50~11:40
+        { start: 710, end: 760 },   // 11:50~12:40
+        { start: 820, end: 870 },   // 13:40~14:30
+        { start: 880, end: 930 },   // 14:40~15:30
+        { start: 940, end: 990 }    // 15:40~16:30
       ];
-
       for (let i = 0; i < periods.length; i++) {
         if (time >= periods[i].start && time <= periods[i].end) {
           return i + 1;
@@ -257,12 +323,10 @@
       const today = getDayName(0);
       const period = getCurrentPeriod();
       const nowInfo = document.getElementById("nowInfo");
-
       if (!timetable[today]) {
         nowInfo.innerText = "오늘은 수업이 없습니다!";
         return;
       }
-
       if (period) {
         const subject = timetable[today][period - 1] || "없음";
         nowInfo.innerText = `현재 ${period}교시 (${subject}) 수업 중입니다.`;
