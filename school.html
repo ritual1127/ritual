@@ -29,7 +29,12 @@
 
     .search-box {
       text-align: center;
-      margin: 20px 0 10px;
+      margin: 10px 0;
+    }
+
+    .day-buttons {
+      text-align: center;
+      margin: 10px 0;
     }
 
     input[type="text"] {
@@ -52,11 +57,6 @@
       font-size: 14px;
     }
 
-    .day-buttons {
-      text-align: center;
-      margin: 10px 0;
-    }
-
     .day-buttons button {
       background-color: #f0f0f0;
       color: #333;
@@ -74,7 +74,6 @@
       display: flex;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
       scroll-behavior: smooth;
       margin-top: 20px;
     }
@@ -109,6 +108,17 @@
       font-size: 15px;
     }
 
+    a.full-link {
+      display: block;
+      text-align: center;
+      margin: 10px auto 20px;
+      text-decoration: none;
+    }
+
+    .full-link button {
+      background-color: #007acc;
+    }
+
     @media (max-width: 480px) {
       input[type="text"] {
         width: 65%;
@@ -127,6 +137,10 @@
 
   <h1 onclick="resetToToday()">메카 1학년 4반 시간표</h1>
   <div id="nowInfo"></div>
+
+  <a href="full.html" class="full-link">
+    <button>📅 전체 시간표 보기</button>
+  </a>
 
   <div class="search-box">
     <input type="text" id="subjectInput" placeholder="과목명 입력 (예: 수학)" />
@@ -234,9 +248,7 @@
 
     function getCurrentPeriod() {
       const now = new Date();
-      const hour = now.getHours();
-      const minute = now.getMinutes();
-      const time = hour * 60 + minute;
+      const time = now.getHours() * 60 + now.getMinutes();
 
       const periods = [
         { start: 530, end: 580 },   // 08:50~09:40 → 1교시
@@ -253,7 +265,6 @@
           return i + 1;
         }
       }
-
       return null;
     }
 
