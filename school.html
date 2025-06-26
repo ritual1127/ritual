@@ -29,12 +29,7 @@
 
     .search-box {
       text-align: center;
-      margin: 10px 0;
-    }
-
-    .day-buttons {
-      text-align: center;
-      margin: 10px 0;
+      margin: 20px 0 10px;
     }
 
     input[type="text"] {
@@ -55,6 +50,11 @@
       cursor: pointer;
       margin: 5px;
       font-size: 14px;
+    }
+
+    .day-buttons {
+      text-align: center;
+      margin: 10px 0;
     }
 
     .day-buttons button {
@@ -108,17 +108,6 @@
       font-size: 15px;
     }
 
-    a.full-link {
-      display: block;
-      text-align: center;
-      margin: 10px auto 20px;
-      text-decoration: none;
-    }
-
-    .full-link button {
-      background-color: #007acc;
-    }
-
     @media (max-width: 480px) {
       input[type="text"] {
         width: 65%;
@@ -137,10 +126,6 @@
 
   <h1 onclick="resetToToday()">메카 1학년 4반 시간표</h1>
   <div id="nowInfo"></div>
-
-  <a href="full.html" class="full-link">
-    <button>📅 전체 시간표 보기</button>
-  </a>
 
   <div class="search-box">
     <input type="text" id="subjectInput" placeholder="과목명 입력 (예: 수학)" />
