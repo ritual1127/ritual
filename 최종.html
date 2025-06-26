@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>메카 1학년 4반 시간표</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #ffffff;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.8em;
+    }
+
+    .search-box {
+      text-align: center;
+      margin: 20px 0 10px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 70%;
+      max-width: 240px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    button {
+      padding: 10px 14px;
+      background-color: #333;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+      margin: 5px;
+      font-size: 14px;
+    }
+
+    .day-buttons {
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .day-buttons button {
+      background-color: #f0f0f0;
+      color: #333;
+      border: 1px solid #ccc;
+    }
+
+    .result {
+      text-align: center;
+      font-weight: bold;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+
+    .slider-container {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+      margin-top: 20px;
+    }
+
+    .slide {
+      flex: 0 0 100%;
+      scroll-snap-align: start;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .card {
+      background: #f9f9f9;
+      padding: 15px 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .card h2 {
+      text-align: center;
+      font-size: 1.3em;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    li {
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 15px;
+    }
+
+    @media (max-width: 480px) {
+      input[type="text"] {
+        width: 65%;
+      }
+      button {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+      .card h2 {
+        font-size: 1.1em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📘 메카 1학년 4반 시간표</h1>
+
+  <div class="search-box">
+    <input type="text" id="subjectInput" placeholder="과목명 입력 (예: 수학)" />
+    <button onclick="searchSubject()">검색</button>
+  </div>
+
+  <div class="day-buttons">
+    <button onclick="goToSlide(0)">오늘</button>
+    <button onclick="goToSlide(1)">내일</button>
+    <button onclick="goToSlide(2)">월</button>
+    <button onclick="goToSlide(3)">화</button>
+    <button onclick="goToSlide(4)">수</button>
+    <button onclick="goToSlide(5)">목</button>
+    <button onclick="goToSlide(6)">금</button>
+  </div>
+
+  <div class="result" id="searchResult"></div>
+
+  <div class="slider-container" id="slider">
+    <div class="slide">
+      <div class="card">
+        <h2>오늘 시간표</h2>
+        <ul id="todayList"></ul>
+      </div>
+    </div>
+    <div class="slide">
+      <div class="card">
+        <h2>내일 시간표</h2>
+        <ul id="tomorrowList"></ul>
+      </div>
+    </div>
+    <div class="slide">
+      <div class="card">
+        <h2>월요일 시간표</h2>
+        <ul id="monList"></ul>
+      </div>
+    </div>
+    <div class="slide">
+      <div class="card">
+        <h2>화요일 시간표</h2>
+        <ul id="tueList"></ul>
+      </div>
+    </div>
+    <div class="slide">
+      <div class="card">
+        <h2>수요일 시간표</h2>
+        <ul id="wedList"></ul>
+      </div>
+    </div>
+    <div class="slide">
+      <div class="card">
+        <h2>목요일 시간표</h2>
+        <ul id="thuList"></ul>
+      </div>
+    </div>
+    <div class="slide">
+      <div class="card">
+        <h2>금요일 시간표</h2>
+        <ul id="friList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const timetable = {
+      "월": ["독서", "통과1", "통과2", "체육2", "영어", "수학", "진로"],
+      "화": ["수학", "한국사", "디논", "디논", "전자", "전자", "전자"],
+      "수": ["영어", "수학", "한국사", "전기", "전기", "창체", "창체"],
+      "목": ["미술", "미술", "조립", "조립", "프밍", "프밍", "프밍"],
+      "금": ["한국사", "통과2", "체육1", "원어민", "수학", "통과1", ""]
+    };
+
+    const days = ["일", "월", "화", "수", "목", "금", "토"];
+
+    function getDayName(offset) {
+      const date = new Date();
+      date.setDate(date.getDate() + offset);
+      return days[date.getDay()];
+    }
+
+    function renderTimetable(day, elementId) {
+      const list = document.getElementById(elementId);
+      list.innerHTML = "";
+
+      if (timetable[day]) {
+        timetable[day].forEach((subject, idx) => {
+          list.innerHTML += `<li>${idx + 1}교시: ${subject || "없음"}</li>`;
+        });
+      } else {
+        list.innerHTML = "<li>수업이 없습니다!</li>";
+      }
+    }
+
+    function searchSubject() {
+      const input = document.getElementById("subjectInput").value.trim();
+      const resultDiv = document.getElementById("searchResult");
+      resultDiv.innerHTML = "";
+
+      if (!input) {
+        resultDiv.innerText = "과목명을 입력해주세요.";
+        return;
+      }
+
+      const results = [];
+
+      for (const [day, subjects] of Object.entries(timetable)) {
+        subjects.forEach((subject, idx) => {
+          if (subject.includes(input)) {
+            results.push(`${day}요일 ${idx + 1}교시`);
+          }
+        });
+      }
+
+      if (results.length > 0) {
+        let listHtml = results.map(r => {
+          const [day, period] = r.split("요일 ");
+          return `<div><strong>${input}</strong> <span style="color: #777;">⎯⎯ ${day}요일 ${period}</span></div>`;
+        }).join("");
+
+        resultDiv.innerHTML = `
+          "<strong>${input}</strong>" 과목은 주 <strong>${results.length}</strong>회 있습니다.<br><br>
+          ${listHtml}
+        `;
+      } else {
+        resultDiv.innerText = `"${input}" 과목은 시간표에 없습니다.`;
+      }
+    }
+
+    function goToSlide(index) {
+      const slider = document.getElementById("slider");
+      const width = slider.clientWidth;
+      slider.scrollTo({ left: index * width, behavior: "smooth" });
+    }
+
+    // 초기 렌더링
+    renderTimetable(getDayName(0), "todayList");
+    renderTimetable(getDayName(1), "tomorrowList");
+    renderTimetable("월", "monList");
+    renderTimetable("화", "tueList");
+    renderTimetable("수", "wedList");
+    renderTimetable("목", "thuList");
+    renderTimetable("금", "friList");
+  </script>
+</body>
+</html>
