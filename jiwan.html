@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>오늘의 급식</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+    }
+    .meal {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+    .dish {
+      line-height: 1.6;
+    }
+    .no-meal {
+      text-align: center;
+      font-size: 1.2em;
+      color: #666;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <h1>오늘의 급식</h1>
+  <div id="meal-container">
+    <p class="no-meal">불러오는 중...</p>
+  </div>
+
+  <script>
+    async function loadTodayMeal() {
+      // JSON 파일 로드 :contentReference[oaicite:0]{index=0}
+      const res = await fetch('3c9236b1-171c-4820-b467-838ab1637774.json');
+      const data = await res.json();
+      // 오늘 날짜를 YYYYMMDD 형식으로
+      const today = new Date().toISOString().slice(0,10).replace(/-/g, '');
+      // 중식(코드 2) 중 오늘 날짜 항목 필터링
+      const meals = data.filter(item => item.MLSV_YMD === today && item.MMEAL_SC_CODE === '2');
+      
+      const container = document.getElementById('meal-container');
+      container.innerHTML = '';
+      
+      if (meals.length === 0) {
+        container.innerHTML = '<p class="no-meal">오늘의 급식 정보가 없습니다.</p>';
+        return;
+      }
+      
+      const meal = meals[0];
+      const div = document.createElement('div');
+      div.className = 'meal';
+      div.innerHTML = `
+        <h2>${meal.MMEAL_SC_NM}</h2>
+        <p class="dish">${meal.DDISH_NM.replace(/<br\/?>/g, '<br>')}</p>
+        <p>칼로리: ${meal.CAL_INFO}</p>
+      `;
+      container.appendChild(div);
+    }
+
+    loadTodayMeal().catch(err => {
+      document.getElementById('meal-container').innerHTML =
+        '<p class="no-meal">급식 정보를 불러오지 못했습니다.</p>';
+      console.error(err);
+    });
+  </script>
+</body>
+</html>
