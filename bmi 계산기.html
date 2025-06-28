@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>BMI 계산기</title>
+  <style>
+    /* 전체 리셋 및 기본 설정 */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f2f2f2; color: #333; line-height: 1.5; padding: 1rem; }
+    .container { max-width: 360px; margin: 0 auto; background: #fff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    h1 { text-align: center; margin-bottom: 1rem; font-size: 1.75rem; cursor: pointer; }
+    .form-group { margin-bottom: 1rem; }
+    label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 1rem; }
+    input[type="number"] { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; background: #fafafa; font-size: 1rem; }
+
+    /* 성별 토글 스타일 */
+    .gender-group {
+      display: flex;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+    .gender-group input { display: none; }
+    .gender-group label {
+      flex: 1;
+      width: 50%;
+      text-align: center;
+      padding: 0.75rem 0;
+      cursor: pointer;
+      background: #fafafa;
+      font-size: 1rem;
+      color: #333;
+      margin: 0;
+      transition: background 0.2s, color 0.2s;
+    }
+    .gender-group label:first-child { border-right: 1px solid #ccc; }
+    .gender-group input:checked + label {
+      background: #0078d4;
+      color: #fff;
+    }
+
+    /* 버튼 기본 스타일 */
+    button { width: 100%; padding: 0.75rem; margin-top: 0.5rem; border: none; border-radius: 6px; background: #0078d4; color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    button:hover { background: #005fa1; }
+
+    .result, .advice { margin-top: 1rem; padding: 0.75rem; border-radius: 6px; font-size: 0.95rem; }
+    .result { background: #f9f9f9; }
+    .advice { background: #fffbe6; border: 1px solid #ffe58f; }
+
+    /* PDF 버튼 스타일 통일 */
+    #savePdf { background: #0078d4; margin-top: 0.25rem; }
+    #savePdf:hover { background: #005fa1; }
+
+    @media (max-width: 400px) {
+      html { font-size: 14px; }
+      .container { padding: 1rem; }
+      h1 { font-size: 1.5rem; }
+      input, button { padding: 0.6rem; font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 id="title">BMI 계산기</h1>
+    <div class="form-group">
+      <label for="age">나이 (만 세)</label>
+      <input type="number" id="age" placeholder="예: 30" min="1" max="120" />
+    </div>
+    <div class="form-group">
+      <label>성별</label>
+      <div class="gender-group">
+        <input type="radio" id="male" name="gender" value="남자" />
+        <label for="male">남자</label>
+        <input type="radio" id="female" name="gender" value="여자" />
+        <label for="female">여자</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="height">키 (cm)</label>
+      <input type="number" id="height" placeholder="예: 170" min="50" max="250" />
+    </div>
+    <div class="form-group">
+      <label for="weight">체중 (kg)</label>
+      <input type="number" id="weight" placeholder="예: 65" min="10" max="300" />
+    </div>
+    <button onclick="calculateBMI()">계산하기</button>
+
+    <div id="result" class="result" style="display:none;"></div>
+    <div id="advice" class="advice" style="display:none;"></div>
+    <button id="savePdf" style="display:none;" onclick="window.print()">PDF로 저장</button>
+  </div>
+
+  <script>
+    // 초기화
+    function resetForm() {
+      ['age','height','weight'].forEach(id => document.getElementById(id).value = '');
+      document.querySelectorAll('input[name="gender"]').forEach(r => r.checked = false);
+      ['result','advice','savePdf'].forEach(id => document.getElementById(id).style.display = 'none');
+    }
+    document.getElementById('title').addEventListener('click', resetForm);
+
+    // 결과 계산
+    function calculateBMI() {
+      const age = parseInt(document.getElementById('age').value);
+      const gender = (document.querySelector('input[name="gender"]:checked') || {}).value;
+      const h = parseFloat(document.getElementById('height').value);
+      const w = parseFloat(document.getElementById('weight').value);
+      const resultEl = document.getElementById('result');
+      const adviceEl = document.getElementById('advice');
+      const saveBtn = document.getElementById('savePdf');
+      if (!age || !gender || !h || !w) {
+        resultEl.style.display = 'block';
+        resultEl.textContent = '모든 항목을 선택/입력해 주세요.';
+        adviceEl.style.display = 'none';
+        saveBtn.style.display = 'none';
+        return;
+      }
+      const bmi = w / ((h/100)**2);
+      const boundaries = [18.5,23,25,30,35];
+      const categories = ['저체중','정상 체중','과체중','1단계 비만','2단계 비만','3단계 이상 비만'];
+      const comments = [
+        '조금 더 맛있는 걸 드셔보시는 건 어떨까요? 🍰',
+        '완벽해요! 지금처럼만 유지하세요! 🎉',
+        '조금만 조절하면 금방 돌아올 거예요! 💪',
+        '힘든 건 알지만, 조금만 더 힘내봐요! 👍',
+        '조금만 식단 관리 해볼까요? 😊',
+        '와우! 만세! 하지만 건강도 챙기세요! 🥳'
+      ];
+      let idx = boundaries.findIndex(th => bmi < th);
+      if (idx === -1) idx = boundaries.length;
+      const category = categories[idx];
+      const comment = comments[idx];
+
+      resultEl.style.display = 'block';
+      resultEl.innerHTML = `나이: ${age}세 (${gender})<br>BMI: ${bmi.toFixed(1)}<br>분류: ${category}`;
+      adviceEl.style.display = 'block';
+      adviceEl.textContent = comment;
+      saveBtn.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
