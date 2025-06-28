@@ -1,7 +1,8 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>성적 계산기</title>
   <style>
     body {
@@ -40,6 +41,7 @@
       cursor: pointer;
     }
     button:hover { background: #0056b3; }
+
     #exportPdfBtn, #resetBtn {
       display: inline-block;
       font-size: 12px;
@@ -62,6 +64,7 @@
     #resetBtn:hover {
       background: #5a6268;
     }
+
     #result {
       font-size: 18px; text-align: center;
       margin-top: 10px; word-break: keep-all;
@@ -74,7 +77,11 @@
       justify-content: center; width: 100%;
       max-width: 300px;
     }
-    .table-container { overflow-x: auto; margin-top: 10px; }
+    .table-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-top: 10px;
+    }
     .record-table {
       width: 100%; min-width: 700px;
       border-collapse: collapse;
@@ -96,11 +103,22 @@
       flex: 1;
       text-align: center;
     }
+
     @media (max-width: 600px) {
+      body { padding: 15px; }
+      .box { padding: 15px; }
+      h1 { font-size: 1.5rem; }
+      h2 { font-size: 1.2rem; }
       .entry { flex-direction: column; align-items: stretch; }
-      .entry label { text-align: left; }
+      .entry label { text-align: left; min-width: auto; }
+      .entry input { font-size: 14px; }
+      button { width: 100%; font-size: 14px; margin: 8px 0; }
+      #exportPdfBtn, #resetBtn { width: 48%; margin: 5px 1%; }
+      .record-table { font-size: 12px; }
+      .record-table th, .record-table td { padding: 6px; }
     }
   </style>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
@@ -310,7 +328,7 @@
 
       document.getElementById('result').innerHTML =
         `최종: <strong>${final}점</strong><br>` +
-        `등급: ${gradeHtml}, ${comment}<br>` +
+        `등급: ${gradeHtml}<br>` +
         `${nextMsg}<br>` +
         `${dropMsg}`;
 
