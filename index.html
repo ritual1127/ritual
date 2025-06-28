@@ -71,7 +71,6 @@
     }
     #resetBtn:hover { background: #5a6268; }
     #exportPdfBtn:hover { background: #1e8449; }
-
     #result {
       font-size: 18px;
       text-align: center;
@@ -124,20 +123,11 @@
       font-size: 1.25rem;
       font-weight: bold;
     }
-
     @media (max-width: 600px) {
-      body {
-        padding: 15px;
-      }
-      h1 {
-        font-size: 1.5rem;
-      }
-      h2 {
-        font-size: 1.2rem;
-      }
-      .box {
-        padding: 15px;
-      }
+      body { padding: 15px; }
+      h1 { font-size: 1.5rem; }
+      h2 { font-size: 1.2rem; }
+      .box { padding: 15px; }
       .entry {
         flex-direction: column;
         align-items: stretch;
@@ -147,10 +137,7 @@
         min-width: auto;
         margin-bottom: 5px;
       }
-      .entry input {
-        font-size: 14px;
-        padding: 6px;
-      }
+      .entry input { font-size: 14px; padding: 6px; }
       button {
         width: 100%;
         font-size: 14px;
@@ -161,9 +148,6 @@
         width: 48%;
         display: inline-block;
         margin: 5px 1%;
-      }
-      .table-container {
-        margin-top: 8px;
       }
       .record-table {
         min-width: 100%;
@@ -286,7 +270,7 @@
           <td><strong style="color:${{A:'#2ecc71',B:'#3498db',C:'#f1c40f',D:'#e67e22',E:'#e74c3c'}[item.grade]}">${item.grade}</strong></td>
           <td>${item.nextMsg}</td>
           <td>${item.dropMsg}</td>
-          <td><button class="delBtn" onclick="deleteHistory(${idx})">삭제</button></td>
+          <td><button onclick="deleteHistory(${idx})">삭제</button></td>
         `;
         tbody.appendChild(tr);
       });
@@ -336,20 +320,17 @@
         `등급: ${gradeHtml}<br>`+
         `${nextMsg}<br>`+
         `${dropMsg}`;
-      saveHistory({
-        time:new Date().toLocaleString('ko-KR'),
-        subject,final,grade,nextMsg,dropMsg
-      });
+      saveHistory({ time:new Date().toLocaleString('ko-KR'), subject, final, grade, nextMsg, dropMsg });
       renderHistory();
     }
 
     function exportPdf() {
       html2canvas(document.getElementById('historyTable')).then(canvas=>{
-        const img=canvas.toDataURL('image/png');
-        const pdf=new jsPDF({unit:'pt',format:'a4'});
-        const w=pdf.internal.pageSize.getWidth();
-        const h=(canvas.height*w)/canvas.width;
-        pdf.addImage(img,'PNG',0,0,w,h);
+        const img = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({unit:'pt',format:'a4'});
+        const w = pdf.internal.pageSize.getWidth();
+        const h = (canvas.height * w) / canvas.width;
+        pdf.addImage(img, 'PNG', 0, 0, w, h);
         pdf.save('계산기록.pdf');
       });
     }
@@ -357,7 +338,7 @@
     window.onload = () => {
       generateInputs();
       renderHistory();
-      document.getElementById('resetBtn').addEventListener('click', ()=>{
+      document.getElementById('resetBtn').addEventListener('click', () => {
         if (confirm('계산 기록을 모두 삭제하시겠습니까?')) {
           localStorage.removeItem('gradeHistory');
           renderHistory();
