@@ -13,10 +13,16 @@
       padding: 30px;
       color: #333;
     }
-    h1, h2 { text-align: center; margin-bottom: 10px; }
-    h1 { cursor: pointer; }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    h1 {
+      cursor: pointer;
+      font-size: 2rem;
+    }
     .box {
-      background: white;
+      background: #fff;
       padding: 20px;
       border-radius: 10px;
       margin-bottom: 20px;
@@ -28,53 +34,58 @@
       gap: 10px;
       margin: 10px 0;
     }
-    .entry label { min-width: 100px; text-align: right; }
+    .entry label {
+      min-width: 100px;
+      text-align: right;
+    }
     .entry input {
-      flex: 1; padding: 8px; font-size: 16px;
-      border: 1px solid #ccc; border-radius: 4px;
+      flex: 1;
+      padding: 8px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
-    button {
-      display: block; margin: 10px auto;
-      padding: 10px 20px; font-size: 16px;
-      border: none; border-radius: 5px;
-      background: #007bff; color: white;
-      cursor: pointer;
-    }
-    button:hover { background: #0056b3; }
-
-    #exportPdfBtn, #resetBtn {
-      display: inline-block;
-      font-size: 12px;
-      padding: 2px 6px;
-      border-radius: 3px;
+    button, #exportPdfBtn, #resetBtn {
+      display: block;
+      margin: 10px auto;
+      padding: 10px 20px;
+      font-size: 16px;
       border: none;
+      border-radius: 5px;
+      color: #fff;
       cursor: pointer;
+    }
+    button { background: #007bff; }
+    button:hover { background: #0056b3; }
+    #resetBtn {
+      background: #6c757d;
+      font-size: 12px;
+      padding: 4px 8px;
+      margin: 0;
     }
     #exportPdfBtn {
       background: #27ae60;
-      color: white;
+      font-size: 12px;
+      padding: 4px 8px;
+      margin: 0;
     }
-    #exportPdfBtn:hover {
-      background: #1e8449;
-    }
-    #resetBtn {
-      background: #6c757d;
-      color: white;
-    }
-    #resetBtn:hover {
-      background: #5a6268;
-    }
+    #resetBtn:hover { background: #5a6268; }
+    #exportPdfBtn:hover { background: #1e8449; }
 
     #result {
-      font-size: 18px; text-align: center;
-      margin-top: 10px; word-break: keep-all;
+      font-size: 18px;
+      text-align: center;
+      margin-top: 10px;
+      word-break: keep-all;
     }
     #countBox {
-      display: flex; flex-direction: column;
+      display: flex;
+      flex-direction: column;
       align-items: center;
     }
     #countBox .entry {
-      justify-content: center; width: 100%;
+      justify-content: center;
+      width: 100%;
       max-width: 300px;
     }
     .table-container {
@@ -83,42 +94,86 @@
       margin-top: 10px;
     }
     .record-table {
-      width: 100%; min-width: 700px;
+      width: 100%;
+      min-width: 600px;
       border-collapse: collapse;
     }
     .record-table th, .record-table td {
-      border: 1px solid #ddd; padding: 8px;
-      text-align: center; white-space: nowrap;
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+      white-space: nowrap;
     }
-    .record-table th { background: #f0f0f0; }
+    .record-table th {
+      background: #f0f0f0;
+      font-weight: bold;
+    }
     .record-table td.subject, .record-table th.subject {
-      text-align: left; padding-left: 12px;
+      text-align: left;
+      padding-left: 12px;
     }
     .history-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 5px;
     }
     .history-header span {
       flex: 1;
       text-align: center;
+      font-size: 1.25rem;
+      font-weight: bold;
     }
 
     @media (max-width: 600px) {
-      body { padding: 15px; }
-      .box { padding: 15px; }
-      h1 { font-size: 1.5rem; }
-      h2 { font-size: 1.2rem; }
-      .entry { flex-direction: column; align-items: stretch; }
-      .entry label { text-align: left; min-width: auto; }
-      .entry input { font-size: 14px; }
-      button { width: 100%; font-size: 14px; margin: 8px 0; }
-      #exportPdfBtn, #resetBtn { width: 48%; margin: 5px 1%; }
-      .record-table { font-size: 12px; }
-      .record-table th, .record-table td { padding: 6px; }
+      body {
+        padding: 15px;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+      h2 {
+        font-size: 1.2rem;
+      }
+      .box {
+        padding: 15px;
+      }
+      .entry {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .entry label {
+        text-align: left;
+        min-width: auto;
+        margin-bottom: 5px;
+      }
+      .entry input {
+        font-size: 14px;
+        padding: 6px;
+      }
+      button {
+        width: 100%;
+        font-size: 14px;
+        padding: 10px;
+        margin: 8px 0;
+      }
+      #resetBtn, #exportPdfBtn {
+        width: 48%;
+        display: inline-block;
+        margin: 5px 1%;
+      }
+      .table-container {
+        margin-top: 8px;
+      }
+      .record-table {
+        min-width: 100%;
+        font-size: 12px;
+      }
+      .record-table th, .record-table td {
+        padding: 6px;
+      }
     }
   </style>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
@@ -129,18 +184,18 @@
   <div class="box">
     <div class="entry">
       <label for="subjectName">과목명</label>
-      <input type="text" id="subjectName" placeholder="예: 수학" />
+      <input type="text" id="subjectName" placeholder="예: 수학">
     </div>
   </div>
 
   <div id="countBox" class="box">
     <div class="entry">
       <label for="sCount">수행평가 개수</label>
-      <input type="number" id="sCount" value="2" min="1" onchange="generateInputs()" />
+      <input type="number" id="sCount" value="2" min="1" onchange="generateInputs()">
     </div>
     <div class="entry">
       <label for="tCount">지필평가 개수</label>
-      <input type="number" id="tCount" value="2" min="1" max="2" onchange="generateInputs()" />
+      <input type="number" id="tCount" value="2" min="1" max="2" onchange="generateInputs()">
     </div>
   </div>
 
@@ -179,28 +234,27 @@
 
     function generateInputs() {
       const sCnt = +document.getElementById('sCount').value;
-      const rawTCnt = +document.getElementById('tCount').value;
-      const tCnt = Math.min(Math.max(rawTCnt, 1), 2);
+      const tCnt = Math.min(Math.max(+document.getElementById('tCount').value, 1), 2);
       let html = '<h2>수행평가</h2>';
       for (let i = 0; i < sCnt; i++) {
         html += `
-        <div class="entry">
-          <label>수행${i+1} 점수</label>
-          <input type="number" id="s${i}" />
-          <label>비중(%)</label>
-          <input type="number" id="sw${i}" />
-        </div>`;
+          <div class="entry">
+            <label>수행${i+1} 점수</label>
+            <input type="number" id="s${i}">
+            <label>비중(%)</label>
+            <input type="number" id="sw${i}">
+          </div>`;
       }
       html += '<h2>지필평가</h2>';
       for (let i = 0; i < tCnt; i++) {
         const label = tCnt === 1 ? '기말고사' : (i === 0 ? '중간고사' : '기말고사');
         html += `
-        <div class="entry">
-          <label>${label} 점수</label>
-          <input type="number" id="t${i}" />
-          <label>비중(%)</label>
-          <input type="number" id="tw${i}" />
-        </div>`;
+          <div class="entry">
+            <label>${label} 점수</label>
+            <input type="number" id="t${i}">
+            <label>비중(%)</label>
+            <input type="number" id="tw${i}">
+          </div>`;
       }
       document.getElementById('inputs').innerHTML = html;
     }
@@ -229,10 +283,7 @@
           <td>${item.time}</td>
           <td class="subject">${item.subject}</td>
           <td>${item.final}</td>
-          <td><strong style="color: ${{
-            A: '#2ecc71', B: '#3498db', C: '#f1c40f',
-            D: '#e67e22', E: '#e74c3c'
-          }[item.grade]}">${item.grade}</strong></td>
+          <td><strong style="color:${{A:'#2ecc71',B:'#3498db',C:'#f1c40f',D:'#e67e22',E:'#e74c3c'}[item.grade]}">${item.grade}</strong></td>
           <td>${item.nextMsg}</td>
           <td>${item.dropMsg}</td>
           <td><button class="delBtn" onclick="deleteHistory(${idx})">삭제</button></td>
@@ -245,107 +296,60 @@
       const subject = document.getElementById('subjectName').value || '-';
       const sCnt = +document.getElementById('sCount').value;
       const tCnt = Math.min(Math.max(+document.getElementById('tCount').value, 1), 2);
-      let sSum = 0, wSum = 0, midContrib = 0, finalW = 0, tSum = 0;
-
-      for (let i = 0; i < sCnt; i++) {
-        const sc = +document.getElementById(`s${i}`).value || 0;
-        const w  = +document.getElementById(`sw${i}`).value || 0;
-        sSum += sc * (w/100);
-        wSum += w;
+      let sSum=0, wSum=0, midContrib=0, finalW=0, tSum=0;
+      for (let i=0; i<sCnt; i++) {
+        const sc=+document.getElementById(`s${i}`).value||0;
+        const w =+document.getElementById(`sw${i}`).value||0;
+        sSum+=(sc*(w/100)); wSum+=w;
       }
-      for (let i = 0; i < tCnt; i++) {
-        const sc = +document.getElementById(`t${i}`).value || 0;
-        const w  = +document.getElementById(`tw${i}`).value || 0;
-        if (tCnt === 1 || i === tCnt - 1) finalW = w/100;
-        else midContrib = sc * (w/100);
-        tSum += sc * (w/100);
-        wSum += w;
+      for (let i=0; i<tCnt; i++) {
+        const sc=+document.getElementById(`t${i}`).value||0;
+        const w =+document.getElementById(`tw${i}`).value||0;
+        if (tCnt===1||i===tCnt-1) finalW=w/100;
+        else midContrib+=(sc*(w/100));
+        tSum+=(sc*(w/100)); wSum+=w;
       }
-      if (wSum !== 100) {
-        document.getElementById('result').innerHTML =
-          `❗ 총 비중이 100%가 아닙니다. 현재: ${wSum}%`;
+      if (wSum!==100) {
+        document.getElementById('result').textContent=`❗ 총 비중이 100%가 아닙니다. 현재: ${wSum}%`;
         return;
       }
-
-      const final = +(sSum + tSum).toFixed(2);
-      const grade = final >= 90 ? 'A'
-                    : final >= 80 ? 'B'
-                    : final >= 70 ? 'C'
-                    : final >= 60 ? 'D'
-                    : 'E';
-
-      const gradeColorMap = {
-        A: '#2ecc71',
-        B: '#3498db',
-        C: '#f1c40f',
-        D: '#e67e22',
-        E: '#e74c3c'
-      };
-      const gradeHtml = `<strong style="color: ${gradeColorMap[grade]}">${grade}</strong>`;
-
-      const nextTh = grade === 'A' ? null
-                     : grade === 'B' ? 90
-                     : grade === 'C' ? 80
-                     : grade === 'D' ? 70
-                     : 60;
-      const currTh = grade === 'A' ? 90
-                     : grade === 'B' ? 80
-                     : grade === 'C' ? 70
-                     : grade === 'D' ? 60
-                     : 0;
-      let comment;
-      switch (grade) {
-        case 'A': comment = '참 잘했어요'; break;
-        case 'B': comment = '노력하세요'; break;
-        case 'C': comment = '포기하세요'; break;
-        case 'D': comment = '뒤지세요'; break;
-        case 'E': comment = '풉 ㅋㅋ'; break;
-      }
-      let nextMsg;
+      const final=+(sSum+tSum).toFixed(2);
+      const grade= final>=90?'A': final>=80?'B': final>=70?'C': final>=60?'D':'E';
+      const gradeColor={A:'#2ecc71',B:'#3498db',C:'#f1c40f',D:'#e67e22',E:'#e74c3c'}[grade];
+      const gradeHtml=`<strong style="color:${gradeColor}">${grade}</strong>`;
+      const nextTh={A:null,B:90,C:80,D:70,E:60}[grade];
+      const currTh={A:90,B:80,C:70,D:60,E:0}[grade];
+      let nextMsg, dropMsg;
       if (nextTh) {
-        const nextGrade = nextTh === 90 ? 'A'
-                         : nextTh === 80 ? 'B'
-                         : nextTh === 70 ? 'C'
-                         : 'D';
-        const needFinalRaw = (nextTh - sSum - midContrib) / finalW;
-        nextMsg = needFinalRaw > 100
-          ? `${nextGrade} 등급으로 갈 수 없음`
-          : `${nextGrade} 등급 위해 기말고사에 ${needFinalRaw.toFixed(2)}점↑`;
-      } else {
-        nextMsg = '최고 등급입니다🎉';
+        const need=(nextTh - sSum - midContrib)/finalW;
+        const nG={90:'A',80:'B',70:'C',60:'D'}[nextTh];
+        nextMsg=need>100?`${nG} 등급으로 갈 수 없음`:`${nG} 등급 위해 기말고사에 ${need.toFixed(2)}점↑`;
+      } else nextMsg='최고 등급입니다🎉';
+      const drop=(currTh-0.01-sSum-midContrib)/finalW;
+      if (drop<0) dropMsg='떨어질 등급 없음';
+      else {
+        const dG={90:'B',80:'C',70:'D',60:'E'}[currTh];
+        dropMsg=`기말고사에 ${drop.toFixed(2)}점↓ (이하일 경우 ${dG} 등급)`;
       }
-      const dropFinalRaw = (currTh - 0.01 - sSum - midContrib) / finalW;
-      let dropMsg;
-      if (dropFinalRaw < 0) {
-        dropMsg = '떨어질 등급 없음';
-      } else {
-        const dropGrade = currTh === 90 ? 'B'
-                         : currTh === 80 ? 'C'
-                         : currTh === 70 ? 'D'
-                         : 'E';
-        dropMsg = `기말고사에 ${dropFinalRaw.toFixed(2)}점↓ (이하일 경우 ${dropGrade} 등급)`;
-      }
-
-      document.getElementById('result').innerHTML =
-        `최종: <strong>${final}점</strong><br>` +
-        `등급: ${gradeHtml}<br>` +
-        `${nextMsg}<br>` +
+      document.getElementById('result').innerHTML=
+        `최종: <strong>${final}점</strong><br>`+
+        `등급: ${gradeHtml}<br>`+
+        `${nextMsg}<br>`+
         `${dropMsg}`;
-
       saveHistory({
-        time: new Date().toLocaleString('ko-KR'),
-        subject, final, grade, nextMsg, dropMsg
+        time:new Date().toLocaleString('ko-KR'),
+        subject,final,grade,nextMsg,dropMsg
       });
       renderHistory();
     }
 
     function exportPdf() {
-      html2canvas(document.getElementById('historyTable')).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      html2canvas(document.getElementById('historyTable')).then(canvas=>{
+        const img=canvas.toDataURL('image/png');
+        const pdf=new jsPDF({unit:'pt',format:'a4'});
+        const w=pdf.internal.pageSize.getWidth();
+        const h=(canvas.height*w)/canvas.width;
+        pdf.addImage(img,'PNG',0,0,w,h);
         pdf.save('계산기록.pdf');
       });
     }
@@ -353,7 +357,7 @@
     window.onload = () => {
       generateInputs();
       renderHistory();
-      document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('resetBtn').addEventListener('click', ()=>{
         if (confirm('계산 기록을 모두 삭제하시겠습니까?')) {
           localStorage.removeItem('gradeHistory');
           renderHistory();
