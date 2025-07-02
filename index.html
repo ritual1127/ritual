@@ -41,26 +41,25 @@
       overflow-x: hidden;
     }
 
-    /* top-level count & weight inputs */
+    /* count & weight inputs side by side */
     .count-container {
       display: flex;
       gap: 12px;
     }
     .count-container .half {
       flex: 1;
-      display: flex;
-      flex-direction: column;
     }
     .count-container .half label {
+      display: block;
       font-size: 15px;
       color: #3c3c4399;
       margin-bottom: 6px;
     }
-    .inline-inputs {
+    .count-container .half .inline-inputs {
       display: flex;
       gap: 8px;
     }
-    .inline-inputs input {
+    .count-container .half .inline-inputs input {
       flex: 1;
       height: 44px;
       padding: 0 12px;
@@ -70,7 +69,7 @@
       border-radius: 10px;
     }
 
-    /* individual entry rows */
+    /* dynamic entries */
     .entry {
       display: flex;
       align-items: center;
@@ -82,10 +81,9 @@
       font-size: 15px;
       color: #3c3c4399;
       margin-right: 8px;
-      text-align: left;
     }
     .entry input {
-      flex: 0 0 calc((100% - 100px - 8px) / 2);
+      flex: 0 0 calc((100% - 100px - 8px)/2);
       height: 44px;
       padding: 0 12px;
       font-size: 16px;
@@ -98,17 +96,17 @@
       margin-right: 0;
     }
 
-    /* 버튼 스타일 */
+    /* buttons */
     .btn {
       display: block;
       width: 100%;
       height: 44px;
       font-size: 17px;
       font-weight: 600;
-      line-height: 44px;
       text-align: center;
       border-radius: 12px;
       margin-bottom: 12px;
+      line-height: 44px;
       cursor: pointer;
       user-select: none;
     }
@@ -122,7 +120,6 @@
     }
     .btn-outline {
       display: inline-block;
-      width: auto;
       background: transparent;
       color: #007aff;
       border: 1px solid #007aff;
@@ -140,12 +137,12 @@
       font-size: 17px;
       text-align: center;
       line-height: 1.5;
-      word-break: keep-all;
       color: #3c3c43;
       margin-bottom: 20px;
+      word-break: keep-all;
     }
 
-    /* 테이블 스타일 */
+    /* history table */
     .table-container {
       margin-top: 10px;
       background: #fff;
@@ -194,9 +191,9 @@
 
     @media (max-width: 400px) {
       .count-container { flex-direction: column; }
-      .inline-inputs { flex-direction: column; }
+      .count-container .half .inline-inputs { flex-direction: column; }
       .entry { flex-direction: column; }
-      .entry input { flex: 1 0 auto; margin-right: 0; width: 100%; }
+      .entry input { width: 100%; margin-right: 0; }
       .btn, .btn-outline { height: 50px; font-size: 18px; }
     }
   </style>
@@ -278,7 +275,7 @@
       const sCnt = +document.getElementById('sCount').value;
       const tCnt = +document.getElementById('tCount').value;
       let html = '<h2>수행평가</h2>';
-      for (let i = 0; i < sCnt; i++) {
+      for (let i=0; i<sCnt; i++) {
         html += `
           <div class="entry">
             <label>수행${i+1}</label>
@@ -288,10 +285,8 @@
           </div>`;
       }
       html += '<h2>지필평가</h2>';
-      for (let i = 0; i < tCnt; i++) {
-        const label = tCnt === 1
-          ? '기말고사'
-          : (i === 0 ? '중간고사' : '기말고사');
+      for (let i=0; i<tCnt; i++) {
+        const label = tCnt===1 ? '기말고사' : (i===0 ? '중간고사' : '기말고사');
         html += `
           <div class="entry">
             <label>${label}</label>
