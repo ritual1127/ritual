@@ -214,16 +214,78 @@
   </div>
 
   <script>
-    // 비밀번호 확인 로직: '1234' 입력해야 이하 스크립트 실행
+    // --- 비밀번호 확인 & 잠금 로직 ---
     (function() {
-      const pw = prompt('비밀번호를 입력하세요:');
+      const now = Date.now();
+      // 로컬스토리지에서 시도 횟수, 차단 만료시간, 차단 레벨 불러오기
+      let attempts = parseInt(localStorage.getItem('pwAttempts') || '0', 10);
+      let blockUntil = parseInt(localStorage.getItem('pwBlockUntil') || '0', 10);
+      let blockLevel = parseInt(localStorage.getItem('pwBlockLevel') || '0', 10);
+
+      // 아직 차단 중이면 남은 시간 안내 후 차단
+      if (now < blockUntil) {
+        const remainSec = Math.ceil((blockUntil - now) / 1000);
+        alert(`접근이 차단되었습니다. ${remainSec}초 후에 다시 시도해주세요.`);
+        document.documentElement.innerHTML =
+          '<body><h2 style="text-align:center;margin-top:50px;">접근이 차단되었습니다</h2></body>';
+        throw new Error('Blocked until ' + new Date(blockUntil).toLocaleTimeString());
+      }
+
+      // 차단이 끝났으면 시도 횟수 초기화
+      if (now >= blockUntil && blockUntil !== 0) {
+        attempts = 0;
+        localStorage.setItem('pwAttempts', '0');
+      }
+
+      // 4자리 입력 안내 포함
+      const pw = prompt('비밀번호를 입력하세요 (4자리 숫자):');
+      if (pw === null) {
+        // 취소 시 접근 차단 상태로 두려면 아래 줄 주석 해제
+        // document.documentElement.innerHTML = '';
+        throw new Error('User cancelled');
+      }
+
+      // 정확한 4자리인지 확인 (선택)
+      if (!/^\d{4}$/.test(pw)) {
+        alert('비밀번호는 반드시 4자리 숫자여야 합니다.');
+        throw new Error('Invalid format');
+      }
+
+      // 비밀번호 검증
       if (pw !== '1234') {
-        alert('비밀번호가 틀렸습니다.');
+        attempts += 1;
+        localStorage.setItem('pwAttempts', attempts.toString());
+
+        // 5회 틀리면 첫 차단 (1분)
+        if (attempts >= 5 && blockLevel === 0) {
+          blockLevel = 1;
+          localStorage.setItem('pwBlockLevel', '1');
+          blockUntil = now + 60 * 1000;
+          localStorage.setItem('pwBlockUntil', blockUntil.toString());
+          localStorage.setItem('pwAttempts', '0');
+          alert('비밀번호를 5회 틀렸습니다. 1분간 접근이 차단됩니다.');
+        }
+        // 5회 더 틀리면 추가 차단 (5분)
+        else if (attempts >= 5 && blockLevel === 1) {
+          blockLevel = 2;
+          localStorage.setItem('pwBlockLevel', '2');
+          blockUntil = now + 5 * 60 * 1000;
+          localStorage.setItem('pwBlockUntil', blockUntil.toString());
+          localStorage.setItem('pwAttempts', '0');
+          alert('추가로 5회 더 틀려 5분간 접근이 차단됩니다.');
+        }
+        // 차단 되었거나 아닐 때도 페이지 차단
         document.documentElement.innerHTML =
           '<body><h2 style="text-align:center;margin-top:50px;">접근이 거부되었습니다</h2></body>';
         throw new Error('Invalid password');
       }
+
+      // 성공 시, 모든 카운터 초기화
+      localStorage.removeItem('pwAttempts');
+      localStorage.removeItem('pwBlockUntil');
+      localStorage.removeItem('pwBlockLevel');
     })();
+    // --- /비밀번호 확인 & 잠금 로직 ---
 
     // 기존 스크립트 시작
     const { jsPDF } = window.jspdf;
