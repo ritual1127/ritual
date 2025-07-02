@@ -2,161 +2,146 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>성적 계산기</title>
   <style>
+    /* reset & box-sizing */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
       background: #f2f2f7;
-      max-width: 800px;
-      margin: auto;
-      padding: 30px 15px;
       color: #000;
+      padding: env(safe-area-inset-top) 15px 30px env(safe-area-inset-left);
+      padding-bottom: env(safe-area-inset-bottom);
+      max-width: 500px;
+      margin: 0 auto;
     }
-    h1, h2 {
-      text-align: center;
-      margin-bottom: 10px;
-      font-weight: 600;
-    }
+
     h1 {
-      cursor: pointer;
       font-size: 28px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 20px;
+      cursor: pointer;
     }
+    h2 {
+      font-size: 17px;
+      font-weight: 600;
+      margin: 20px 0 10px;
+    }
+
     .box {
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(20px);
-      padding: 20px;
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(30px);
       border-radius: 16px;
+      padding: 20px;
       margin-bottom: 20px;
       border: 1px solid rgba(255,255,255,0.6);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
     }
+
     .entry {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin: 12px 0;
+      margin-bottom: 16px;
     }
     .entry label {
-      min-width: 100px;
-      text-align: right;
-      font-size: 16px;
+      width: 100px;
+      font-size: 15px;
+      color: #3c3c4399;
     }
     .entry input {
       flex: 1;
-      height: 36px;
+      height: 44px;
       padding: 0 12px;
       font-size: 16px;
-      border: none;
+      background: #fff;
+      border: 0.5px solid #c6c6c8;
       border-radius: 10px;
-      background: #f2f2f7;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
     }
-    button, #resetBtn {
+
+    /* 버튼 스타일 */
+    .btn {
       display: block;
-      margin: 12px auto;
+      width: 100%;
       height: 44px;
-      padding: 0 16px;
       font-size: 17px;
       font-weight: 600;
-      border: none;
+      line-height: 44px;
+      text-align: center;
       border-radius: 12px;
-      color: #fff;
+      margin-bottom: 12px;
       cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      user-select: none;
     }
-    button {
+    .btn-primary {
       background: #007aff;
+      color: #fff;
+      border: none;
     }
-    button:hover {
-      background: #0051a8;
+    .btn-primary:active {
+      background: #0060dd;
     }
-    #resetBtn {
-      background: #8e8e93;
-      font-size: 14px;
+    .btn-outline {
+      background: transparent;
+      color: #007aff;
+      border: 1px solid #007aff;
       height: 36px;
-      padding: 0 12px;
-      box-shadow: none;
+      line-height: 36px;
+      font-size: 15px;
       margin-top: 0;
     }
-    #resetBtn:hover {
-      background: #6e6e73;
+    .btn-outline:active {
+      background: rgba(0,122,255,0.1);
     }
+
     #result {
-      font-size: 18px;
+      font-size: 17px;
       text-align: center;
-      margin-top: 10px;
+      line-height: 1.5;
       word-break: keep-all;
-      line-height: 1.4;
+      color: #3c3c43;
     }
-    #countBox {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    #countBox .entry {
-      justify-content: center;
-      width: 100%;
-      max-width: 300px;
-    }
+
     .table-container {
       overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
       margin-top: 10px;
     }
     .record-table {
       width: 100%;
-      min-width: 600px;
       border-collapse: collapse;
     }
     .record-table th, .record-table td {
-      border: none;
-      padding: 12px 8px;
+      padding: 10px 8px;
       text-align: center;
-      white-space: nowrap;
+      font-size: 14px;
+      color: #3c3c4399;
+      border-bottom: 0.5px solid #c6c6c8;
     }
     .record-table th {
-      background: #f2f2f7;
       font-weight: 600;
+      background: #fafafa;
     }
-    .record-table td.subject, .record-table th.subject {
+    .record-table td.subject {
       text-align: left;
-      padding-left: 16px;
+      padding-left: 12px;
     }
     .history-header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 5px;
+      align-items: center;
+      margin-bottom: 10px;
     }
     .history-header span {
-      flex: 1;
-      text-align: center;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 600;
+      color: #3c3c4399;
     }
-    @media (max-width: 600px) {
-      h1 { font-size: 24px; }
-      h2 { font-size: 18px; }
-      .box { padding: 15px; }
-      .entry {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .entry label {
-        text-align: left;
-        margin-bottom: 5px;
-      }
-      button, #resetBtn {
-        width: 100%;
-        margin: 8px 0;
-      }
-      .record-table {
-        font-size: 12px;
-      }
-      .record-table th, .record-table td {
-        padding: 8px 6px;
-      }
+
+    @media (max-width: 400px) {
+      .entry { flex-direction: column; align-items: stretch; }
+      .entry label { margin-bottom: 6px; text-align: left; }
+      .btn, .btn-outline { height: 50px; font-size: 18px; }
     }
   </style>
 </head>
@@ -174,26 +159,28 @@
   <div id="countBox" class="box">
     <div class="entry">
       <label for="sCount">수행평가 개수</label>
-      <input type="number" id="sCount" value="2" min="1" onchange="generateInputs()">
+      <input type="number" id="sCount" value="2" min="1">
     </div>
     <div class="entry">
       <label for="tCount">지필평가 개수</label>
-      <input type="number" id="tCount" value="2" min="1" max="2" onchange="generateInputs()">
+      <input type="number" id="tCount" value="2" min="1" max="2">
     </div>
   </div>
 
   <div id="inputs" class="box"></div>
 
-  <button onclick="calculate()">계산하기</button>
+  <div>
+    <div id="calcBtn" class="btn btn-primary">계산하기</div>
+  </div>
 
   <div id="result" class="box"></div>
 
   <div id="history" class="box">
-    <h2 class="history-header">
-      <button id="resetBtn">전체 리셋</button>
+    <div class="history-header">
+      <div id="resetBtn" class="btn btn-outline">전체 리셋</div>
       <span>계산 기록</span>
-    </h2>
-    <div class="table-container" id="historyTable">
+    </div>
+    <div class="table-container">
       <table class="record-table">
         <thead>
           <tr>
@@ -201,8 +188,8 @@
             <th class="subject">과목명</th>
             <th>최종 점수</th>
             <th>등급</th>
-            <th>다음 등급 및 필요 기말점수</th>
-            <th>떨어질 기준 (기말)</th>
+            <th>다음 등급 필요점수</th>
+            <th>떨어질 기준</th>
             <th>삭제</th>
           </tr>
         </thead>
@@ -223,28 +210,29 @@
       }
     })();
 
+    // 입력창 개수 변경 시 동적 생성
     function generateInputs() {
       const sCnt = +document.getElementById('sCount').value;
-      const tCnt = Math.min(Math.max(+document.getElementById('tCount').value, 1), 2);
+      const tCnt = Math.min(Math.max(+document.getElementById('tCount').value,1),2);
       let html = '<h2>수행평가</h2>';
-      for (let i = 0; i < sCnt; i++) {
+      for (let i=0; i<sCnt; i++){
         html += `
           <div class="entry">
-            <label>수행${i+1} 점수</label>
-            <input type="number" id="s${i}">
-            <label>비중(%)</label>
-            <input type="number" id="sw${i}">
+            <label>수행${i+1}</label>
+            <input type="number" id="s${i}" placeholder="점수">
+            <label style="width:auto;margin-left:10px;">비중(%)</label>
+            <input type="number" id="sw${i}" style="width:60px" placeholder="%">
           </div>`;
       }
       html += '<h2>지필평가</h2>';
-      for (let i = 0; i < tCnt; i++) {
-        const label = tCnt === 1 ? '기말고사' : (i === 0 ? '중간고사' : '기말고사');
+      for (let i=0; i<tCnt; i++){
+        const label = tCnt===1?'기말고사':(i===0?'중간고사':'기말고사');
         html += `
           <div class="entry">
-            <label>${label} 점수</label>
-            <input type="number" id="t${i}">
-            <label>비중(%)</label>
-            <input type="number" id="tw${i}">
+            <label>${label}</label>
+            <input type="number" id="t${i}" placeholder="점수">
+            <label style="width:auto;margin-left:10px;">비중(%)</label>
+            <input type="number" id="tw${i}" style="width:60px" placeholder="%">
           </div>`;
       }
       document.getElementById('inputs').innerHTML = html;
@@ -257,14 +245,15 @@
     function saveHistory(entry) {
       const h = loadHistory();
       h.unshift(entry);
-      localStorage.setItem('gradeHistory', JSON.stringify(h.slice(0, 50)));
+      localStorage.setItem('gradeHistory', JSON.stringify(h.slice(0,50)));
     }
     function deleteHistory(idx) {
       const h = loadHistory();
-      h.splice(idx, 1);
+      h.splice(idx,1);
       localStorage.setItem('gradeHistory', JSON.stringify(h));
       renderHistory();
     }
+
     function renderHistory() {
       const tbody = document.getElementById('historyBody');
       tbody.innerHTML = '';
@@ -274,10 +263,10 @@
           <td>${item.time}</td>
           <td class="subject">${item.subject}</td>
           <td>${item.final}</td>
-          <td><strong style="color:${{A:'#2ecc71',B:'#3498db',C:'#f1c40f',D:'#e67e22',E:'#e74c3c'}[item.grade]}">${item.grade}</strong></td>
+          <td><strong style="color:${{A:'#2ecc71',B:'#007aff',C:'#ffcc00',D:'#ff9500',E:'#ff3b30'}[item.grade]}">${item.grade}</strong></td>
           <td>${item.nextMsg}</td>
           <td>${item.dropMsg}</td>
-          <td><button onclick="deleteHistory(${idx})">삭제</button></td>
+          <td><div style="color:#ff3b30;cursor:pointer;" onclick="deleteHistory(${idx})">삭제</div></td>
         `;
         tbody.appendChild(tr);
       });
@@ -286,54 +275,58 @@
     function calculate() {
       const subject = document.getElementById('subjectName').value || '-';
       const sCnt = +document.getElementById('sCount').value;
-      const tCnt = Math.min(Math.max(+document.getElementById('tCount').value, 1), 2);
-      let sSum=0, wSum=0, midContrib=0, finalW=0, tSum=0;
-      for (let i=0; i<sCnt; i++) {
+      const tCnt = Math.min(Math.max(+document.getElementById('tCount').value,1),2);
+      let sSum=0, wSum=0, mid=0, finalW=0, tSum=0;
+
+      for (let i=0; i<sCnt; i++){
         const sc=+document.getElementById(`s${i}`).value||0;
         const w =+document.getElementById(`sw${i}`).value||0;
-        sSum+=(sc*(w/100)); wSum+=w;
+        sSum += sc*(w/100); wSum += w;
       }
-      for (let i=0; i<tCnt; i++) {
+      for (let i=0; i<tCnt; i++){
         const sc=+document.getElementById(`t${i}`).value||0;
         const w =+document.getElementById(`tw${i}`).value||0;
-        if (tCnt===1||i===tCnt-1) finalW=w/100;
-        else midContrib+=(sc*(w/100));
-        tSum+=(sc*(w/100)); wSum+=w;
+        if (tCnt===1||i===tCnt-1) finalW = w/100;
+        else mid += sc*(w/100);
+        tSum += sc*(w/100); wSum += w;
       }
-      if (wSum!==100) {
-        document.getElementById('result').textContent = `❗ 총 비중이 100%가 아닙니다. 현재: ${wSum}%`;
+      if (wSum!==100){
+        document.getElementById('result').textContent = `❗ 총 비중이 100%가 아닙니다 (현재 ${wSum}%).`;
         return;
       }
-      const final = +(sSum + tSum).toFixed(2);
-      const grade = final>=90?'A': final>=80?'B': final>=70?'C': final>=60?'D':'E';
-      const gradeColor = {A:'#2ecc71',B:'#3498db',C:'#f1c40f',D:'#e67e22',E:'#e74c3c'}[grade];
-      const gradeHtml = `<strong style="color:${gradeColor}">${grade}</strong>`;
+      const final = +(sSum+tSum).toFixed(2);
+      const grade = final>=90?'A':final>=80?'B':final>=70?'C':final>=60?'D':'E';
       const nextTh = {A:null,B:90,C:80,D:70,E:60}[grade];
       const currTh = {A:90,B:80,C:70,D:60,E:0}[grade];
       let nextMsg, dropMsg;
-      if (nextTh) {
-        const need = (nextTh - sSum - midContrib) / finalW;
+      if (nextTh){
+        const need = (nextTh - sSum - mid)/finalW;
         const nG = {90:'A',80:'B',70:'C',60:'D'}[nextTh];
-        nextMsg = need>100 ? `${nG} 등급으로 갈 수 없음` : `${nG} 등급 위해 기말고사에 ${need.toFixed(2)}점↑`;
-      } else nextMsg = '최고 등급입니다🎉';
-      const drop = (currTh - 0.01 - sSum - midContrib) / finalW;
-      if (drop < 0) dropMsg = '떨어질 등급 없음';
+        nextMsg = need>100?`${nG} 등급 불가`:`${nG} 위해 ${need.toFixed(2)}점↑`;
+      } else nextMsg = '최고 등급!';
+      const drop = (currTh-0.01 - sSum - mid)/finalW;
+      if (drop<0) dropMsg='떨어질 등급 없음';
       else {
         const dG = {90:'B',80:'C',70:'D',60:'E'}[currTh];
-        dropMsg = `기말고사에 ${drop.toFixed(2)}점↓ (이하일 경우 ${dG} 등급)`;
+        dropMsg = `${drop.toFixed(2)}점↓ (이하 ${dG})`;
       }
+
       document.getElementById('result').innerHTML =
-        `최종: <strong>${final}점</strong><br>` +
-        `등급: ${gradeHtml}<br>` +
-        `${nextMsg}<br>` +
-        `${dropMsg}`;
-      saveHistory({ time: new Date().toLocaleString('ko-KR'), subject, final, grade, nextMsg, dropMsg });
+        `최종: <strong>${final}점</strong><br>${grade} 등급<br>${nextMsg}<br>${dropMsg}`;
+
+      saveHistory({
+        time: new Date().toLocaleString('ko-KR'),
+        subject, final, grade, nextMsg, dropMsg
+      });
       renderHistory();
     }
 
-    window.onload = () => {
+    window.onload = function() {
       generateInputs();
       renderHistory();
+      document.getElementById('sCount').addEventListener('change', generateInputs);
+      document.getElementById('tCount').addEventListener('change', generateInputs);
+      document.getElementById('calcBtn').addEventListener('click', calculate);
       document.getElementById('resetBtn').addEventListener('click', () => {
         if (confirm('계산 기록을 모두 삭제하시겠습니까?')) {
           localStorage.removeItem('gradeHistory');
@@ -342,6 +335,5 @@
       });
     };
   </script>
-
 </body>
 </html>
