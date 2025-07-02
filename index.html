@@ -41,7 +41,7 @@
       overflow-x: hidden;
     }
 
-    /* count inputs arranged side by side */
+    /* top-level count & weight inputs */
     .count-container {
       display: flex;
       gap: 12px;
@@ -56,7 +56,12 @@
       color: #3c3c4399;
       margin-bottom: 6px;
     }
-    .count-container .half input {
+    .inline-inputs {
+      display: flex;
+      gap: 8px;
+    }
+    .inline-inputs input {
+      flex: 1;
       height: 44px;
       padding: 0 12px;
       font-size: 16px;
@@ -65,11 +70,12 @@
       border-radius: 10px;
     }
 
+    /* individual entry rows */
     .entry {
       display: flex;
       align-items: center;
       margin-bottom: 16px;
-      max-width: 100%;
+      flex-wrap: wrap;
     }
     .entry label {
       flex: 0 0 100px;
@@ -187,11 +193,10 @@
     }
 
     @media (max-width: 400px) {
-      .entry { flex-direction: column; align-items: stretch; }
-      .entry label { margin-bottom: 6px; }
-      .entry input { flex: 1 0 auto; margin-right: 0; width: 100%; }
       .count-container { flex-direction: column; }
-      .count-container .half input { width: 100%; }
+      .inline-inputs { flex-direction: column; }
+      .entry { flex-direction: column; }
+      .entry input { flex: 1 0 auto; margin-right: 0; width: 100%; }
       .btn, .btn-outline { height: 50px; font-size: 18px; }
     }
   </style>
@@ -211,11 +216,17 @@
     <div class="count-container">
       <div class="half">
         <label for="sCount">수행평가 개수</label>
-        <input type="number" id="sCount" value="2" min="1">
+        <div class="inline-inputs">
+          <input type="number" id="sCount" value="2" min="1" placeholder="개수">
+          <input type="number" id="sWeight" min="0" max="100" placeholder="비중(%)">
+        </div>
       </div>
       <div class="half">
         <label for="tCount">지필평가 개수</label>
-        <input type="number" id="tCount" value="2" min="1" max="2">
+        <div class="inline-inputs">
+          <input type="number" id="tCount" value="2" min="1" max="2" placeholder="개수">
+          <input type="number" id="tWeight" min="0" max="100" placeholder="비중(%)">
+        </div>
       </div>
     </div>
   </div>
@@ -333,14 +344,14 @@
       let sSum=0, wSum=0, mid=0, finalW=0, tSum=0;
 
       for (let i=0; i<sCnt; i++){
-        const sc = +document.getElementById(`s${i}`).value || 0;
-        const w  = +document.getElementById(`sw${i}`).value || 0;
+        const sc = +document.getElementById(`s${i}`).value||0;
+        const w  = +document.getElementById(`sw${i}`).value||0;
         sSum += sc*(w/100); wSum += w;
       }
       for (let i=0; i<tCnt; i++){
-        const sc = +document.getElementById(`t${i}`).value || 0;
-        const w  = +document.getElementById(`tw${i}`).value || 0;
-        if (tCnt===1 || i===tCnt-1) finalW = w/100;
+        const sc = +document.getElementById(`t${i}`).value||0;
+        const w  = +document.getElementById(`tw${i}`).value||0;
+        if (tCnt===1||i===tCnt-1) finalW = w/100;
         else mid += sc*(w/100);
         tSum += sc*(w/100); wSum += w;
       }
