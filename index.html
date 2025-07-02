@@ -26,6 +26,7 @@
       margin: 20px 0;
       cursor: pointer;
     }
+
     h2 {
       font-size: 17px;
       font-weight: 600;
@@ -33,15 +34,15 @@
     }
 
     .box {
-      background: rgba(255,255,255,0.8);
-      backdrop-filter: blur(30px);
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(20px);
       border-radius: 16px;
       padding: 20px;
       margin-bottom: 20px;
       border: 1px solid rgba(255,255,255,0.6);
     }
 
-    /* 수행/지필 개수 입력칸: 50%씩 */
+    /* 수행/지필 개수 칸: 반반 사이즈 */
     .count-container {
       display: flex;
       gap: 12px;
@@ -52,54 +53,57 @@
     .count-container .half label {
       display: block;
       font-size: 15px;
-      color: #3c3c4399;
+      color: #8e8e93;
       margin-bottom: 6px;
     }
     .count-container .half input {
       width: 100%;
-      height: 44px;
+      height: 42px;
       padding: 0 12px;
       font-size: 16px;
       background: #fff;
-      border: 0.5px solid #c6c6c8;
+      border: 1px solid #d1d1d6;
       border-radius: 10px;
     }
 
-    /* 동적 입력 행: label/input 두 줄 그리드 */
+    /* 동적 입력 행: label + 두 input */
     .entry {
-      display: grid;
-      grid-template-columns: 100px 1fr;
-      grid-template-rows: auto auto;
-      column-gap: 8px;
-      row-gap: 8px;
+      display: flex;
       align-items: center;
       margin-bottom: 16px;
+      flex-wrap: wrap;
     }
     .entry label {
+      flex: 0 0 100px;
       font-size: 15px;
-      color: #3c3c4399;
+      color: #8e8e93;
+      margin-right: 8px;
     }
     .entry input {
-      width: 100%;
-      height: 44px;
+      flex: 0 0 calc((100% - 100px - 8px)/2);
+      height: 42px;
       padding: 0 12px;
       font-size: 16px;
       background: #fff;
-      border: 0.5px solid #c6c6c8;
+      border: 1px solid #d1d1d6;
       border-radius: 10px;
+      margin-right: 8px;
+    }
+    .entry input:last-of-type {
+      margin-right: 0;
     }
 
-    /* 버튼 */
+    /* 주요 버튼 */
     .btn {
       display: block;
       width: 100%;
-      height: 44px;
+      height: 42px;
       font-size: 17px;
       font-weight: 600;
       text-align: center;
       border-radius: 12px;
-      margin: 12px 0;
-      line-height: 44px;
+      margin: 16px 0;
+      line-height: 42px;
       background: #007aff;
       color: #fff;
       border: none;
@@ -107,20 +111,21 @@
       user-select: none;
     }
     .btn:active {
-      background: #0060dd;
+      background: #005ecb;
     }
+
+    /* 리셋 버튼 (작게, 우측) */
     .btn-outline {
       display: inline-block;
       background: transparent;
       color: #007aff;
       border: 1px solid #007aff;
-      height: 36px;
-      line-height: 36px;
-      font-size: 15px;
-      padding: 0 12px;
-      border-radius: 10px;
+      height: 30px;
+      line-height: 30px;
+      font-size: 14px;
+      padding: 0 10px;
+      border-radius: 8px;
       cursor: pointer;
-      float: right;
     }
     .btn-outline:active {
       background: rgba(0,122,255,0.1);
@@ -135,57 +140,60 @@
       word-break: keep-all;
     }
 
-    /* 기록 테이블 */
+    /* 기록 테이블 개선 */
     .table-container {
       margin-top: 10px;
-      background: #fff;
+      background: transparent;
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .record-table {
       width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
+      border-collapse: collapse;
     }
-    .record-table th, .record-table td {
-      padding: 12px 8px;
+    .record-table th,
+    .record-table td {
+      padding: 12px;
       text-align: center;
       font-size: 14px;
       color: #3c3c4399;
-      border-bottom: 0.5px solid #c6c6c8;
+      border: none;
     }
-    .record-table th {
-      position: sticky;
-      top: 0;
-      background: #fafafa;
+    .record-table thead th {
+      color: #1c1c1e;
       font-weight: 600;
     }
-    .record-table tr:nth-child(odd) {
-      background: #f9f9f9;
+    .record-table tbody tr:nth-child(odd) td {
+      background: #ffffff;
+    }
+    .record-table tbody tr:nth-child(even) td {
+      background: #f2f2f7;
+    }
+    .record-table tbody tr:hover td {
+      background: #e5e5ea;
     }
     .record-table td.subject {
       text-align: left;
-      padding-left: 12px;
+      padding-left: 16px;
     }
 
     .history-header {
-      position: relative;
-      padding-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
     }
     .history-header span {
       font-size: 17px;
       font-weight: 600;
-      color: #3c3c4399;
-      text-align: center;
-      display: block;
+      color: #1c1c1e;
     }
 
     @media (max-width: 400px) {
       .count-container { flex-direction: column; }
-      .entry { grid-template-columns: 100% !important; }
-      .entry input { width: 100%; }
-      .btn, .btn-outline { height: 50px; font-size: 18px; }
+      .entry { flex-direction: column; }
+      .entry input { width: 100%; margin-right: 0; }
+      .btn, .btn-outline { height: 48px; font-size: 16px; }
     }
   </style>
 </head>
