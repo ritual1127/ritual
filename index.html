@@ -288,6 +288,7 @@
       }
       document.getElementById('inputs').innerHTML = html;
     }
+
     function loadHistory() {
       const raw = localStorage.getItem('gradeHistory');
       return raw ? JSON.parse(raw) : [];
