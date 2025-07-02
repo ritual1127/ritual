@@ -41,6 +41,30 @@
       overflow-x: hidden;
     }
 
+    /* count inputs arranged side by side */
+    .count-container {
+      display: flex;
+      gap: 12px;
+    }
+    .count-container .half {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .count-container .half label {
+      font-size: 15px;
+      color: #3c3c4399;
+      margin-bottom: 6px;
+    }
+    .count-container .half input {
+      height: 44px;
+      padding: 0 12px;
+      font-size: 16px;
+      background: #fff;
+      border: 0.5px solid #c6c6c8;
+      border-radius: 10px;
+    }
+
     .entry {
       display: flex;
       align-items: center;
@@ -166,6 +190,8 @@
       .entry { flex-direction: column; align-items: stretch; }
       .entry label { margin-bottom: 6px; }
       .entry input { flex: 1 0 auto; margin-right: 0; width: 100%; }
+      .count-container { flex-direction: column; }
+      .count-container .half input { width: 100%; }
       .btn, .btn-outline { height: 50px; font-size: 18px; }
     }
   </style>
@@ -182,11 +208,15 @@
   </div>
 
   <div id="countBox" class="box">
-    <div class="entry">
-      <label for="sCount">수행평가 개수</label>
-      <input type="number" id="sCount" value="2" min="1">
-      <label for="tCount">지필평가 개수</label>
-      <input type="number" id="tCount" value="2" min="1" max="2">
+    <div class="count-container">
+      <div class="half">
+        <label for="sCount">수행평가 개수</label>
+        <input type="number" id="sCount" value="2" min="1">
+      </div>
+      <div class="half">
+        <label for="tCount">지필평가 개수</label>
+        <input type="number" id="tCount" value="2" min="1" max="2">
+      </div>
     </div>
   </div>
 
