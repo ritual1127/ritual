@@ -239,26 +239,6 @@
     <button id="calcBtn" class="btn">계산하기</button>
     <div id="result"></div>
 
-    <!-- D-Day 카운터 -->
-    <div id="ddayBox" class="box">
-      <div class="history-header">
-        <span>시험 일정 & D-Day</span>
-        <button id="addDdayBtn" class="btn-outline">일정 추가</button>
-      </div>
-      <div id="ddayForm" style="display:none; margin-bottom:16px;">
-        <div class="entry">
-          <label>시험명</label>
-          <input type="text" id="ddayName" placeholder="예: 중간고사">
-        </div>
-        <div class="entry">
-          <label>날짜</label>
-          <input type="date" id="ddayDate">
-        </div>
-        <button id="saveDdayBtn" class="btn">저장</button>
-      </div>
-      <ul id="ddayList" style="list-style:none; padding:0;"></ul>
-    </div>
-
     <!-- 계산 기록 -->
     <div id="history" class="box">
       <div class="history-header">
@@ -277,6 +257,26 @@
           <tbody id="historyBody"></tbody>
         </table>
       </div>
+    </div>
+
+    <!-- D-Day 카운터 -->
+    <div id="ddayBox" class="box">
+      <div class="history-header">
+        <span>시험 일정 & D-Day</span>
+        <button id="addDdayBtn" class="btn-outline">일정 추가</button>
+      </div>
+      <div id="ddayForm" style="display:none; margin-bottom:16px;">
+        <div class="entry">
+          <label>시험명</label>
+          <input type="text" id="ddayName" placeholder="예: 방학식">
+        </div>
+        <div class="entry">
+          <label>날짜</label>
+          <input type="date" id="ddayDate">
+        </div>
+        <button id="saveDdayBtn" class="btn">저장</button>
+      </div>
+      <ul id="ddayList" style="list-style:none; padding:0;"></ul>
     </div>
   </div>
 
