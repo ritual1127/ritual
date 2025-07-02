@@ -8,7 +8,6 @@
   <style>
     /* reset & box-sizing */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     /* 테마 변수 */
     :root {
       --bg: #f2f2f7;
@@ -48,7 +47,7 @@
       font-size: 28px;
       font-weight: 600;
       cursor: pointer;
-      margin-left: 10px; /* 제목을 오른쪽으로 한 칸 이동 */
+      margin-left: 10px;
     }
     .top-controls button {
       background: transparent;
@@ -220,6 +219,81 @@
       .count-container { flex-direction: column; }
       .entry { grid-template-columns: 100% !important; }
     }
+
+    /* 다크모드용 테이블 배경 덮어쓰기 */
+    [data-theme="dark"] .record-table tbody tr:nth-child(even) td {
+      background: var(--inp-bg);
+    }
+    [data-theme="dark"] .record-table tbody tr:hover td {
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* ─── 모달 스타일 ─── */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: var(--box-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90%;
+      overflow-y: auto;
+      padding: 20px;
+      position: relative;
+    }
+    #modalCloseBtn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: transparent;
+      border: none;
+      font-size: 16px;
+      color: var(--primary);
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+
+    /* iOS 스타일 세부표 */
+    .table-group {
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .table-group table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--inp-bg);
+    }
+    .table-group th,
+    .table-group td {
+      padding: 16px;
+      font-size: 16px;
+      text-align: left;
+    }
+    .table-group tr:not(:last-child) td {
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    .table-group thead {
+      background: rgba(0,0,0,0.05);
+    }
+    [data-theme="dark"] .table-group tr:not(:last-child) td {
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    [data-theme="dark"] .table-group thead {
+      background: rgba(255,255,255,0.1);
+    }
   </style>
 </head>
 <body>
@@ -265,19 +339,22 @@
         <table class="record-table">
           <thead>
             <tr>
-              <th>일시</th>
-              <th>과목<br>명</th>
-              <th>최종<br>점수</th>
-              <th>등급</th>
-              <th>다음<br>등급<br>필요<br>점수</th>
-              <th>떨어질<br>기준</th>
-              <th>삭<br>제</th>
-              <th>정<br>보</th>
+              <th>일시</th><th>과목<br>명</th><th>최종<br>점수</th><th>등급</th>
+              <th>다음<br>등급<br>필요<br>점수</th><th>떨어질<br>기준</th>
+              <th>삭<br>제</th><th>정<br>보</th>
             </tr>
           </thead>
           <tbody id="historyBody"></tbody>
         </table>
       </div>
+    </div>
+  </div>
+
+  <!-- 모달 -->
+  <div id="detailModal" class="modal">
+    <div class="modal-content">
+      <button id="modalCloseBtn">닫기</button>
+      <div id="modalInnerContent"></div>
     </div>
   </div>
 
@@ -363,119 +440,34 @@
       });
     }
 
-    // 정보 새창 띄우기 (iOS 스타일 테이블 UI, 모바일 최적화)
+    // 모달 제어
+    const modal = document.getElementById('detailModal');
+    const modalInner = document.getElementById('modalInnerContent');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    modalCloseBtn.onclick = () => modal.style.display = 'none';
+    window.onclick = e => { if (e.target === modal) modal.style.display = 'none'; };
+
+    // 상세정보 표시
     function showInfo(idx) {
       const e = loadHistory()[idx];
       if (!e) return;
-      const w = window.open('', '', 'width=375,height=600');
-      const html = `
-        <!DOCTYPE html>
-        <html lang="ko">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-          <title>상세 정보 — ${e.subject}</title>
-          <style>
-            body {
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-              margin: 0;
-              padding: 20px;
-              background-color: #fff;
-              color: #000;
-            }
-            h2 {
-              font-size: 20px;
-              margin-bottom: 16px;
-            }
-            h3 {
-              font-size: 18px;
-              margin-top: 24px;
-              margin-bottom: 8px;
-              font-weight: 600;
-            }
-            .table-group {
-              border-radius: 12px;
-              overflow: hidden;
-              margin-bottom: 20px;
-              box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              background-color: #f9f9f9;
-            }
-            th, td {
-              padding: 16px;
-              font-size: 16px;
-              text-align: left;
-            }
-            tr:not(:last-child) td {
-              border-bottom: 1px solid #e0e0e0;
-            }
-            thead {
-              background-color: #f0f0f0;
-            }
-            button {
-              display: block;
-              width: 100%;
-              padding: 14px;
-              font-size: 16px;
-              border: none;
-              border-radius: 8px;
-              background-color: #007aff;
-              color: #fff;
-              margin-top: 10px;
-            }
-            button:active {
-              opacity: 0.8;
-            }
-          </style>
-        </head>
-        <body>
-          <h2>${e.subject} — 상세 정보</h2>
-
-          <h3>수행평가</h3>
-          <div class="table-group">
-            <table>
-              <thead>
-                <tr>
-                  <th>회차</th>
-                  <th>점수</th>
-                  <th>비중(%)</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${e.performances.map((p,i) =>
-                  `<tr><td>${i+1}</td><td>${p.score}</td><td>${p.weight}</td></tr>`
-                ).join('')}
-              </tbody>
-            </table>
-          </div>
-
-          <h3>지필평가</h3>
-          <div class="table-group">
-            <table>
-              <thead>
-                <tr>
-                  <th>구분</th>
-                  <th>점수</th>
-                  <th>비중(%)</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${e.exams.map(ex =>
-                  `<tr><td>${ex.label}</td><td>${ex.score}</td><td>${ex.weight}</td></tr>`
-                ).join('')}
-              </tbody>
-            </table>
-          </div>
-
-          <button onclick="window.close()">닫기</button>
-        </body>
-        </html>
-      `;
-      w.document.write(html);
-      w.document.close();
+      let html = `<h2>${e.subject} — 상세 정보</h2>
+        <h3>수행평가</h3>
+        <div class="table-group"><table>
+          <thead><tr><th>회차</th><th>점수</th><th>비중(%)</th></tr></thead>
+          <tbody>
+            ${e.performances.map((p,i)=>`<tr><td>${i+1}</td><td>${p.score}</td><td>${p.weight}</td></tr>`).join('')}
+          </tbody>
+        </table></div>
+        <h3>지필평가</h3>
+        <div class="table-group"><table>
+          <thead><tr><th>구분</th><th>점수</th><th>비중(%)</th></tr></thead>
+          <tbody>
+            ${e.exams.map(ex=>`<tr><td>${ex.label}</td><td>${ex.score}</td><td>${ex.weight}</td></tr>`).join('')}
+          </tbody>
+        </table></div>`;
+      modalInner.innerHTML = html;
+      modal.style.display = 'flex';
     }
 
     // 계산
@@ -493,8 +485,8 @@
         sSum += sc*(w/100); wSum += w;
       }
       for (let i=0; i<tCnt; i++) {
-        const sc    = +document.getElementById(`t${i}`).value||0;
-        const w     = +document.getElementById(`tw${i}`).value||0;
+        const sc = +document.getElementById(`t${i}`).value||0;
+        const w  = +document.getElementById(`tw${i}`).value||0;
         const label = (tCnt===1)?'기말고사':(i===0?'중간고사':'기말고사');
         exams.push({ label, score: sc, weight: w });
         if (tCnt===1 || i===tCnt-1) finalW = w/100;
@@ -528,11 +520,7 @@
       document.getElementById('result').innerHTML =
         `최종: <strong>${final}점</strong><br>${grade} 등급<br>${nextMsg}<br>${dropMsg}`;
 
-      saveHistory({
-        time: new Date().toLocaleString('ko-KR'),
-        subject, final, grade, nextMsg, dropMsg,
-        performances, exams
-      });
+      saveHistory({ time: new Date().toLocaleString('ko-KR'), subject, final, grade, nextMsg, dropMsg, performances, exams });
       renderHistory();
     }
 
