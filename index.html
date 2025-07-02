@@ -295,6 +295,16 @@
     [data-theme="dark"] .table-group thead {
       background: rgba(255,255,255,0.1);
     }
+
+    /* 제목과 소제목 사이 여백 늘리기 */
+    .modal-content h2 {
+      margin-top: 0;
+      margin-bottom: 24px; /* 제목 아래 여백을 더 넉넉히 */
+    }
+    .modal-content h3 {
+      margin-top: 24px;   /* 소제목 위 여백 */
+      margin-bottom: 12px;
+    }
   </style>
 </head>
 <body>
@@ -409,27 +419,27 @@
 
     // 로컬스토리지 관리
     function loadHistory() {
-      return JSON.parse(localStorage.getItem('gradeHistory') || '[]');
+      return JSON.parse(localStorage.getItem('gradeHistory')||'[]');
     }
     function saveHistory(entry) {
-      const h = loadHistory();
+      const h=loadHistory();
       h.unshift(entry);
-      localStorage.setItem('gradeHistory', JSON.stringify(h.slice(0,50)));
+      localStorage.setItem('gradeHistory',JSON.stringify(h.slice(0,50)));
     }
     function deleteHistory(idx) {
-      const h = loadHistory();
+      const h=loadHistory();
       h.splice(idx,1);
-      localStorage.setItem('gradeHistory', JSON.stringify(h));
+      localStorage.setItem('gradeHistory',JSON.stringify(h));
       renderHistory();
     }
 
-    // 기록 렌더
+    // 렌더
     function renderHistory() {
-      const tbody = document.getElementById('historyBody');
-      tbody.innerHTML = '';
-      loadHistory().forEach((it, idx) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
+      const tb=document.getElementById('historyBody');
+      tb.innerHTML='';
+      loadHistory().forEach((it,i)=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`
           <td>${it.time}</td>
           <td class="subject">${it.subject}</td>
           <td>${it.final}</td>
@@ -438,119 +448,91 @@
           }">${it.grade}</strong></td>
           <td>${it.nextMsg}</td>
           <td>${it.dropMsg}</td>
-          <td><div class="delete-btn" onclick="deleteHistory(${idx})">삭제</div></td>
-          <td><button class="info-btn" data-idx="${idx}">정보</button></td>
-        `;
-        tbody.appendChild(tr);
+          <td><div class="delete-btn" onclick="deleteHistory(${i})">삭제</div></td>
+          <td><button class="info-btn" data-idx="${i}">정보</button></td>`;
+        tb.appendChild(tr);
       });
-      document.querySelectorAll('.info-btn').forEach(btn => {
-        btn.onclick = () => showInfo(+btn.dataset.idx);
-      });
+      document.querySelectorAll('.info-btn').forEach(b=>b.onclick=()=>showInfo(+b.dataset.idx));
     }
 
     // 모달 제어
-    const modal = document.getElementById('detailModal');
-    const modalInner = document.getElementById('modalInnerContent');
-    const modalCloseBtn = document.getElementById('modalCloseBtn');
-    modalCloseBtn.onclick = () => modal.style.display = 'none';
-    window.onclick = e => { if (e.target === modal) modal.style.display = 'none'; };
+    const modal=document.getElementById('detailModal'),
+          inner=document.getElementById('modalInnerContent'),
+          closeBtn=document.getElementById('modalCloseBtn');
+    closeBtn.onclick=()=>modal.style.display='none';
+    window.onclick=e=>{ if(e.target===modal) modal.style.display='none'; };
 
-    // 상세정보 표시 (— 제거, “점”/“%” 추가)
-    function showInfo(idx) {
-      const e = loadHistory()[idx];
-      if (!e) return;
-      let html = `<h2>${e.subject} 상세 정보</h2>
+    // 상세정보 표시
+    function showInfo(idx){
+      const e=loadHistory()[idx]; if(!e)return;
+      let html=`<h2>${e.subject} 상세 정보</h2>
         <h3>수행평가</h3>
         <div class="table-group"><table>
           <thead><tr><th>회차</th><th>점수</th><th>비중(%)</th></tr></thead>
           <tbody>
-            ${e.performances.map((p,i)=>
-              `<tr>
-                 <td>${i+1}</td>
-                 <td>${p.score}점</td>
-                 <td>${p.weight}%</td>
-               </tr>`
-            ).join('')}
-          </tbody>
-        </table></div>
+            ${e.performances.map((p,i)=>`<tr><td>${i+1}</td><td>${p.score}점</td><td>${p.weight}%</td></tr>`).join('')}
+          </tbody></table></div>
         <h3>지필평가</h3>
         <div class="table-group"><table>
           <thead><tr><th>구분</th><th>점수</th><th>비중(%)</th></tr></thead>
           <tbody>
-            ${e.exams.map(ex=>
-              `<tr>
-                 <td>${ex.label}</td>
-                 <td>${ex.score}점</td>
-                 <td>${ex.weight}%</td>
-               </tr>`
-            ).join('')}
-          </tbody>
-        </table></div>`;
-      modalInner.innerHTML = html;
-      modal.style.display = 'flex';
+            ${e.exams.map(ex=>`<tr><td>${ex.label}</td><td>${ex.score}점</td><td>${ex.weight}%</td></tr>`).join('')}
+          </tbody></table></div>`;
+      inner.innerHTML=html;
+      modal.style.display='flex';
     }
 
     // 계산
-    function calculate() {
-      const subject = document.getElementById('subjectName').value || '-';
-      const sCnt = +document.getElementById('sCount').value;
-      const tCnt = +document.getElementById('tCount').value;
-      let sSum=0, wSum=0, mid=0, finalW=0, tSum=0;
-      const performances = [], exams = [];
-
-      for (let i=0; i<sCnt; i++) {
-        const sc = +document.getElementById(`s${i}`).value||0;
-        const w  = +document.getElementById(`sw${i}`).value||0;
-        performances.push({ score: sc, weight: w });
-        sSum += sc*(w/100); wSum += w;
+    function calculate(){
+      const subj=document.getElementById('subjectName').value||'-',
+            sCnt=+document.getElementById('sCount').value,
+            tCnt=+document.getElementById('tCount').value;
+      let sSum=0,wSum=0,mid=0,finalW=0,tSum=0;
+      const perf=[],exms=[];
+      for(let i=0;i<sCnt;i++){
+        const sc=+document.getElementById(`s${i}`).value||0,
+              w=+document.getElementById(`sw${i}`).value||0;
+        perf.push({score:sc,weight:w});
+        sSum+=sc*(w/100); wSum+=w;
       }
-      for (let i=0; i<tCnt; i++) {
-        const sc = +document.getElementById(`t${i}`).value||0;
-        const w  = +document.getElementById(`tw${i}`).value||0;
-        const label = (tCnt===1)?'기말고사':(i===0?'중간고사':'기말고사');
-        exams.push({ label, score: sc, weight: w });
-        if (tCnt===1 || i===tCnt-1) finalW = w/100;
-        else mid += sc*(w/100);
-        tSum += sc*(w/100); wSum += w;
+      for(let i=0;i<tCnt;i++){
+        const sc=+document.getElementById(`t${i}`).value||0,
+              w=+document.getElementById(`tw${i}`).value||0,
+              lbl=(tCnt===1?'기말고사':i===0?'중간고사':'기말고사');
+        exms.push({label:lbl,score:sc,weight:w});
+        if(tCnt===1||i===tCnt-1) finalW=w/100;
+        else mid+=sc*(w/100);
+        tSum+=sc*(w/100); wSum+=w;
       }
-
-      if (wSum!==100) {
-        document.getElementById('result').textContent =
-          `❗ 총 비중이 100%가 아닙니다 (현재 ${wSum}%).`;
+      if(wSum!==100){
+        document.getElementById('result').textContent=`❗ 총 비중이 100%가 아닙니다 (현재 ${wSum}%).`;
         return;
       }
-
-      const final = +(sSum + tSum).toFixed(2);
-      const grade = final>=90?'A': final>=80?'B': final>=70?'C': final>=60?'D':'E';
-      const nextTh = {A:null,B:90,C:80,D:70,E:60}[grade];
-      const currTh = {A:90,B:80,C:70,D:60,E:0}[grade];
-      let nextMsg, dropMsg;
-      if (nextTh) {
-        const need = (nextTh - sSum - mid)/finalW;
-        const nG = {90:'A',80:'B',70:'C',60:'D'}[nextTh];
-        nextMsg = need>100?`${nG} 등급 불가`:`${nG} 위해 ${need.toFixed(2)}점↑`;
-      } else nextMsg = '최고 등급!';
-      const drop = (currTh - 0.01 - sSum - mid)/finalW;
-      if (drop<0) dropMsg='떨어질 등급 없음';
-      else {
-        const dG = {90:'B',80:'C',70:'D',60:'E'}[currTh];
-        dropMsg = `${drop.toFixed(2)}점↓ (이하 ${dG})`;
-      }
-
-      document.getElementById('result').innerHTML =
+      const final=+(sSum+tSum).toFixed(2),
+            grade=final>=90?'A':final>=80?'B':final>=70?'C':final>=60?'D':'E',
+            nextTh={A:null,B:90,C:80,D:70,E:60}[grade],
+            currTh={A:90,B:80,C:70,D:60,E:0}[grade];
+      let nextMsg,dropMsg;
+      if(nextTh){
+        const need=(nextTh-sSum-mid)/finalW,
+              nG={90:'A',80:'B',70:'C',60:'D'}[nextTh];
+        nextMsg=need>100?`${nG} 등급 불가`:`${nG} 위해 ${need.toFixed(2)}점↑`;
+      } else nextMsg='최고 등급!';
+      const drop=(currTh-0.01-sSum-mid)/finalW;
+      dropMsg=drop<0?'떨어질 등급 없음':`${drop.toFixed(2)}점↓ (이하 ${ {90:'B',80:'C',70:'D',60:'E'}[currTh] })`;
+      document.getElementById('result').innerHTML=
         `최종: <strong>${final}점</strong><br>${grade} 등급<br>${nextMsg}<br>${dropMsg}`;
-
-      saveHistory({ time: new Date().toLocaleString('ko-KR'), subject, final, grade, nextMsg, dropMsg, performances, exams });
+      saveHistory({ time:new Date().toLocaleString('ko-KR'), subject:subj, final, grade, nextMsg, dropMsg, performances:perf, exams:exms });
       renderHistory();
     }
 
     // 초기화
-    window.onload = () => {
+    window.onload=()=>{
       generateInputs();
       renderHistory();
-      document.getElementById('calcBtn').onclick = calculate;
-      document.getElementById('resetBtn').onclick = () => {
-        if (confirm('계산 기록을 모두 삭제하시겠습니까?')) {
+      document.getElementById('calcBtn').onclick=calculate;
+      document.getElementById('resetBtn').onclick=()=>{
+        if(confirm('계산 기록을 모두 삭제하시겠습니까?')){
           localStorage.removeItem('gradeHistory');
           renderHistory();
         }
