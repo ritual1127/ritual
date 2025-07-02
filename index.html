@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <!-- 확대/축소 방지 -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>성적 계산기 & 그래프</title>
+  <title>성적 계산기</title>
   <style>
     /* reset & box-sizing */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,7 +36,7 @@
       background: transparent; color: var(--primary);
       border: 1px solid var(--primary); border-radius: 8px;
       font-size: 14px; height: 30px; line-height: 30px;
-      padding: 0 10px; margin-left: 6px; cursor: pointer;
+      padding: 0 10px; cursor: pointer;
     }
     .top-controls button:active {
       background: rgba(0,122,255,0.1);
@@ -80,7 +80,7 @@
     .btn:active { filter: brightness(0.9); }
     #result {
       font-size:17px;text-align:center;line-height:1.5;
-      margin-bottom:20px;
+      margin-bottom:20px;word-break:keep-all;
     }
     /* 히스토리 & 테이블 */
     .history-header {
@@ -120,12 +120,6 @@
     .delete-btn {
       color:#ff3b30;cursor:pointer;font-size:14px;
     }
-    /* 그래프 뷰 */
-    #graphView { display:none; }
-    .chart-container {
-      background:var(--inp-bg);border-radius:12px;
-      padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.1);
-    }
     @media (max-width:400px) {
       .count-container { flex-direction:column; }
       .entry { grid-template-columns:100% !important; }
@@ -134,9 +128,8 @@
 </head>
 <body>
   <div class="top-bar">
-    <h1 onclick="showView('calc')">성적 계산기</h1>
+    <h1 onclick="location.reload()">성적 계산기</h1>
     <div class="top-controls">
-      <button id="graphBtn">그래프 만들기</button>
       <button id="themeToggle">다크 모드</button>
     </div>
   </div>
@@ -184,112 +177,103 @@
     </div>
   </div>
 
-  <!-- 그래프 뷰 -->
-  <div id="graphView">
-    <div class="history-header">
-      <span>내 성적 그래프</span>
-      <button onclick="showView('calc')" class="btn-outline">뒤로</button>
-    </div>
-    <div class="chart-container">
-      <canvas id="gradeChart"></canvas>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    // 다크모드
+    // 다크모드 토글
     const themeToggle = document.getElementById('themeToggle');
     function applyTheme(t) {
       document.documentElement.setAttribute('data-theme', t);
       themeToggle.textContent = t==='light' ? '다크 모드' : '라이트 모드';
       localStorage.setItem('theme', t);
     }
-    const saved = localStorage.getItem('theme')||'light';
+    const saved = localStorage.getItem('theme') || 'light';
     applyTheme(saved);
-    themeToggle.onclick = ()=> applyTheme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light');
+    themeToggle.onclick = () => applyTheme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light');
 
-    // 뷰 전환
-    function showView(v){
-      document.getElementById('calcView').style.display = v==='calc'?'block':'none';
-      document.getElementById('graphView').style.display = v==='graph'?'block':'none';
-      if(v==='graph') drawChart();
-    }
-    document.getElementById('graphBtn').onclick = ()=> showView('graph');
-
-    // --- 기존 계산기 로직 ---
-    function generateInputs(){
-      const sCnt=+sCount.value, tCnt=+tCount.value;
-      let html='<h2>수행평가</h2>';
-      for(let i=0;i<sCnt;i++){
-        html+=`<div class="entry">
-          <label>수행${i+1}</label>
-          <input type="number" id="s${i}" placeholder="점수">
-          <label>비중(%)</label>
-          <input type="number" id="sw${i}" placeholder="%">
-        </div>`;
+    // 계산기 로직
+    function generateInputs() {
+      const sCnt = +document.getElementById('sCount').value;
+      const tCnt = +document.getElementById('tCount').value;
+      let html = '<h2>수행평가</h2>';
+      for (let i = 0; i < sCnt; i++) {
+        html += `
+          <div class="entry">
+            <label>수행${i+1}</label>
+            <input type="number" id="s${i}" placeholder="점수">
+            <label>비중(%)</label>
+            <input type="number" id="sw${i}" placeholder="%">
+          </div>`;
       }
-      html+='<h2>지필평가</h2>';
-      for(let i=0;i<tCnt;i++){
-        let label=tCnt===1?'기말고사':(i===0?'중간고사':'기말고사');
-        html+=`<div class="entry">
-          <label>${label}</label>
-          <input type="number" id="t${i}" placeholder="점수">
-          <label>비중(%)</label>
-          <input type="number" id="tw${i}" placeholder="%">
-        </div>`;
+      html += '<h2>지필평가</h2>';
+      for (let i = 0; i < tCnt; i++) {
+        const label = tCnt===1?'기말고사':(i===0?'중간고사':'기말고사');
+        html += `
+          <div class="entry">
+            <label>${label}</label>
+            <input type="number" id="t${i}" placeholder="점수">
+            <label>비중(%)</label>
+            <input type="number" id="tw${i}" placeholder="%">
+          </div>`;
       }
-      inputs.innerHTML=html;
+      document.getElementById('inputs').innerHTML = html;
     }
-    function loadHistory(){
-      const raw=localStorage.getItem('gradeHistory');
-      return raw?JSON.parse(raw):[];
+    function loadHistory() {
+      const raw = localStorage.getItem('gradeHistory');
+      return raw ? JSON.parse(raw) : [];
     }
-    function saveHistory(e){
-      const h=loadHistory(); h.unshift(e);
-      localStorage.setItem('gradeHistory',JSON.stringify(h.slice(0,50)));
+    function saveHistory(entry) {
+      const h = loadHistory();
+      h.unshift(entry);
+      localStorage.setItem('gradeHistory', JSON.stringify(h.slice(0,50)));
     }
-    function deleteHistory(i){
-      const h=loadHistory(); h.splice(i,1);
-      localStorage.setItem('gradeHistory',JSON.stringify(h));
+    function deleteHistory(idx) {
+      const h = loadHistory();
+      h.splice(idx,1);
+      localStorage.setItem('gradeHistory', JSON.stringify(h));
       renderHistory();
     }
-    function renderHistory(){
-      const tbody=historyBody; tbody.innerHTML='';
+    function renderHistory() {
+      const tbody = document.getElementById('historyBody');
+      tbody.innerHTML = '';
       loadHistory().forEach((it,idx)=>{
-        const tr=document.createElement('tr');
-        tr.innerHTML=`<td>${it.time}</td>
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${it.time}</td>
           <td class="subject">${it.subject}</td>
           <td>${it.final}</td>
           <td><strong style="color:${{A:'#2ecc71',B:'#007aff',C:'#ffcc00',D:'#ff9500',E:'#ff3b30'}[it.grade]}">${it.grade}</strong></td>
-          <td>${it.nextMsg}</td><td>${it.dropMsg}</td>
-          <td><div class="delete-btn" onclick="deleteHistory(${idx})">삭제</div></td>`;
+          <td>${it.nextMsg}</td>
+          <td>${it.dropMsg}</td>
+          <td><div class="delete-btn" onclick="deleteHistory(${idx})">삭제</div></td>
+        `;
         tbody.appendChild(tr);
       });
     }
-    function calculate(){
-      const subject=subjectName.value||'-';
-      let sSum=0,wSum=0,mid=0,finalW=0,tSum=0;
-      for(let i=0;i<+sCount.value;i++){
+    function calculate() {
+      const subject = document.getElementById('subjectName').value || '-';
+      const sCnt = +document.getElementById('sCount').value;
+      const tCnt = +document.getElementById('tCount').value;
+      let sSum=0, wSum=0, mid=0, finalW=0, tSum=0;
+      for (let i=0; i<sCnt; i++){
         const sc=+document.getElementById(`s${i}`).value||0;
         const w=+document.getElementById(`sw${i}`).value||0;
         sSum+=sc*(w/100); wSum+=w;
       }
-      for(let i=0;i<+tCount.value;i++){
+      for (let i=0; i<tCnt; i++){
         const sc=+document.getElementById(`t${i}`).value||0;
         const w=+document.getElementById(`tw${i}`).value||0;
-        if(+tCount.value===1||i===+tCount.value-1) finalW=w/100;
+        if(tCnt===1||i===tCnt-1) finalW = w/100;
         else mid+=sc*(w/100);
         tSum+=sc*(w/100); wSum+=w;
       }
       if(wSum!==100){
-        result.textContent=`❗ 총 비중이 100%가 아닙니다 (현재 ${wSum}%).`;
+        document.getElementById('result').textContent = `❗ 총 비중이 100%가 아닙니다 (현재 ${wSum}%).`;
         return;
       }
-      const final=+(sSum+tSum).toFixed(2);
-      const grade= final>=90?'A': final>=80?'B': final>=70?'C': final>=60?'D':'E';
-      const nextTh={A:null,B:90,C:80,D:70,E:60}[grade];
-      const currTh={A:90,B:80,C:70,D:60,E:0}[grade];
-      let nextMsg,dropMsg;
+      const final = +(sSum + tSum).toFixed(2);
+      const grade = final>=90?'A':final>=80?'B':final>=70?'C':final>=60?'D':'E';
+      const nextTh = {A:null,B:90,C:80,D:70,E:60}[grade];
+      const currTh = {A:90,B:80,C:70,D:60,E:0}[grade];
+      let nextMsg, dropMsg;
       if(nextTh){
         const need=(nextTh-sSum-mid)/finalW;
         const nG={90:'A',80:'B',70:'C',60:'D'}[nextTh];
@@ -297,51 +281,27 @@
       } else nextMsg='최고 등급!';
       const drop=(currTh-0.01-sSum-mid)/finalW;
       if(drop<0) dropMsg='떨어질 등급 없음';
-      else {
+      else{
         const dG={90:'B',80:'C',70:'D',60:'E'}[currTh];
         dropMsg=`${drop.toFixed(2)}점↓ (이하 ${dG})`;
       }
-      result.innerHTML=`최종: <strong>${final}점</strong><br>${grade} 등급<br>${nextMsg}<br>${dropMsg}`;
-      saveHistory({ time:new Date().toLocaleString('ko-KR'), subject, final, grade, nextMsg, dropMsg });
+      document.getElementById('result').innerHTML =
+        `최종: <strong>${final}점</strong><br>${grade} 등급<br>${nextMsg}<br>${dropMsg}`;
+      saveHistory({
+        time:new Date().toLocaleString('ko-KR'),
+        subject, final, grade, nextMsg, dropMsg
+      });
       renderHistory();
     }
-    // 초기화
     window.onload = ()=>{
       generateInputs(); renderHistory();
-      calcBtn.onclick=calculate;
-      resetBtn.onclick=()=>{
+      document.getElementById('calcBtn').onclick = calculate;
+      document.getElementById('resetBtn').onclick = ()=>{
         if(confirm('계산 기록을 모두 삭제하시겠습니까?')){
           localStorage.removeItem('gradeHistory'); renderHistory();
         }
       };
     };
-
-    // 그래프 그리기
-    let chart;
-    function drawChart(){
-      const hist = loadHistory().slice().reverse();
-      const labels = hist.map(e=>e.time);
-      const data   = hist.map(e=>parseFloat(e.final));
-      if(chart) chart.destroy();
-      const ctx = document.getElementById('gradeChart').getContext('2d');
-      chart = new Chart(ctx, {
-        type:'line',
-        data:{ labels, datasets:[{
-          label:'최종 점수',
-          data, borderColor:'var(--primary)',
-          backgroundColor:'rgba(0,122,255,0.2)',
-          fill:true, tension:0.2, pointRadius:4
-        }]},
-        options:{
-          scales:{
-            x:{ ticks:{ color:'var(--fg)' }, grid:{ color:'rgba(0,0,0,0.05)' } },
-            y:{ suggestedMin:0, suggestedMax:100,
-                ticks:{ color:'var(--fg)' }, grid:{ color:'rgba(0,0,0,0.05)' } }
-          },
-          plugins:{ legend:{ labels:{ color:'var(--fg)' } } }
-        }
-      });
-    }
   </script>
 </body>
 </html>
