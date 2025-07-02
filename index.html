@@ -7,66 +7,60 @@
   <title>성적 계산기</title>
   <style>
     /* reset & box-sizing */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+    *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
     /* 테마 변수 */
     :root {
-      --bg: #f2f2f7; --fg: #1c1c1e; --box-bg: rgba(255,255,255,0.8);
-      --inp-bg: #fff; --inp-border: #c6c6c8; --primary: #007aff;
+      --bg:#f2f2f7; --fg:#1c1c1e; --box-bg:rgba(255,255,255,0.8);
+      --inp-bg:#fff; --inp-border:#c6c6c8; --primary:#007aff;
     }
     [data-theme="dark"] {
-      --bg: #000; --fg: #f2f2f7; --box-bg: rgba(28,28,30,0.8);
-      --inp-bg: #1c1c1e; --inp-border: #3a3a3c; --primary: #0a84ff;
+      --bg:#000; --fg:#f2f2f7; --box-bg:rgba(28,28,30,0.8);
+      --inp-bg:#1c1c1e; --inp-border:#3a3a3c; --primary:#0a84ff;
     }
-
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      background: var(--bg); color: var(--fg);
-      max-width: 500px; margin: 0 auto;
-      padding: env(safe-area-inset-top) 15px 30px env(safe-area-inset-left);
-      padding-bottom: env(safe-area-inset-bottom);
+      font-family:-apple-system, BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;
+      background:var(--bg); color:var(--fg);
+      max-width:500px; margin:0 auto;
+      padding:env(safe-area-inset-top) 15px 30px env(safe-area-inset-left);
+      padding-bottom:env(safe-area-inset-bottom);
     }
-
     /* 상단 바 */
     .top-bar {
-      display: flex; align-items: center; justify-content: space-between;
-      margin: 20px 0;
+      display:flex; align-items:center; justify-content:space-between;
+      margin:20px 0;
     }
     .top-bar h1 {
-      font-size: 28px; font-weight: 600; cursor: pointer;
-      margin-left: 10px; /* 제목을 오른쪽으로 한 칸 이동 */
+      font-size:28px; font-weight:600; cursor:pointer;
+      margin-left:10px; /* 오른쪽으로 한 칸 */
     }
     .top-controls button {
-      background: transparent; color: var(--primary);
-      border: 1px solid var(--primary); border-radius: 8px;
-      font-size: 14px; height: 30px; line-height: 30px;
-      padding: 0 10px; cursor: pointer;
+      background:transparent; color:var(--primary);
+      border:1px solid var(--primary); border-radius:8px;
+      font-size:14px; height:30px; line-height:30px;
+      padding:0 10px; cursor:pointer;
     }
     .top-controls button:active {
-      background: rgba(0,122,255,0.1);
+      background:rgba(0,122,255,0.1);
     }
-
-    /* 공통 박스 */
+    /* 박스 공통 */
     .box {
-      background: var(--box-bg); backdrop-filter: blur(20px);
-      border-radius: 16px; padding: 20px; margin-bottom: 20px;
-      border: 1px solid rgba(255,255,255,0.6);
+      background:var(--box-bg); backdrop-filter:blur(20px);
+      border-radius:16px; padding:20px; margin-bottom:20px;
+      border:1px solid rgba(255,255,255,0.6);
     }
-
     /* 입력 칸 */
-    .count-container { display: flex; gap: 12px; }
-    .count-container .half { flex: 1; }
+    .count-container { display:flex; gap:12px; }
+    .count-container .half { flex:1; }
     .count-container .half label {
-      display: block; font-size: 15px; color: #8e8e93; margin-bottom: 6px;
+      display:block; font-size:15px; color:#8e8e93; margin-bottom:6px;
     }
     .count-container .half input {
       width:100%; height:44px; padding:0 12px; font-size:16px;
       background:var(--inp-bg); border:1px solid var(--inp-border);
       border-radius:10px; color:var(--fg);
     }
-
     .entry {
-      display: grid; grid-template-columns:100px 1fr;
+      display:grid; grid-template-columns:100px 1fr;
       grid-template-rows:auto auto; column-gap:8px; row-gap:8px;
       align-items:center; margin-bottom:16px;
     }
@@ -76,7 +70,6 @@
       background:var(--inp-bg); border:1px solid var(--inp-border);
       border-radius:10px; color:var(--fg);
     }
-
     /* 버튼 */
     .btn {
       display:block; width:100%; height:44px;
@@ -85,14 +78,12 @@
       background:var(--primary); color:#fff; border:none;
       cursor:pointer;
     }
-    .btn:active { filter: brightness(0.9); }
-
+    .btn:active { filter:brightness(0.9); }
     #result {
       font-size:17px; text-align:center; line-height:1.5;
       margin-bottom:20px; word-break:keep-all;
     }
-
-    /* 히스토리 & 테이블 */
+    /* 테이블 */
     .history-header {
       display:flex; align-items:center; justify-content:space-between;
       margin-bottom:12px;
@@ -103,7 +94,6 @@
     .history-header .btn-outline {
       font-size:14px; height:30px; line-height:30px; padding:0 10px;
     }
-
     .table-container {
       background:var(--inp-bg); border-radius:12px;
       overflow-x:auto; box-shadow:0 2px 8px rgba(0,0,0,0.1);
@@ -111,8 +101,7 @@
     .record-table {
       width:100%; border-collapse:collapse;
     }
-    .record-table th,
-    .record-table td {
+    .record-table th, .record-table td {
       padding:12px 8px; text-align:center;
       font-size:14px; color:#3c3c4399; border:none;
     }
@@ -132,13 +121,12 @@
       color:#ff3b30; cursor:pointer; font-size:14px;
     }
     .info-btn {
-      background: var(--primary); color: #fff;
-      border: none; border-radius: 6px;
-      padding: 4px 8px; font-size: 13px;
-      cursor: pointer;
+      background:var(--primary); color:#fff;
+      border:none; border-radius:6px;
+      padding:4px 8px; font-size:13px;
+      cursor:pointer;
     }
-    .info-btn:active { filter: brightness(0.9); }
-
+    .info-btn:active { filter:brightness(0.9); }
     @media (max-width:400px) {
       .count-container { flex-direction:column; }
       .entry { grid-template-columns:100% !important; }
@@ -161,7 +149,6 @@
         <input type="text" id="subjectName" placeholder="예: 수학">
       </div>
     </div>
-
     <div id="countBox" class="box">
       <div class="count-container">
         <div class="half">
@@ -174,11 +161,9 @@
         </div>
       </div>
     </div>
-
     <div id="inputs" class="box"></div>
     <button id="calcBtn" class="btn">계산하기</button>
     <div id="result"></div>
-
     <div id="history" class="box">
       <div class="history-header">
         <span>계산 기록</span>
@@ -205,173 +190,150 @@
   </div>
 
   <script>
-    // 다크모드 토글
+    // 다크 모드 토글
     const themeToggle = document.getElementById('themeToggle');
     function applyTheme(t) {
       document.documentElement.setAttribute('data-theme', t);
       themeToggle.textContent = t==='light' ? '다크 모드' : '라이트 모드';
       localStorage.setItem('theme', t);
     }
-    const savedTheme = localStorage.getItem('theme') || 'light';
+    const savedTheme = localStorage.getItem('theme')||'light';
     applyTheme(savedTheme);
     themeToggle.onclick = ()=>
       applyTheme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light');
 
-    // 동적 입력 생성
-    function generateInputs() {
-      const sCnt = +document.getElementById('sCount').value;
-      const tCnt = +document.getElementById('tCount').value;
-      let html = '<h2>수행평가</h2>';
-      for (let i = 0; i < sCnt; i++) {
-        html += `
-          <div class="entry">
-            <label>수행${i+1}</label>
-            <input type="number" id="s${i}" placeholder="점수">
-            <label>비중(%)</label>
-            <input type="number" id="sw${i}" placeholder="%">
-          </div>`;
+    // 입력칸 생성
+    function generateInputs(){
+      const sCnt=+sCount.value, tCnt=+tCount.value;
+      let html='<h2>수행평가</h2>';
+      for(let i=0;i<sCnt;i++){
+        html+=`<div class="entry">
+          <label>수행${i+1}</label>
+          <input type="number" id="s${i}" placeholder="점수">
+          <label>비중(%)</label>
+          <input type="number" id="sw${i}" placeholder="%">
+        </div>`;
       }
-      html += '<h2>지필평가</h2>';
-      for (let i = 0; i < tCnt; i++) {
-        const label = tCnt===1 ? '기말고사' : (i===0 ? '중간고사' : '기말고사');
-        html += `
-          <div class="entry">
-            <label>${label}</label>
-            <input type="number" id="t${i}" placeholder="점수">
-            <label>비중(%)</label>
-            <input type="number" id="tw${i}" placeholder="%">
-          </div>`;
+      html+='<h2>지필평가</h2>';
+      for(let i=0;i<tCnt;i++){
+        const lbl=tCnt===1?'기말고사':(i===0?'중간고사':'기말고사');
+        html+=`<div class="entry">
+          <label>${lbl}</label>
+          <input type="number" id="t${i}" placeholder="점수">
+          <label>비중(%)</label>
+          <input type="number" id="tw${i}" placeholder="%">
+        </div>`;
       }
-      document.getElementById('inputs').innerHTML = html;
+      inputs.innerHTML=html;
     }
 
-    // 히스토리 로드/저장/삭제
-    function loadHistory() {
-      return JSON.parse(localStorage.getItem('gradeHistory')||'[]');
+    // 로컬스토리지
+    function loadHistory(){ return JSON.parse(localStorage.getItem('gradeHistory')||'[]'); }
+    function saveHistory(e){
+      const h=loadHistory(); h.unshift(e);
+      localStorage.setItem('gradeHistory',JSON.stringify(h.slice(0,50)));
     }
-    function saveHistory(entry) {
-      const h = loadHistory();
-      h.unshift(entry);
-      localStorage.setItem('gradeHistory', JSON.stringify(h.slice(0,50)));
-    }
-    function deleteHistory(idx) {
-      const h = loadHistory();
-      h.splice(idx,1);
-      localStorage.setItem('gradeHistory', JSON.stringify(h));
+    function deleteHistory(i){
+      const h=loadHistory(); h.splice(i,1);
+      localStorage.setItem('gradeHistory',JSON.stringify(h));
       renderHistory();
     }
 
-    // 히스토리 렌더링
-    function renderHistory() {
-      const tbody = document.getElementById('historyBody');
-      tbody.innerHTML = '';
-      loadHistory().forEach((it, idx) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
+    // 기록 렌더
+    function renderHistory(){
+      const tbody=historyBody; tbody.innerHTML='';
+      loadHistory().forEach((it,i)=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`
           <td>${it.time}</td>
           <td class="subject">${it.subject}</td>
           <td>${it.final}</td>
-          <td><strong style="color:${{A:'#2ecc71',B:'#007aff',C:'#ffcc00',D:'#ff9500',E:'#ff3b30'}[it.grade]}">${it.grade}</strong></td>
+          <td><strong style="color:${
+            {A:'#2ecc71',B:'#007aff',C:'#ffcc00',D:'#ff9500',E:'#ff3b30'}[it.grade]
+          }">${it.grade}</strong></td>
           <td>${it.nextMsg}</td>
           <td>${it.dropMsg}</td>
-          <td><div class="delete-btn" onclick="deleteHistory(${idx})">삭제</div></td>
-          <td><button class="info-btn" data-idx="${idx}">정보</button></td>
+          <td><div class="delete-btn" onclick="deleteHistory(${i})">삭제</div></td>
+          <td><button class="info-btn" data-idx="${i}">정보</button></td>
         `;
         tbody.appendChild(tr);
       });
-      // 정보 버튼 이벤트
       document.querySelectorAll('.info-btn').forEach(btn=>{
         btn.onclick = ()=> showInfo(+btn.dataset.idx);
       });
     }
 
-    // 정보 표시
-    function showInfo(idx) {
-      const entry = loadHistory()[idx];
-      if (!entry) return;
-      let msg = `과목: ${entry.subject}\n\n`;
-      msg += '수행평가:\n';
-      entry.performances.forEach((p,i)=>{
-        msg += `  ${i+1}. ${p.score}점, 비중 ${p.weight}%\n`;
+    // 정보 팝업
+    function showInfo(idx){
+      const e = loadHistory()[idx];
+      if(!e) return;
+      let msg=`과목: ${e.subject}\n\n수행평가:\n`;
+      e.performances.forEach((p,j)=>{
+        msg+=` ${j+1}. ${p.score}점, 비중 ${p.weight}%\n`;
       });
-      msg += '\n지필평가:\n';
-      entry.exams.forEach(e=>{
-        msg += `  ${e.label}: ${e.score}점, 비중 ${e.weight}%\n`;
+      msg+='\n지필평가:\n';
+      e.exams.forEach(ex=>{
+        msg+=` ${ex.label}: ${ex.score}점, 비중 ${ex.weight}%\n`;
       });
       alert(msg);
     }
 
     // 계산
-    function calculate() {
-      const subject = document.getElementById('subjectName').value || '-';
-      const sCnt = +document.getElementById('sCount').value;
-      const tCnt = +document.getElementById('tCount').value;
-      let sSum=0, wSum=0, mid=0, finalW=0, tSum=0;
-      const performances = [], exams = [];
-
-      // 수행평가
-      for (let i=0; i<sCnt; i++){
-        const sc = +document.getElementById(`s${i}`).value||0;
-        const w  = +document.getElementById(`sw${i}`).value||0;
-        performances.push({ score: sc, weight: w });
-        sSum += sc*(w/100);
-        wSum += w;
+    function calculate(){
+      const subject = subjectName.value||'-';
+      let sSum=0,wSum=0,mid=0,finalW=0,tSum=0;
+      const performances = [], exams=[];
+      for(let i=0;i<+sCount.value;i++){
+        const sc=+document.getElementById(`s${i}`).value||0;
+        const w =+document.getElementById(`sw${i}`).value||0;
+        performances.push({score:sc, weight:w});
+        sSum+=sc*(w/100); wSum+=w;
       }
-      // 지필평가
-      for (let i=0; i<tCnt; i++){
-        const sc    = +document.getElementById(`t${i}`).value||0;
-        const w     = +document.getElementById(`tw${i}`).value||0;
-        const label = (tCnt===1) ? '기말고사' : (i===0 ? '중간고사' : '기말고사');
-        exams.push({ label, score: sc, weight: w });
-        if (tCnt===1 || i===tCnt-1) finalW = w/100;
-        else mid += sc*(w/100);
-        tSum += sc*(w/100);
-        wSum += w;
+      for(let i=0;i<+tCount.value;i++){
+        const sc=+document.getElementById(`t${i}`).value||0;
+        const w =+document.getElementById(`tw${i}`).value||0;
+        const lbl=(+tCount.value===1?'기말고사':(i===0?'중간고사':'기말고사'));
+        exams.push({label:lbl, score:sc, weight:w});
+        if(+tCount.value===1||i===+tCount.value-1) finalW=w/100;
+        else mid+=sc*(w/100);
+        tSum+=sc*(w/100); wSum+=w;
       }
-
-      if (wSum !== 100) {
-        document.getElementById('result').textContent =
-          `❗ 총 비중이 100%가 아닙니다 (현재 ${wSum}%).`;
+      if(wSum!==100){
+        result.textContent=`❗ 총 비중이 100%가 아닙니다 (현재 ${wSum}%).`;
         return;
       }
-
-      const final = +(sSum + tSum).toFixed(2);
-      const grade = final>=90?'A': final>=80?'B': final>=70?'C': final>=60?'D':'E';
-      const nextTh = {A:null,B:90,C:80,D:70,E:60}[grade];
-      const currTh = {A:90,B:80,C:70,D:60,E:0}[grade];
-
-      let nextMsg, dropMsg;
-      if (nextTh) {
-        const need = (nextTh - sSum - mid)/finalW;
-        const nG = {90:'A',80:'B',70:'C',60:'D'}[nextTh];
-        nextMsg = need>100 ? `${nG} 등급 불가` : `${nG} 위해 ${need.toFixed(2)}점↑`;
-      } else nextMsg = '최고 등급!';
-
-      const drop = (currTh - 0.01 - sSum - mid)/finalW;
-      if (drop < 0) dropMsg = '떨어질 등급 없음';
-      else {
-        const dG = {90:'B',80:'C',70:'D',60:'E'}[currTh];
-        dropMsg = `${drop.toFixed(2)}점↓ (이하 ${dG})`;
+      const final=+(sSum+tSum).toFixed(2);
+      const grade= final>=90?'A': final>=80?'B': final>=70?'C': final>=60?'D':'E';
+      const nextTh={A:null,B:90,C:80,D:70,E:60}[grade];
+      const currTh={A:90,B:80,C:70,D:60,E:0}[grade];
+      let nextMsg,dropMsg;
+      if(nextTh){
+        const need=(nextTh-sSum-mid)/finalW;
+        const nG={90:'A',80:'B',70:'C',60:'D'}[nextTh];
+        nextMsg=need>100?`${nG} 등급 불가`:`${nG} 위해 ${need.toFixed(2)}점↑`;
+      } else nextMsg='최고 등급!';
+      const drop=(currTh-0.01-sSum-mid)/finalW;
+      if(drop<0) dropMsg='떨어질 등급 없음';
+      else{
+        const dG={90:'B',80:'C',70:'D',60:'E'}[currTh];
+        dropMsg=`${drop.toFixed(2)}점↓ (이하 ${dG})`;
       }
-
-      document.getElementById('result').innerHTML =
+      result.innerHTML=
         `최종: <strong>${final}점</strong><br>${grade} 등급<br>${nextMsg}<br>${dropMsg}`;
-
       saveHistory({
-        time: new Date().toLocaleString('ko-KR'),
+        time:new Date().toLocaleString('ko-KR'),
         subject, final, grade, nextMsg, dropMsg,
         performances, exams
       });
       renderHistory();
     }
 
-    // 초기 설정
-    window.onload = ()=>{
-      generateInputs();
-      renderHistory();
-      document.getElementById('calcBtn').onclick = calculate;
-      document.getElementById('resetBtn').onclick = ()=>{
-        if (confirm('계산 기록을 모두 삭제하시겠습니까?')) {
+    // 초기화
+    window.onload=()=>{
+      generateInputs(); renderHistory();
+      calcBtn.onclick=calculate;
+      resetBtn.onclick=()=>{
+        if(confirm('계산 기록을 모두 삭제하시겠습니까?')){
           localStorage.removeItem('gradeHistory');
           renderHistory();
         }
