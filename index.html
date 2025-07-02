@@ -10,119 +10,187 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     /* 테마 변수 */
     :root {
-      --bg: #f2f2f7; --fg: #1c1c1e; --box-bg: rgba(255,255,255,0.8);
-      --inp-bg: #fff; --inp-border: #c6c6c8; --primary: #007aff;
+      --bg: #f2f2f7;
+      --fg: #1c1c1e;
+      --box-bg: rgba(255,255,255,0.8);
+      --inp-bg: #fff;
+      --inp-border: #c6c6c8;
+      --primary: #007aff;
     }
     [data-theme="dark"] {
-      --bg: #000; --fg: #f2f2f7; --box-bg: rgba(28,28,30,0.8);
-      --inp-bg: #1c1c1e; --inp-border: #3a3a3c; --primary: #0a84ff;
+      --bg: #000;
+      --fg: #f2f2f7;
+      --box-bg: rgba(28,28,30,0.8);
+      --inp-bg: #1c1c1e;
+      --inp-border: #3a3a3c;
+      --primary: #0a84ff;
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      background: var(--bg); color: var(--fg);
-      max-width: 500px; margin: 0 auto;
+      background: var(--bg);
+      color: var(--fg);
+      max-width: 500px;
+      margin: 0 auto;
       padding: env(safe-area-inset-top) 15px 30px env(safe-area-inset-left);
       padding-bottom: env(safe-area-inset-bottom);
     }
     /* 상단 바 */
     .top-bar {
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin: 20px 0;
     }
     .top-bar h1 {
-      font-size: 28px; font-weight: 600; cursor: pointer;
+      font-size: 28px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: 10px; /* 제목을 오른쪽으로 한 칸 이동 */
     }
     .top-controls button {
-      background: transparent; color: var(--primary);
-      border: 1px solid var(--primary); border-radius: 8px;
-      font-size: 14px; height: 30px; line-height: 30px;
-      padding: 0 10px; cursor: pointer;
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      border-radius: 8px;
+      font-size: 14px;
+      height: 30px;
+      line-height: 30px;
+      padding: 0 10px;
+      cursor: pointer;
     }
     .top-controls button:active {
       background: rgba(0,122,255,0.1);
     }
     /* 공통 박스 */
     .box {
-      background: var(--box-bg); backdrop-filter: blur(20px);
-      border-radius: 16px; padding: 20px; margin-bottom: 20px;
+      background: var(--box-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
       border: 1px solid rgba(255,255,255,0.6);
     }
     /* 입력 칸 */
     .count-container { display: flex; gap: 12px; }
     .count-container .half { flex: 1; }
     .count-container .half label {
-      display: block; font-size: 15px; color: #8e8e93; margin-bottom: 6px;
+      display: block;
+      font-size: 15px;
+      color: #8e8e93;
+      margin-bottom: 6px;
     }
     .count-container .half input {
-      width:100%;height:44px;padding:0 12px;font-size:16px;
-      background:var(--inp-bg);border:1px solid var(--inp-border);
-      border-radius:10px;color:var(--fg);
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      font-size: 16px;
+      background: var(--inp-bg);
+      border: 1px solid var(--inp-border);
+      border-radius: 10px;
+      color: var(--fg);
     }
     .entry {
-      display: grid; grid-template-columns:100px 1fr;
-      grid-template-rows:auto auto; column-gap:8px; row-gap:8px;
-      align-items:center; margin-bottom:16px;
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      grid-template-rows: auto auto;
+      column-gap: 8px;
+      row-gap: 8px;
+      align-items: center;
+      margin-bottom: 16px;
     }
-    .entry label { font-size:15px; color:#8e8e93; }
+    .entry label { font-size: 15px; color: #8e8e93; }
     .entry input {
-      width:100%;height:44px;padding:0 12px;font-size:16px;
-      background:var(--inp-bg);border:1px solid var(--inp-border);
-      border-radius:10px;color:var(--fg);
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      font-size: 16px;
+      background: var(--inp-bg);
+      border: 1px solid var(--inp-border);
+      border-radius: 10px;
+      color: var(--fg);
     }
     /* 버튼 */
     .btn {
-      display:block;width:100%;height:44px;
-      font-size:17px;font-weight:600;text-align:center;
-      border-radius:12px;margin:12px 0;line-height:44px;
-      background:var(--primary);color:#fff;border:none;
-      cursor:pointer;
+      display: block;
+      width: 100%;
+      height: 44px;
+      font-size: 17px;
+      font-weight: 600;
+      text-align: center;
+      border-radius: 12px;
+      margin: 12px 0;
+      line-height: 44px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      cursor: pointer;
     }
     .btn:active { filter: brightness(0.9); }
     #result {
-      font-size:17px;text-align:center;line-height:1.5;
-      margin-bottom:20px;word-break:keep-all;
+      font-size: 17px;
+      text-align: center;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      word-break: keep-all;
     }
     /* 히스토리 & 테이블 */
     .history-header {
-      display:flex;align-items:center;justify-content:space-between;
-      margin-bottom:12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
     }
     .history-header span {
-      font-size:17px;font-weight:600;color:var(--fg);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--fg);
     }
     .history-header .btn-outline {
-      font-size:14px;height:30px;line-height:30px;padding:0 10px;
+      font-size: 14px;
+      height: 30px;
+      line-height: 30px;
+      padding: 0 10px;
     }
     .table-container {
-      background:var(--inp-bg);border-radius:12px;
-      overflow-x:auto;box-shadow:0 2px 8px rgba(0,0,0,0.1);
+      background: var(--inp-bg);
+      border-radius: 12px;
+      overflow-x: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .record-table {
-      width:100%;border-collapse:collapse;
+      width: 100%;
+      border-collapse: collapse;
     }
     .record-table th,
     .record-table td {
-      padding:12px 8px;text-align:center;
-      font-size:14px;color:#3c3c4399;border:none;
+      padding: 12px 8px;
+      text-align: center;
+      font-size: 14px;
+      color: #3c3c4399;
+      border: none;
     }
     .record-table thead th {
-      color:var(--fg);font-weight:600;
+      color: var(--fg);
+      font-weight: 600;
     }
     .record-table tbody tr:nth-child(even) td {
-      background:#f2f2f7;
+      background: #f2f2f7;
     }
     .record-table tbody tr:hover td {
-      background:#e5e5ea;
+      background: #e5e5ea;
     }
     .record-table td.subject {
-      text-align:left;padding-left:16px;
+      text-align: left;
+      padding-left: 16px;
     }
     .delete-btn {
-      color:#ff3b30;cursor:pointer;font-size:14px;
+      color: #ff3b30;
+      cursor: pointer;
+      font-size: 14px;
     }
-    @media (max-width:400px) {
-      .count-container { flex-direction:column; }
-      .entry { grid-template-columns:100% !important; }
+    @media (max-width: 400px) {
+      .count-container { flex-direction: column; }
+      .entry { grid-template-columns: 100% !important; }
     }
   </style>
 </head>
@@ -166,9 +234,13 @@
         <table class="record-table">
           <thead>
             <tr>
-              <th>일시</th><th>과목<br>명</th><th>최종<br>점수</th>
-              <th>등급</th><th>다음<br>등급<br>필요<br>점수</th>
-              <th>떨어질<br>기준</th><th>삭<br>제</th>
+              <th>일시</th>
+              <th>과목<br>명</th>
+              <th>최종<br>점수</th>
+              <th>등급</th>
+              <th>다음<br>등급<br>필요<br>점수</th>
+              <th>떨어질<br>기준</th>
+              <th>삭<br>제</th>
             </tr>
           </thead>
           <tbody id="historyBody"></tbody>
@@ -182,12 +254,12 @@
     const themeToggle = document.getElementById('themeToggle');
     function applyTheme(t) {
       document.documentElement.setAttribute('data-theme', t);
-      themeToggle.textContent = t==='light' ? '다크 모드' : '라이트 모드';
+      themeToggle.textContent = t === 'light' ? '다크 모드' : '라이트 모드';
       localStorage.setItem('theme', t);
     }
     const saved = localStorage.getItem('theme') || 'light';
     applyTheme(saved);
-    themeToggle.onclick = () => applyTheme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light');
+    themeToggle.onclick = () => applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
 
     // 계산기 로직
     function generateInputs() {
@@ -205,7 +277,7 @@
       }
       html += '<h2>지필평가</h2>';
       for (let i = 0; i < tCnt; i++) {
-        const label = tCnt===1?'기말고사':(i===0?'중간고사':'기말고사');
+        const label = tCnt === 1 ? '기말고사' : (i === 0 ? '중간고사' : '기말고사');
         html += `
           <div class="entry">
             <label>${label}</label>
@@ -234,7 +306,7 @@
     function renderHistory() {
       const tbody = document.getElementById('historyBody');
       tbody.innerHTML = '';
-      loadHistory().forEach((it,idx)=>{
+      loadHistory().forEach((it, idx) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${it.time}</td>
@@ -254,18 +326,18 @@
       const tCnt = +document.getElementById('tCount').value;
       let sSum=0, wSum=0, mid=0, finalW=0, tSum=0;
       for (let i=0; i<sCnt; i++){
-        const sc=+document.getElementById(`s${i}`).value||0;
-        const w=+document.getElementById(`sw${i}`).value||0;
-        sSum+=sc*(w/100); wSum+=w;
+        const sc = +document.getElementById(`s${i}`).value||0;
+        const w  = +document.getElementById(`sw${i}`).value||0;
+        sSum += sc*(w/100); wSum += w;
       }
       for (let i=0; i<tCnt; i++){
-        const sc=+document.getElementById(`t${i}`).value||0;
-        const w=+document.getElementById(`tw${i}`).value||0;
-        if(tCnt===1||i===tCnt-1) finalW = w/100;
-        else mid+=sc*(w/100);
-        tSum+=sc*(w/100); wSum+=w;
+        const sc = +document.getElementById(`t${i}`).value||0;
+        const w  = +document.getElementById(`tw${i}`).value||0;
+        if (tCnt===1 || i===tCnt-1) finalW = w/100;
+        else mid += sc*(w/100);
+        tSum += sc*(w/100); wSum += w;
       }
-      if(wSum!==100){
+      if (wSum !== 100) {
         document.getElementById('result').textContent = `❗ 총 비중이 100%가 아닙니다 (현재 ${wSum}%).`;
         return;
       }
@@ -274,31 +346,33 @@
       const nextTh = {A:null,B:90,C:80,D:70,E:60}[grade];
       const currTh = {A:90,B:80,C:70,D:60,E:0}[grade];
       let nextMsg, dropMsg;
-      if(nextTh){
-        const need=(nextTh-sSum-mid)/finalW;
-        const nG={90:'A',80:'B',70:'C',60:'D'}[nextTh];
-        nextMsg=need>100?`${nG} 등급 불가`:`${nG} 위해 ${need.toFixed(2)}점↑`;
-      } else nextMsg='최고 등급!';
-      const drop=(currTh-0.01-sSum-mid)/finalW;
-      if(drop<0) dropMsg='떨어질 등급 없음';
-      else{
-        const dG={90:'B',80:'C',70:'D',60:'E'}[currTh];
-        dropMsg=`${drop.toFixed(2)}점↓ (이하 ${dG})`;
+      if (nextTh) {
+        const need = (nextTh - sSum - mid)/finalW;
+        const nG   = {90:'A',80:'B',70:'C',60:'D'}[nextTh];
+        nextMsg    = need>100?`${nG} 등급 불가`:`${nG} 위해 ${need.toFixed(2)}점↑`;
+      } else nextMsg = '최고 등급!';
+      const drop = (currTh - 0.01 - sSum - mid)/finalW;
+      if (drop < 0) dropMsg = '떨어질 등급 없음';
+      else {
+        const dG = {90:'B',80:'C',70:'D',60:'E'}[currTh];
+        dropMsg  = `${drop.toFixed(2)}점↓ (이하 ${dG})`;
       }
       document.getElementById('result').innerHTML =
         `최종: <strong>${final}점</strong><br>${grade} 등급<br>${nextMsg}<br>${dropMsg}`;
       saveHistory({
-        time:new Date().toLocaleString('ko-KR'),
+        time: new Date().toLocaleString('ko-KR'),
         subject, final, grade, nextMsg, dropMsg
       });
       renderHistory();
     }
-    window.onload = ()=>{
-      generateInputs(); renderHistory();
+    window.onload = () => {
+      generateInputs();
+      renderHistory();
       document.getElementById('calcBtn').onclick = calculate;
-      document.getElementById('resetBtn').onclick = ()=>{
-        if(confirm('계산 기록을 모두 삭제하시겠습니까?')){
-          localStorage.removeItem('gradeHistory'); renderHistory();
+      document.getElementById('resetBtn').onclick = () => {
+        if (confirm('계산 기록을 모두 삭제하시겠습니까?')) {
+          localStorage.removeItem('gradeHistory');
+          renderHistory();
         }
       };
     };
