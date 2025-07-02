@@ -12,17 +12,17 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
       background: #f2f2f7;
       color: #000;
-      padding: env(safe-area-inset-top) 15px 30px env(safe-area-inset-left);
-      padding-bottom: env(safe-area-inset-bottom);
       max-width: 500px;
       margin: 0 auto;
+      padding: env(safe-area-inset-top) 15px 30px env(safe-area-inset-left);
+      padding-bottom: env(safe-area-inset-bottom);
     }
 
     h1 {
       font-size: 28px;
       font-weight: 600;
       text-align: center;
-      margin-bottom: 20px;
+      margin: 20px 0;
       cursor: pointer;
     }
     h2 {
@@ -38,10 +38,9 @@
       padding: 20px;
       margin-bottom: 20px;
       border: 1px solid rgba(255,255,255,0.6);
-      overflow-x: hidden;
     }
 
-    /* count & weight inputs side by side */
+    /* 수행/지필 개수 입력칸: 50%씩 */
     .count-container {
       display: flex;
       gap: 12px;
@@ -55,12 +54,8 @@
       color: #3c3c4399;
       margin-bottom: 6px;
     }
-    .count-container .half .inline-inputs {
-      display: flex;
-      gap: 8px;
-    }
-    .count-container .half .inline-inputs input {
-      flex: 1;
+    .count-container .half input {
+      width: 100%;
       height: 44px;
       padding: 0 12px;
       font-size: 16px;
@@ -69,7 +64,7 @@
       border-radius: 10px;
     }
 
-    /* dynamic entries */
+    /* 동적 입력 행 */
     .entry {
       display: flex;
       align-items: center;
@@ -96,7 +91,7 @@
       margin-right: 0;
     }
 
-    /* buttons */
+    /* 버튼 */
     .btn {
       display: block;
       width: 100%;
@@ -105,17 +100,15 @@
       font-weight: 600;
       text-align: center;
       border-radius: 12px;
-      margin-bottom: 12px;
+      margin: 12px 0;
       line-height: 44px;
-      cursor: pointer;
-      user-select: none;
-    }
-    .btn-primary {
       background: #007aff;
       color: #fff;
       border: none;
+      cursor: pointer;
+      user-select: none;
     }
-    .btn-primary:active {
+    .btn:active {
       background: #0060dd;
     }
     .btn-outline {
@@ -128,6 +121,8 @@
       font-size: 15px;
       padding: 0 12px;
       margin: 0;
+      border-radius: 10px;
+      cursor: pointer;
     }
     .btn-outline:active {
       background: rgba(0,122,255,0.1);
@@ -142,7 +137,7 @@
       word-break: keep-all;
     }
 
-    /* history table */
+    /* 기록 테이블 */
     .table-container {
       margin-top: 10px;
       background: #fff;
@@ -191,7 +186,6 @@
 
     @media (max-width: 400px) {
       .count-container { flex-direction: column; }
-      .count-container .half .inline-inputs { flex-direction: column; }
       .entry { flex-direction: column; }
       .entry input { width: 100%; margin-right: 0; }
       .btn, .btn-outline { height: 50px; font-size: 18px; }
@@ -202,6 +196,7 @@
 
   <h1 onclick="location.reload()">성적 계산기</h1>
 
+  <!-- 과목명 -->
   <div class="box">
     <div class="entry">
       <label for="subjectName">과목명</label>
@@ -209,33 +204,32 @@
     </div>
   </div>
 
+  <!-- 수행/지필 개수 -->
   <div id="countBox" class="box">
     <div class="count-container">
       <div class="half">
         <label for="sCount">수행평가 개수</label>
-        <div class="inline-inputs">
-          <input type="number" id="sCount" value="2" min="1" placeholder="개수">
-          <input type="number" id="sWeight" min="0" max="100" placeholder="비중(%)">
-        </div>
+        <input type="number" id="sCount" value="2" min="1" onchange="generateInputs()">
       </div>
       <div class="half">
         <label for="tCount">지필평가 개수</label>
-        <div class="inline-inputs">
-          <input type="number" id="tCount" value="2" min="1" max="2" placeholder="개수">
-          <input type="number" id="tWeight" min="0" max="100" placeholder="비중(%)">
-        </div>
+        <input type="number" id="tCount" value="2" min="1" max="2" onchange="generateInputs()">
       </div>
     </div>
   </div>
 
+  <!-- 동적 입력 -->
   <div id="inputs" class="box"></div>
 
+  <!-- 계산 버튼 -->
   <div>
-    <div id="calcBtn" class="btn btn-primary">계산하기</div>
+    <div id="calcBtn" class="btn">계산하기</div>
   </div>
 
+  <!-- 결과 -->
   <div id="result"></div>
 
+  <!-- 기록 영역 -->
   <div id="history" class="box">
     <div class="history-header">
       <span>계산 기록</span>
@@ -275,7 +269,7 @@
       const sCnt = +document.getElementById('sCount').value;
       const tCnt = +document.getElementById('tCount').value;
       let html = '<h2>수행평가</h2>';
-      for (let i=0; i<sCnt; i++) {
+      for (let i = 0; i < sCnt; i++) {
         html += `
           <div class="entry">
             <label>수행${i+1}</label>
@@ -285,8 +279,10 @@
           </div>`;
       }
       html += '<h2>지필평가</h2>';
-      for (let i=0; i<tCnt; i++) {
-        const label = tCnt===1 ? '기말고사' : (i===0 ? '중간고사' : '기말고사');
+      for (let i = 0; i < tCnt; i++) {
+        const label = tCnt === 1
+          ? '기말고사'
+          : (i === 0 ? '중간고사' : '기말고사');
         html += `
           <div class="entry">
             <label>${label}</label>
@@ -379,8 +375,6 @@
     window.onload = function() {
       generateInputs();
       renderHistory();
-      document.getElementById('sCount').addEventListener('change', generateInputs);
-      document.getElementById('tCount').addEventListener('change', generateInputs);
       document.getElementById('calcBtn').addEventListener('click', calculate);
       document.getElementById('resetBtn').addEventListener('click', () => {
         if (confirm('계산 기록을 모두 삭제하시겠습니까?')) {
