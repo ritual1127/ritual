@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" data-theme="light">
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
   <!-- 확대/축소 방지 -->
@@ -8,6 +8,7 @@
   <style>
     /* reset & box-sizing */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     /* 테마 변수 */
     :root {
       --bg: #f2f2f7;
@@ -228,7 +229,7 @@
       background: rgba(255,255,255,0.1);
     }
 
-    /* ─── 모달 스타일 ─── */
+    /* 모달 스타일 */
     .modal {
       display: none;
       position: fixed;
@@ -301,7 +302,7 @@
   <div class="top-bar">
     <h1 onclick="location.reload()">성적 계산기</h1>
     <div class="top-controls">
-      <button id="themeToggle">다크 모드</button>
+      <button id="themeToggle">테마 변경</button>
     </div>
   </div>
 
@@ -359,17 +360,34 @@
   </div>
 
   <script>
-    // 다크 모드 토글
-    const themeToggle = document.getElementById('themeToggle');
-    function applyTheme(t) {
-      document.documentElement.setAttribute('data-theme', t);
-      themeToggle.textContent = t === 'light' ? '다크 모드' : '라이트 모드';
-      localStorage.setItem('theme', t);
+    // 시스템 다크/라이트 감지
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      themeToggle.textContent = theme === 'dark' ? '라이트 모드' : '다크 모드';
     }
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    applyTheme(savedTheme);
-    themeToggle.onclick = () =>
-      applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    // 초기 테마 설정: 로컬 스토리지에 저장된 값이 있으면 그대로, 없으면 시스템 설정
+    const savedTheme = localStorage.getItem('theme');
+    const initTheme = (savedTheme === 'light' || savedTheme === 'dark')
+      ? savedTheme
+      : (mediaQuery.matches ? 'dark' : 'light');
+    applyTheme(initTheme);
+
+    // 시스템 설정 변경 시 자동 업데이트 (단, 사용자가 수동 토글한 적 없으면)
+    mediaQuery.addEventListener('change', e => {
+      if (!localStorage.getItem('theme')) {
+        applyTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+
+    // 토글 버튼
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.onclick = () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', next);
+      applyTheme(next);
+    };
 
     // 입력칸 생성
     function generateInputs() {
@@ -520,7 +538,11 @@
       document.getElementById('result').innerHTML =
         `최종: <strong>${final}점</strong><br>${grade} 등급<br>${nextMsg}<br>${dropMsg}`;
 
-      saveHistory({ time: new Date().toLocaleString('ko-KR'), subject, final, grade, nextMsg, dropMsg, performances, exams });
+      saveHistory({
+        time: new Date().toLocaleString('ko-KR'),
+        subject, final, grade, nextMsg, dropMsg,
+        performances, exams
+      });
       renderHistory();
     }
 
