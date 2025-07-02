@@ -26,7 +26,6 @@
       margin: 20px 0;
       cursor: pointer;
     }
-
     h2 {
       font-size: 17px;
       font-weight: 600;
@@ -34,15 +33,15 @@
     }
 
     .box {
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(20px);
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(30px);
       border-radius: 16px;
       padding: 20px;
       margin-bottom: 20px;
       border: 1px solid rgba(255,255,255,0.6);
     }
 
-    /* 수행/지필 개수 칸: 반반 사이즈 */
+    /* 수행/지필 개수 입력칸: 50%씩 */
     .count-container {
       display: flex;
       gap: 12px;
@@ -53,57 +52,54 @@
     .count-container .half label {
       display: block;
       font-size: 15px;
-      color: #8e8e93;
+      color: #3c3c4399;
       margin-bottom: 6px;
     }
     .count-container .half input {
       width: 100%;
-      height: 42px;
+      height: 44px;
       padding: 0 12px;
       font-size: 16px;
       background: #fff;
-      border: 1px solid #d1d1d6;
+      border: 0.5px solid #c6c6c8;
       border-radius: 10px;
     }
 
-    /* 동적 입력 행: label + 두 input */
+    /* 동적 입력 행: label/input 두 줄 그리드 */
     .entry {
-      display: flex;
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      grid-template-rows: auto auto;
+      column-gap: 8px;
+      row-gap: 8px;
       align-items: center;
       margin-bottom: 16px;
-      flex-wrap: wrap;
     }
     .entry label {
-      flex: 0 0 100px;
       font-size: 15px;
-      color: #8e8e93;
-      margin-right: 8px;
+      color: #3c3c4399;
     }
     .entry input {
-      flex: 0 0 calc((100% - 100px - 8px)/2);
-      height: 42px;
+      width: 100%;
+      height: 44px;
       padding: 0 12px;
       font-size: 16px;
       background: #fff;
-      border: 1px solid #d1d1d6;
+      border: 0.5px solid #c6c6c8;
       border-radius: 10px;
-      margin-right: 8px;
-    }
-    .entry input:last-of-type {
-      margin-right: 0;
     }
 
-    /* 주요 버튼 */
+    /* 버튼 */
     .btn {
       display: block;
       width: 100%;
-      height: 42px;
+      height: 44px;
       font-size: 17px;
       font-weight: 600;
       text-align: center;
       border-radius: 12px;
-      margin: 16px 0;
-      line-height: 42px;
+      margin: 12px 0;
+      line-height: 44px;
       background: #007aff;
       color: #fff;
       border: none;
@@ -111,21 +107,20 @@
       user-select: none;
     }
     .btn:active {
-      background: #005ecb;
+      background: #0060dd;
     }
-
-    /* 리셋 버튼 (작게, 우측) */
     .btn-outline {
       display: inline-block;
       background: transparent;
       color: #007aff;
       border: 1px solid #007aff;
-      height: 30px;
-      line-height: 30px;
-      font-size: 14px;
-      padding: 0 10px;
-      border-radius: 8px;
+      height: 36px;
+      line-height: 36px;
+      font-size: 15px;
+      padding: 0 12px;
+      border-radius: 10px;
       cursor: pointer;
+      float: right;
     }
     .btn-outline:active {
       background: rgba(0,122,255,0.1);
@@ -140,12 +135,31 @@
       word-break: keep-all;
     }
 
-    /* 기록 테이블 개선 */
+    /* — 아래만 교체: history 헤더 & 테이블 — */
+
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .history-header span {
+      font-size: 17px;
+      font-weight: 600;
+      color: #1c1c1e;
+    }
+    .history-header .btn-outline {
+      font-size: 14px;
+      height: 30px;
+      line-height: 30px;
+      padding: 0 10px;
+    }
+
     .table-container {
-      margin-top: 10px;
-      background: transparent;
+      background: #fff;
       border-radius: 12px;
-      overflow: hidden;
+      overflow-x: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .record-table {
       width: 100%;
@@ -153,7 +167,7 @@
     }
     .record-table th,
     .record-table td {
-      padding: 12px;
+      padding: 12px 8px;
       text-align: center;
       font-size: 14px;
       color: #3c3c4399;
@@ -162,9 +176,6 @@
     .record-table thead th {
       color: #1c1c1e;
       font-weight: 600;
-    }
-    .record-table tbody tr:nth-child(odd) td {
-      background: #ffffff;
     }
     .record-table tbody tr:nth-child(even) td {
       background: #f2f2f7;
@@ -176,24 +187,17 @@
       text-align: left;
       padding-left: 16px;
     }
-
-    .history-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-    .history-header span {
-      font-size: 17px;
-      font-weight: 600;
-      color: #1c1c1e;
+    .record-table td .delete-btn {
+      color: #ff3b30;
+      cursor: pointer;
+      font-size: 14px;
     }
 
     @media (max-width: 400px) {
       .count-container { flex-direction: column; }
-      .entry { flex-direction: column; }
-      .entry input { width: 100%; margin-right: 0; }
-      .btn, .btn-outline { height: 48px; font-size: 16px; }
+      .entry { grid-template-columns: 100% !important; }
+      .entry input { width: 100%; }
+      .btn, .btn-outline { height: 50px; font-size: 18px; }
     }
   </style>
 </head>
@@ -238,19 +242,19 @@
   <div id="history" class="box">
     <div class="history-header">
       <span>계산 기록</span>
-      <div id="resetBtn" class="btn-outline">전체 리셋</div>
+      <button id="resetBtn" class="btn-outline">전체 리셋</button>
     </div>
     <div class="table-container">
       <table class="record-table">
         <thead>
           <tr>
             <th>일시</th>
-            <th class="subject">과목명</th>
-            <th>최종 점수</th>
+            <th>과목<br>명</th>
+            <th>최종<br>점수</th>
             <th>등급</th>
-            <th>다음 등급 필요점수</th>
-            <th>떨어질 기준</th>
-            <th>삭제</th>
+            <th>다음<br>등급<br>필요<br>점수</th>
+            <th>떨어질<br>기준</th>
+            <th>삭<br>제</th>
           </tr>
         </thead>
         <tbody id="historyBody"></tbody>
@@ -327,7 +331,7 @@
           <td><strong style="color:${{A:'#2ecc71',B:'#007aff',C:'#ffcc00',D:'#ff9500',E:'#ff3b30'}[item.grade]}">${item.grade}</strong></td>
           <td>${item.nextMsg}</td>
           <td>${item.dropMsg}</td>
-          <td><div style="color:#ff3b30;cursor:pointer;" onclick="deleteHistory(${idx})">삭제</div></td>
+          <td><div class="delete-btn" onclick="deleteHistory(${idx})">삭제</div></td>
         `;
         tbody.appendChild(tr);
       });
