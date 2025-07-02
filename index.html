@@ -6,76 +6,88 @@
   <title>성적 계산기</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f5f7fa;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background: #f2f2f7;
       max-width: 800px;
       margin: auto;
-      padding: 30px;
-      color: #333;
+      padding: 30px 15px;
+      color: #000;
     }
     h1, h2 {
       text-align: center;
       margin-bottom: 10px;
+      font-weight: 600;
     }
     h1 {
       cursor: pointer;
-      font-size: 2rem;
+      font-size: 28px;
     }
     .box {
-      background: #fff;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(20px);
       padding: 20px;
-      border-radius: 10px;
+      border-radius: 16px;
       margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border: 1px solid rgba(255,255,255,0.6);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
     }
     .entry {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin: 10px 0;
+      margin: 12px 0;
     }
     .entry label {
       min-width: 100px;
       text-align: right;
+      font-size: 16px;
     }
     .entry input {
       flex: 1;
-      padding: 8px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button, #exportPdfBtn, #resetBtn {
-      display: block;
-      margin: 10px auto;
-      padding: 10px 20px;
+      height: 36px;
+      padding: 0 12px;
       font-size: 16px;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
+      background: #f2f2f7;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+    }
+    button, #resetBtn {
+      display: block;
+      margin: 12px auto;
+      height: 44px;
+      padding: 0 16px;
+      font-size: 17px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
       color: #fff;
       cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-    button { background: #007bff; }
-    button:hover { background: #0056b3; }
+    button {
+      background: #007aff;
+    }
+    button:hover {
+      background: #0051a8;
+    }
     #resetBtn {
-      background: #6c757d;
-      font-size: 12px;
-      padding: 4px 8px;
-      margin: 0;
+      background: #8e8e93;
+      font-size: 14px;
+      height: 36px;
+      padding: 0 12px;
+      box-shadow: none;
+      margin-top: 0;
     }
-    #exportPdfBtn {
-      background: #27ae60;
-      font-size: 12px;
-      padding: 4px 8px;
-      margin: 0;
+    #resetBtn:hover {
+      background: #6e6e73;
     }
-    #resetBtn:hover { background: #5a6268; }
-    #exportPdfBtn:hover { background: #1e8449; }
     #result {
       font-size: 18px;
       text-align: center;
       margin-top: 10px;
       word-break: keep-all;
+      line-height: 1.4;
     }
     #countBox {
       display: flex;
@@ -98,18 +110,18 @@
       border-collapse: collapse;
     }
     .record-table th, .record-table td {
-      border: 1px solid #ddd;
-      padding: 8px;
+      border: none;
+      padding: 12px 8px;
       text-align: center;
       white-space: nowrap;
     }
     .record-table th {
-      background: #f0f0f0;
-      font-weight: bold;
+      background: #f2f2f7;
+      font-weight: 600;
     }
     .record-table td.subject, .record-table th.subject {
       text-align: left;
-      padding-left: 12px;
+      padding-left: 16px;
     }
     .history-header {
       display: flex;
@@ -120,13 +132,12 @@
     .history-header span {
       flex: 1;
       text-align: center;
-      font-size: 1.25rem;
-      font-weight: bold;
+      font-size: 18px;
+      font-weight: 600;
     }
     @media (max-width: 600px) {
-      body { padding: 15px; }
-      h1 { font-size: 1.5rem; }
-      h2 { font-size: 1.2rem; }
+      h1 { font-size: 24px; }
+      h2 { font-size: 18px; }
       .box { padding: 15px; }
       .entry {
         flex-direction: column;
@@ -134,36 +145,24 @@
       }
       .entry label {
         text-align: left;
-        min-width: auto;
         margin-bottom: 5px;
       }
-      .entry input { font-size: 14px; padding: 6px; }
-      button {
+      button, #resetBtn {
         width: 100%;
-        font-size: 14px;
-        padding: 10px;
         margin: 8px 0;
       }
-      #resetBtn, #exportPdfBtn {
-        width: 48%;
-        display: inline-block;
-        margin: 5px 1%;
-      }
       .record-table {
-        min-width: 100%;
         font-size: 12px;
       }
       .record-table th, .record-table td {
-        padding: 6px;
+        padding: 8px 6px;
       }
     }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
-  <h1 onclick="location.reload()">📊 성적 계산기</h1>
+  <h1 onclick="location.reload()">성적 계산기</h1>
 
   <div class="box">
     <div class="entry">
@@ -193,7 +192,6 @@
     <h2 class="history-header">
       <button id="resetBtn">전체 리셋</button>
       <span>계산 기록</span>
-      <button id="exportPdfBtn">PDF 저장</button>
     </h2>
     <div class="table-container" id="historyTable">
       <table class="record-table">
@@ -214,9 +212,9 @@
   </div>
 
   <script>
-    // 비밀번호 확인 로직: '1234' 입력해야 이하 스크립트 실행
+    // 비밀번호 확인 (4자리)
     (function() {
-      const pw = prompt('비밀번호를 입력하세요:');
+      const pw = prompt('비밀번호를 입력하세요 (4자리 숫자):');
       if (pw !== '1234') {
         alert('비밀번호가 틀렸습니다.');
         document.documentElement.innerHTML =
@@ -224,9 +222,6 @@
         throw new Error('Invalid password');
       }
     })();
-
-    // 기존 스크립트 시작
-    const { jsPDF } = window.jspdf;
 
     function generateInputs() {
       const sCnt = +document.getElementById('sCount').value;
@@ -306,45 +301,34 @@
         tSum+=(sc*(w/100)); wSum+=w;
       }
       if (wSum!==100) {
-        document.getElementById('result').textContent=`❗ 총 비중이 100%가 아닙니다. 현재: ${wSum}%`;
+        document.getElementById('result').textContent = `❗ 총 비중이 100%가 아닙니다. 현재: ${wSum}%`;
         return;
       }
-      const final=+(sSum+tSum).toFixed(2);
-      const grade= final>=90?'A': final>=80?'B': final>=70?'C': final>=60?'D':'E';
-      const gradeColor={A:'#2ecc71',B:'#3498db',C:'#f1c40f',D:'#e67e22',E:'#e74c3c'}[grade];
-      const gradeHtml=`<strong style="color:${gradeColor}">${grade}</strong>`;
-      const nextTh={A:null,B:90,C:80,D:70,E:60}[grade];
-      const currTh={A:90,B:80,C:70,D:60,E:0}[grade];
+      const final = +(sSum + tSum).toFixed(2);
+      const grade = final>=90?'A': final>=80?'B': final>=70?'C': final>=60?'D':'E';
+      const gradeColor = {A:'#2ecc71',B:'#3498db',C:'#f1c40f',D:'#e67e22',E:'#e74c3c'}[grade];
+      const gradeHtml = `<strong style="color:${gradeColor}">${grade}</strong>`;
+      const nextTh = {A:null,B:90,C:80,D:70,E:60}[grade];
+      const currTh = {A:90,B:80,C:70,D:60,E:0}[grade];
       let nextMsg, dropMsg;
       if (nextTh) {
-        const need=(nextTh - sSum - midContrib)/finalW;
-        const nG={90:'A',80:'B',70:'C',60:'D'}[nextTh];
-        nextMsg=need>100?`${nG} 등급으로 갈 수 없음`:`${nG} 등급 위해 기말고사에 ${need.toFixed(2)}점↑`;
-      } else nextMsg='최고 등급입니다🎉';
-      const drop=(currTh-0.01-sSum-midContrib)/finalW;
-      if (drop<0) dropMsg='떨어질 등급 없음';
+        const need = (nextTh - sSum - midContrib) / finalW;
+        const nG = {90:'A',80:'B',70:'C',60:'D'}[nextTh];
+        nextMsg = need>100 ? `${nG} 등급으로 갈 수 없음` : `${nG} 등급 위해 기말고사에 ${need.toFixed(2)}점↑`;
+      } else nextMsg = '최고 등급입니다🎉';
+      const drop = (currTh - 0.01 - sSum - midContrib) / finalW;
+      if (drop < 0) dropMsg = '떨어질 등급 없음';
       else {
-        const dG={90:'B',80:'C',70:'D',60:'E'}[currTh];
-        dropMsg=`기말고사에 ${drop.toFixed(2)}점↓ (이하일 경우 ${dG} 등급)`;
+        const dG = {90:'B',80:'C',70:'D',60:'E'}[currTh];
+        dropMsg = `기말고사에 ${drop.toFixed(2)}점↓ (이하일 경우 ${dG} 등급)`;
       }
-      document.getElementById('result').innerHTML=
-        `최종: <strong>${final}점</strong><br>`+
-        `등급: ${gradeHtml}<br>`+
-        `${nextMsg}<br>`+
+      document.getElementById('result').innerHTML =
+        `최종: <strong>${final}점</strong><br>` +
+        `등급: ${gradeHtml}<br>` +
+        `${nextMsg}<br>` +
         `${dropMsg}`;
-      saveHistory({ time:new Date().toLocaleString('ko-KR'), subject, final, grade, nextMsg, dropMsg });
+      saveHistory({ time: new Date().toLocaleString('ko-KR'), subject, final, grade, nextMsg, dropMsg });
       renderHistory();
-    }
-
-    function exportPdf() {
-      html2canvas(document.getElementById('historyTable')).then(canvas=>{
-        const img = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({unit:'pt',format:'a4'});
-        const w = pdf.internal.pageSize.getWidth();
-        const h = (canvas.height * w) / canvas.width;
-        pdf.addImage(img, 'PNG', 0, 0, w, h);
-        pdf.save('계산기록.pdf');
-      });
     }
 
     window.onload = () => {
@@ -356,7 +340,6 @@
           renderHistory();
         }
       });
-      document.getElementById('exportPdfBtn').addEventListener('click', exportPdf);
     };
   </script>
 
