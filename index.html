@@ -41,7 +41,7 @@
       overflow-x: hidden;
     }
 
-    /* count inputs side by side, only 개수 */
+    /* count & weight inputs side by side */
     .count-container {
       display: flex;
       gap: 12px;
@@ -55,8 +55,12 @@
       color: #3c3c4399;
       margin-bottom: 6px;
     }
-    .count-container .half input {
-      width: 100%;
+    .count-container .half .inline-inputs {
+      display: flex;
+      gap: 8px;
+    }
+    .count-container .half .inline-inputs input {
+      flex: 1;
       height: 44px;
       padding: 0 12px;
       font-size: 16px;
@@ -65,7 +69,7 @@
       border-radius: 10px;
     }
 
-    /* dynamic entry rows */
+    /* dynamic entries */
     .entry {
       display: flex;
       align-items: center;
@@ -187,6 +191,7 @@
 
     @media (max-width: 400px) {
       .count-container { flex-direction: column; }
+      .count-container .half .inline-inputs { flex-direction: column; }
       .entry { flex-direction: column; }
       .entry input { width: 100%; margin-right: 0; }
       .btn, .btn-outline { height: 50px; font-size: 18px; }
@@ -208,11 +213,17 @@
     <div class="count-container">
       <div class="half">
         <label for="sCount">수행평가 개수</label>
-        <input type="number" id="sCount" value="2" min="1">
+        <div class="inline-inputs">
+          <input type="number" id="sCount" value="2" min="1" placeholder="개수">
+          <input type="number" id="sWeight" min="0" max="100" placeholder="비중(%)">
+        </div>
       </div>
       <div class="half">
         <label for="tCount">지필평가 개수</label>
-        <input type="number" id="tCount" value="2" min="1" max="2">
+        <div class="inline-inputs">
+          <input type="number" id="tCount" value="2" min="1" max="2" placeholder="개수">
+          <input type="number" id="tWeight" min="0" max="100" placeholder="비중(%)">
+        </div>
       </div>
     </div>
   </div>
@@ -264,7 +275,7 @@
       const sCnt = +document.getElementById('sCount').value;
       const tCnt = +document.getElementById('tCount').value;
       let html = '<h2>수행평가</h2>';
-      for (let i = 0; i < sCnt; i++) {
+      for (let i=0; i<sCnt; i++) {
         html += `
           <div class="entry">
             <label>수행${i+1}</label>
@@ -274,10 +285,8 @@
           </div>`;
       }
       html += '<h2>지필평가</h2>';
-      for (let i = 0; i < tCnt; i++) {
-        const label = tCnt === 1
-          ? '기말고사'
-          : (i === 0 ? '중간고사' : '기말고사');
+      for (let i=0; i<tCnt; i++) {
+        const label = tCnt===1 ? '기말고사' : (i===0 ? '중간고사' : '기말고사');
         html += `
           <div class="entry">
             <label>${label}</label>
