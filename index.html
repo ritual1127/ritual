@@ -181,7 +181,7 @@
       padding: 12px 8px;
       text-align: center;
       font-size: 14px;
-      color: var(--fg); /* 불투명 */
+      color: var(--fg);
       border: none;
     }
     .record-table thead th {
@@ -363,37 +363,117 @@
       });
     }
 
-    // 정보 새창 띄우기
+    // 정보 새창 띄우기 (iOS 스타일 테이블 UI, 모바일 최적화)
     function showInfo(idx) {
       const e = loadHistory()[idx];
       if (!e) return;
-      const w = window.open('', '', 'width=320,height=400');
-      let html = `
-        <html><head><meta charset="UTF-8"><title>상세 정보</title>
-        <style>
-          body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,sans-serif;padding:20px;margin:0;}
-          h2{margin-top:0;}
-          table{width:100%;border-collapse:collapse;margin-bottom:20px;}
-          th,td{border:1px solid #ccc;padding:8px;text-align:left;font-size:14px;}
-        </style>
-        </head><body>
-        <h2>${e.subject} — 상세 정보</h2>
-        <h3>수행평가</h3>
-        <table>
-          <tr><th>회차</th><th>점수</th><th>비중(%)</th></tr>`;
-      e.performances.forEach((p,i) => {
-        html += `<tr><td>${i+1}</td><td>${p.score}</td><td>${p.weight}</td></tr>`;
-      });
-      html += `</table>
-        <h3>지필평가</h3>
-        <table>
-          <tr><th>구분</th><th>점수</th><th>비중(%)</th></tr>`;
-      e.exams.forEach(ex => {
-        html += `<tr><td>${ex.label}</td><td>${ex.score}</td><td>${ex.weight}</td></tr>`;
-      });
-      html += `</table>
-        <button onclick="window.close()" style="padding:6px 12px;font-size:14px;">닫기</button>
-        </body></html>`;
+      const w = window.open('', '', 'width=375,height=600');
+      const html = `
+        <!DOCTYPE html>
+        <html lang="ko">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+          <title>상세 정보 — ${e.subject}</title>
+          <style>
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+              margin: 0;
+              padding: 20px;
+              background-color: #fff;
+              color: #000;
+            }
+            h2 {
+              font-size: 20px;
+              margin-bottom: 16px;
+            }
+            h3 {
+              font-size: 18px;
+              margin-top: 24px;
+              margin-bottom: 8px;
+              font-weight: 600;
+            }
+            .table-group {
+              border-radius: 12px;
+              overflow: hidden;
+              margin-bottom: 20px;
+              box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              background-color: #f9f9f9;
+            }
+            th, td {
+              padding: 16px;
+              font-size: 16px;
+              text-align: left;
+            }
+            tr:not(:last-child) td {
+              border-bottom: 1px solid #e0e0e0;
+            }
+            thead {
+              background-color: #f0f0f0;
+            }
+            button {
+              display: block;
+              width: 100%;
+              padding: 14px;
+              font-size: 16px;
+              border: none;
+              border-radius: 8px;
+              background-color: #007aff;
+              color: #fff;
+              margin-top: 10px;
+            }
+            button:active {
+              opacity: 0.8;
+            }
+          </style>
+        </head>
+        <body>
+          <h2>${e.subject} — 상세 정보</h2>
+
+          <h3>수행평가</h3>
+          <div class="table-group">
+            <table>
+              <thead>
+                <tr>
+                  <th>회차</th>
+                  <th>점수</th>
+                  <th>비중(%)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${e.performances.map((p,i) =>
+                  `<tr><td>${i+1}</td><td>${p.score}</td><td>${p.weight}</td></tr>`
+                ).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <h3>지필평가</h3>
+          <div class="table-group">
+            <table>
+              <thead>
+                <tr>
+                  <th>구분</th>
+                  <th>점수</th>
+                  <th>비중(%)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${e.exams.map(ex =>
+                  `<tr><td>${ex.label}</td><td>${ex.score}</td><td>${ex.weight}</td></tr>`
+                ).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <button onclick="window.close()">닫기</button>
+        </body>
+        </html>
+      `;
       w.document.write(html);
       w.document.close();
     }
