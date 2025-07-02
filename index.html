@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <!-- 확대/축소 방지 -->
@@ -8,7 +8,6 @@
   <style>
     /* reset & box-sizing */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     /* 테마 변수 */
     :root {
       --bg: #f2f2f7;
@@ -360,34 +359,17 @@
   </div>
 
   <script>
-    // 다크 모드 토글 및 시스템 설정 자동 반영
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    // 다크 모드 토글
     const themeToggle = document.getElementById('themeToggle');
-
-    function applyTheme(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
-      themeToggle.textContent = theme === 'dark' ? '라이트 모드' : '다크 모드';
-      localStorage.setItem('theme', theme);
+    function applyTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      themeToggle.textContent = t === 'light' ? '다크 모드' : '라이트 모드';
+      localStorage.setItem('theme', t);
     }
-
-    // 초기 테마 결정: 로컬 저장소 우선 → 시스템 설정
-    const savedTheme = localStorage.getItem('theme');
-    const initTheme = (savedTheme === 'light' || savedTheme === 'dark')
-      ? savedTheme
-      : (mediaQuery.matches ? 'dark' : 'light');
-    applyTheme(initTheme);
-
-    // 시스템 설정 변경 시 (사용자 토글 기록 없을 때만) 자동 업데이트
-    mediaQuery.addEventListener('change', e => {
-      if (!localStorage.getItem('theme')) {
-        applyTheme(e.matches ? 'dark' : 'light');
-      }
-    });
-
-    themeToggle.onclick = () => {
-      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      applyTheme(next);
-    };
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    applyTheme(savedTheme);
+    themeToggle.onclick = () =>
+      applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
 
     // 입력칸 생성
     function generateInputs() {
@@ -538,11 +520,7 @@
       document.getElementById('result').innerHTML =
         `최종: <strong>${final}점</strong><br>${grade} 등급<br>${nextMsg}<br>${dropMsg}`;
 
-      saveHistory({
-        time: new Date().toLocaleString('ko-KR'),
-        subject, final, grade, nextMsg, dropMsg,
-        performances, exams
-      });
+      saveHistory({ time: new Date().toLocaleString('ko-KR'), subject, final, grade, nextMsg, dropMsg, performances, exams });
       renderHistory();
     }
 
