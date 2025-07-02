@@ -4,188 +4,121 @@
   <meta charset="UTF-8">
   <!-- 확대/축소 방지 -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>성적 계산기</title>
+  <title>성적 계산기 + D-Day 카운터</title>
   <style>
     /* reset & box-sizing */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     /* 테마 변수 */
     :root {
-      --bg: #f2f2f7;
-      --fg: #1c1c1e;
+      --bg: #f2f2f7; --fg: #1c1c1e;
       --box-bg: rgba(255,255,255,0.8);
-      --inp-bg: #fff;
-      --inp-border: #c6c6c8;
+      --inp-bg: #fff; --inp-border: #c6c6c8;
       --primary: #007aff;
     }
     [data-theme="dark"] {
-      --bg: #000;
-      --fg: #f2f2f7;
+      --bg: #000; --fg: #f2f2f7;
       --box-bg: rgba(28,28,30,0.8);
-      --inp-bg: #1c1c1e;
-      --inp-border: #3a3a3c;
+      --inp-bg: #1c1c1e; --inp-border: #3a3a3c;
       --primary: #0a84ff;
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      background: var(--bg);
-      color: var(--fg);
-      max-width: 500px;
-      margin: 0 auto;
+      background: var(--bg); color: var(--fg);
+      max-width: 500px; margin: 0 auto;
       padding: env(safe-area-inset-top) 15px 30px env(safe-area-inset-left);
       padding-bottom: env(safe-area-inset-bottom);
     }
 
-    /* 상단 바 */
     .top-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between;
       margin: 20px 0;
     }
     .top-bar h1 {
-      font-size: 28px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-left: 10px;
+      font-size: 28px; font-weight: 600; cursor: pointer; margin-left: 10px;
     }
     .top-controls button {
-      background: transparent;
-      color: var(--primary);
-      border: 1px solid var(--primary);
-      border-radius: 8px;
-      font-size: 14px;
-      height: 30px;
-      line-height: 30px;
-      padding: 0 10px;
-      cursor: pointer;
+      background: transparent; color: var(--primary);
+      border: 1px solid var(--primary); border-radius: 8px;
+      font-size: 14px; height: 30px; line-height: 30px;
+      padding: 0 10px; cursor: pointer;
     }
     .top-controls button:active {
       background: rgba(0,122,255,0.1);
     }
 
-    /* 공통 박스 */
     .box {
-      background: var(--box-bg);
-      backdrop-filter: blur(20px);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
+      background: var(--box-bg); backdrop-filter: blur(20px);
+      border-radius: 16px; padding: 20px; margin-bottom: 20px;
       border: 1px solid rgba(255,255,255,0.6);
     }
 
-    /* 입력 칸 */
     .count-container { display: flex; gap: 12px; }
     .count-container .half { flex: 1; }
     .count-container .half label {
-      display: block;
-      font-size: 15px;
-      color: #8e8e93;
-      margin-bottom: 6px;
+      display: block; font-size: 15px; color: #8e8e93; margin-bottom: 6px;
     }
     .count-container .half input {
-      width: 100%;
-      height: 44px;
-      padding: 0 12px;
-      font-size: 16px;
-      background: var(--inp-bg);
-      border: 1px solid var(--inp-border);
-      border-radius: 10px;
+      width: 100%; height: 44px; padding: 0 12px;
+      font-size: 16px; background: var(--inp-bg);
+      border: 1px solid var(--inp-border); border-radius: 10px;
       color: var(--fg);
     }
 
     .entry {
-      display: grid;
-      grid-template-columns: 100px 1fr;
-      grid-template-rows: auto auto;
-      column-gap: 8px;
-      row-gap: 8px;
-      align-items: center;
-      margin-bottom: 16px;
+      display: grid; grid-template-columns: 100px 1fr;
+      grid-template-rows: auto auto; column-gap: 8px;
+      row-gap: 8px; align-items: center; margin-bottom: 16px;
     }
     .entry label { font-size: 15px; color: #8e8e93; }
     .entry input {
-      width: 100%;
-      height: 44px;
-      padding: 0 12px;
-      font-size: 16px;
-      background: var(--inp-bg);
-      border: 1px solid var(--inp-border);
-      border-radius: 10px;
+      width: 100%; height: 44px; padding: 0 12px;
+      font-size: 16px; background: var(--inp-bg);
+      border: 1px solid var(--inp-border); border-radius: 10px;
       color: var(--fg);
     }
 
-    /* 버튼 */
     .btn {
-      display: block;
-      width: 100%;
-      height: 44px;
-      font-size: 17px;
-      font-weight: 600;
-      text-align: center;
-      border-radius: 12px;
-      margin: 12px 0;
-      line-height: 44px;
-      background: var(--primary);
-      color: #fff;
-      border: none;
+      display: block; width: 100%; height: 44px;
+      font-size: 17px; font-weight: 600; text-align: center;
+      border-radius: 12px; margin: 12px 0; line-height: 44px;
+      background: var(--primary); color: #fff; border: none;
       cursor: pointer;
     }
     .btn:active { filter: brightness(0.9); }
 
     #result {
-      font-size: 17px;
-      text-align: center;
-      line-height: 1.5;
-      margin-bottom: 20px;
-      word-break: keep-all;
+      font-size: 17px; text-align: center;
+      line-height: 1.5; margin-bottom: 20px; word-break: keep-all;
     }
 
-    /* 히스토리 & 테이블 */
     .history-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 12px;
     }
     .history-header span {
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--fg);
+      font-size: 17px; font-weight: 600; color: var(--fg);
     }
-    .history-header .btn-outline {
-      background: transparent;
-      color: var(--primary);
-      border: 1px solid var(--primary);
-      border-radius: 8px;
-      font-size: 14px;
-      height: 30px;
-      line-height: 30px;
-      padding: 0 10px;
-      cursor: pointer;
+    .btn-outline {
+      background: transparent; color: var(--primary);
+      border: 1px solid var(--primary); border-radius: 8px;
+      font-size: 14px; height: 30px; line-height: 30px;
+      padding: 0 10px; cursor: pointer;
     }
 
     .table-container {
-      background: var(--inp-bg);
-      border-radius: 12px;
-      overflow-x: auto;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      background: var(--inp-bg); border-radius: 12px;
+      overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .record-table {
-      width: 100%;
-      border-collapse: collapse;
+      width: 100%; border-collapse: collapse;
     }
-    .record-table th,
-    .record-table td {
-      padding: 12px 8px;
-      text-align: center;
-      font-size: 14px;
-      color: var(--fg);
-      border: none;
+    .record-table th, .record-table td {
+      padding: 12px 8px; text-align: center;
+      font-size: 14px; color: var(--fg); border: none;
     }
     .record-table thead th {
-      color: var(--fg);
       font-weight: 600;
     }
     .record-table tbody tr:nth-child(even) td {
@@ -195,24 +128,16 @@
       background: #e5e5ea;
     }
     .record-table td.subject {
-      text-align: left;
-      padding-left: 16px;
+      text-align: left; padding-left: 16px;
     }
+
     .delete-btn {
-      color: #ff3b30;
-      cursor: pointer;
-      font-size: 14px;
-      opacity: 1;
+      color: #ff3b30; cursor: pointer; font-size: 14px; opacity: 1;
     }
     .info-btn {
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 13px;
-      cursor: pointer;
-      opacity: 1;
+      background: var(--primary); color: #fff; border: none;
+      border-radius: 6px; padding: 4px 8px; font-size: 13px;
+      cursor: pointer; opacity: 1;
     }
     .info-btn:active { filter: brightness(0.9); }
 
@@ -221,7 +146,6 @@
       .entry { grid-template-columns: 100% !important; }
     }
 
-    /* 다크모드용 테이블 배경 덮어쓰기 */
     [data-theme="dark"] .record-table tbody tr:nth-child(even) td {
       background: var(--inp-bg);
     }
@@ -229,65 +153,43 @@
       background: rgba(255,255,255,0.1);
     }
 
-    /* ─── 모달 스타일 ─── */
+    /* ─── D-Day 리스트 구분선 ─── */
+    #ddayList li + li { border-top: 1px solid rgba(0,0,0,0.1); padding-top: 8px; }
+    [data-theme="dark"] #ddayList li + li { border-color: rgba(255,255,255,0.1); }
+
+    /* 모달 */
     .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      box-sizing: border-box;
-      z-index: 1000;
+      display: none; position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+      align-items: center; justify-content: center;
+      padding: 20px; box-sizing: border-box; z-index: 1000;
     }
     .modal-content {
-      background: var(--box-bg);
-      backdrop-filter: blur(20px);
-      border-radius: 16px;
-      width: 100%;
-      max-width: 500px;
-      max-height: 90%;
-      overflow-y: auto;
-      padding: 20px;
+      background: var(--box-bg); backdrop-filter: blur(20px);
+      border-radius: 16px; width: 100%; max-width: 500px;
+      max-height: 90%; overflow-y: auto; padding: 20px;
       position: relative;
     }
     #modalCloseBtn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: transparent;
-      border: none;
-      font-size: 16px;
-      color: var(--primary);
-      cursor: pointer;
-      padding: 4px 8px;
+      position: absolute; top: 12px; right: 12px;
+      background: transparent; border: none;
+      font-size: 16px; color: var(--primary);
+      cursor: pointer; padding: 4px 8px;
     }
 
-    /* iOS 스타일 세부표 */
     .table-group {
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border-radius: 12px; overflow: hidden;
+      margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     .table-group table {
-      width: 100%;
-      border-collapse: collapse;
+      width: 100%; border-collapse: collapse;
       background: var(--inp-bg);
     }
-    .table-group th,
-    .table-group td {
-      padding: 16px;
-      font-size: 16px;
-      text-align: left;
+    .table-group th, .table-group td {
+      padding: 16px; font-size: 16px; text-align: left;
     }
     .table-group tr:not(:last-child) td {
       border-bottom: 1px solid rgba(0,0,0,0.1);
-    }
-    .table-group thead {
-      background: rgba(0,0,0,0.05);
     }
     [data-theme="dark"] .table-group tr:not(:last-child) td {
       border-bottom: 1px solid rgba(255,255,255,0.1);
@@ -296,18 +198,11 @@
       background: rgba(255,255,255,0.1);
     }
 
-    /* 제목과 소제목 사이 여백 늘리기 */
-    .modal-content h2 {
-      margin-top: 0;
-      margin-bottom: 24px;
-    }
-    .modal-content h3 {
-      margin-top: 24px;
-      margin-bottom: 12px;
-    }
+    .modal-content h2 { margin-top: 0; margin-bottom: 24px; }
+    .modal-content h3 { margin-top: 24px; margin-bottom: 12px; }
   </style>
 </head>
-<body>
+<body data-theme="light">
 
   <div class="top-bar">
     <h1 onclick="location.reload()">성적 계산기</h1>
@@ -317,6 +212,7 @@
   </div>
 
   <div id="calcView">
+    <!-- 과목 입력 -->
     <div class="box">
       <div class="entry">
         <label for="subjectName">과목명</label>
@@ -324,6 +220,7 @@
       </div>
     </div>
 
+    <!-- 수행/지필 개수 설정 -->
     <div id="countBox" class="box">
       <div class="count-container">
         <div class="half">
@@ -337,10 +234,32 @@
       </div>
     </div>
 
+    <!-- 동적 입력 -->
     <div id="inputs" class="box"></div>
     <button id="calcBtn" class="btn">계산하기</button>
     <div id="result"></div>
 
+    <!-- D-Day 카운터 -->
+    <div id="ddayBox" class="box">
+      <div class="history-header">
+        <span>시험 일정 & D-Day</span>
+        <button id="addDdayBtn" class="btn-outline">일정 추가</button>
+      </div>
+      <div id="ddayForm" style="display:none; margin-bottom:16px;">
+        <div class="entry">
+          <label>시험명</label>
+          <input type="text" id="ddayName" placeholder="예: 중간고사">
+        </div>
+        <div class="entry">
+          <label>날짜</label>
+          <input type="date" id="ddayDate">
+        </div>
+        <button id="saveDdayBtn" class="btn">저장</button>
+      </div>
+      <ul id="ddayList" style="list-style:none; padding:0;"></ul>
+    </div>
+
+    <!-- 계산 기록 -->
     <div id="history" class="box">
       <div class="history-header">
         <span>계산 기록</span>
@@ -370,7 +289,7 @@
   </div>
 
   <script>
-    // 다크 모드 토글 및 시스템 설정 자동 반영
+    // 다크 모드
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const themeToggle = document.getElementById('themeToggle');
     function applyTheme(theme) {
@@ -389,7 +308,7 @@
       applyTheme(next);
     };
 
-    // 입력칸 생성
+    // 수행/지필 입력 생성
     function generateInputs() {
       const sCnt = +document.getElementById('sCount').value;
       const tCnt = +document.getElementById('tCount').value;
@@ -417,7 +336,7 @@
       document.getElementById('inputs').innerHTML = html;
     }
 
-    // 로컬스토리지 관리
+    // 로컬스토리지 - 성적
     function loadHistory() {
       return JSON.parse(localStorage.getItem('gradeHistory')||'[]');
     }
@@ -433,7 +352,6 @@
       renderHistory();
     }
 
-    // 렌더
     function renderHistory() {
       const tb = document.getElementById('historyBody');
       tb.innerHTML = '';
@@ -462,7 +380,6 @@
     closeBtn.onclick = () => modal.style.display = 'none';
     window.onclick = e => { if (e.target === modal) modal.style.display = 'none'; };
 
-    // 상세정보 표시
     function showInfo(idx){
       const e = loadHistory()[idx]; if(!e)return;
       let html = `<h2>${e.subject} 상세 정보</h2>
@@ -482,7 +399,7 @@
       modal.style.display = 'flex';
     }
 
-    // 계산
+    // 성적 계산
     function calculate(){
       const subj = document.getElementById('subjectName').value || '-',
             sCnt = +document.getElementById('sCount').value,
@@ -531,7 +448,6 @@
       document.getElementById('result').innerHTML =
         `최종: <strong>${final}점</strong><br>${grade} 등급<br>${nextMsg}<br>${dropMsg}`;
 
-      // ★ 여기서 시간 포맷을 “YYYY.MM.DD HH:MM”만 저장
       const now = new Date();
       const formattedTime =
         now.getFullYear() + '.' +
@@ -541,25 +457,85 @@
         String(now.getMinutes()).padStart(2,'0');
 
       saveHistory({
-        time: formattedTime,
-        subject: subj,
+        time: formattedTime, subject: subj,
         final, grade, nextMsg, dropMsg,
         performances: perf, exams: exms
       });
       renderHistory();
     }
 
+    // ─── D-Day 카운터 ───
+    const DEFAULT_DDAYS = [{ name: '방학식', date: '2025-07-18' }];
+    function loadDdays() {
+      const stored = localStorage.getItem('ddayList');
+      return stored ? JSON.parse(stored) : DEFAULT_DDAYS.slice();
+    }
+    function saveDdayEntry(list) {
+      localStorage.setItem('ddayList', JSON.stringify(list));
+    }
+    function toggleDdayForm() {
+      const f = document.getElementById('ddayForm');
+      f.style.display = f.style.display === 'none' ? 'block' : 'none';
+    }
+    function saveDday() {
+      const name = document.getElementById('ddayName').value.trim();
+      const date = document.getElementById('ddayDate').value;
+      if (!name || !date) return alert('시험명과 날짜 모두 입력하세요.');
+      const list = loadDdays();
+      list.push({ name, date });
+      saveDdayEntry(list);
+      document.getElementById('ddayName').value = '';
+      document.getElementById('ddayDate').value = '';
+      toggleDdayForm();
+      renderDdays();
+    }
+    function calcDday(target) {
+      const today = new Date();
+      const t = new Date(target + 'T00:00');
+      const diff = Math.ceil((t - today)/(1000*60*60*24));
+      if (diff > 0) return `D-${diff}`;
+      if (diff === 0) return 'D-Day';
+      return `D+${Math.abs(diff)}`;
+    }
+    function renderDdays() {
+      const ul = document.getElementById('ddayList');
+      ul.innerHTML = '';
+      loadDdays().forEach((e,i) => {
+        const li = document.createElement('li');
+        li.style.display = 'flex';
+        li.style.justifyContent = 'space-between';
+        li.innerHTML = `
+          <span>
+            <strong>${e.name}</strong> (${e.date}) → ${calcDday(e.date)}
+          </span>
+          <button class="delete-btn" data-i="${i}">삭제</button>
+        `;
+        ul.appendChild(li);
+      });
+      document.querySelectorAll('#ddayList .delete-btn')
+        .forEach(btn => btn.onclick = () => {
+          const idx = +btn.dataset.i;
+          const list = loadDdays();
+          list.splice(idx,1);
+          saveDdayEntry(list);
+          renderDdays();
+        });
+    }
+
     // 초기화
     window.onload = () => {
       generateInputs();
       renderHistory();
+      renderDdays();
       document.getElementById('calcBtn').onclick = calculate;
       document.getElementById('resetBtn').onclick = () => {
-        if(confirm('계산 기록을 모두 삭제하시겠습니까?')){
+        if (confirm('계산 기록을 모두 삭제하시겠습니까?')) {
           localStorage.removeItem('gradeHistory');
           renderHistory();
         }
       };
+      document.getElementById('addDdayBtn').onclick = toggleDdayForm;
+      document.getElementById('saveDdayBtn').onclick = saveDday;
     };
   </script>
 </body>
