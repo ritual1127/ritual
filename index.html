@@ -2,7 +2,8 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <!-- 확대/축소 방지 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>성적 계산기</title>
   <style>
     /* reset & box-sizing */
@@ -120,9 +121,9 @@
       line-height: 36px;
       font-size: 15px;
       padding: 0 12px;
-      margin: 0;
       border-radius: 10px;
       cursor: pointer;
+      float: right;
     }
     .btn-outline:active {
       background: rgba(0,122,255,0.1);
@@ -172,16 +173,15 @@
     }
 
     .history-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 8px;
+      position: relative;
+      padding-bottom: 10px;
     }
     .history-header span {
-      flex: 1;
-      text-align: center;
       font-size: 17px;
       font-weight: 600;
       color: #3c3c4399;
+      text-align: center;
+      display: block;
     }
 
     @media (max-width: 400px) {
@@ -368,7 +368,10 @@
       }
       document.getElementById('result').innerHTML =
         `최종: <strong>${final}점</strong><br>${grade} 등급<br>${nextMsg}<br>${dropMsg}`;
-      saveHistory({ time: new Date().toLocaleString('ko-KR'), subject, final, grade, nextMsg, dropMsg });
+      saveHistory({
+        time: new Date().toLocaleString('ko-KR'),
+        subject, final, grade, nextMsg, dropMsg
+      });
       renderHistory();
     }
 
