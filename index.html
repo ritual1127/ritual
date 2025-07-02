@@ -229,7 +229,7 @@
       background: rgba(255,255,255,0.1);
     }
 
-    /* 모달 스타일 */
+    /* ─── 모달 스타일 ─── */
     .modal {
       display: none;
       position: fixed;
@@ -302,7 +302,7 @@
   <div class="top-bar">
     <h1 onclick="location.reload()">성적 계산기</h1>
     <div class="top-controls">
-      <button id="themeToggle">테마 변경</button>
+      <button id="themeToggle">다크 모드</button>
     </div>
   </div>
 
@@ -360,32 +360,32 @@
   </div>
 
   <script>
-    // 시스템 다크/라이트 감지
+    // 다크 모드 토글 및 시스템 설정 자동 반영
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const themeToggle = document.getElementById('themeToggle');
+
     function applyTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
       themeToggle.textContent = theme === 'dark' ? '라이트 모드' : '다크 모드';
+      localStorage.setItem('theme', theme);
     }
-    // 초기 테마 설정: 로컬 스토리지에 저장된 값이 있으면 그대로, 없으면 시스템 설정
+
+    // 초기 테마 결정: 로컬 저장소 우선 → 시스템 설정
     const savedTheme = localStorage.getItem('theme');
     const initTheme = (savedTheme === 'light' || savedTheme === 'dark')
       ? savedTheme
       : (mediaQuery.matches ? 'dark' : 'light');
     applyTheme(initTheme);
 
-    // 시스템 설정 변경 시 자동 업데이트 (단, 사용자가 수동 토글한 적 없으면)
+    // 시스템 설정 변경 시 (사용자 토글 기록 없을 때만) 자동 업데이트
     mediaQuery.addEventListener('change', e => {
       if (!localStorage.getItem('theme')) {
         applyTheme(e.matches ? 'dark' : 'light');
       }
     });
 
-    // 토글 버튼
-    const themeToggle = document.getElementById('themeToggle');
     themeToggle.onclick = () => {
-      const current = document.documentElement.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
-      localStorage.setItem('theme', next);
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       applyTheme(next);
     };
 
