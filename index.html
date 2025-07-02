@@ -1,3 +1,5 @@
+아래는 일시를 “YYYY.MM.DD HH:MM” 형식(년·월·일, 시:분)으로만 표시하도록 수정한 전체 코드입니다. calculate() 함수에서 시간을 저장할 때 toLocaleString 대신 직접 포맷팅하도록 변경했습니다.
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -5,25 +7,6 @@
   <!-- 확대/축소 방지 -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>성적 계산기</title>
-
-  <!-- PWA manifest (inline 생성) -->
-  <script>
-    const manifest = {
-      name: '성적 계산기',
-      short_name: '성적계산기',
-      start_url: '.',
-      display: 'standalone',
-      background_color: '#f2f2f7',
-      theme_color: '#007aff'
-    };
-    const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('link');
-    link.rel = 'manifest';
-    link.href = url;
-    document.head.appendChild(link);
-  </script>
-
   <style>
     /* reset & box-sizing */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,7 +19,6 @@
       --inp-bg: #fff;
       --inp-border: #c6c6c8;
       --primary: #007aff;
-      --danger: #ff3b30;
     }
     [data-theme="dark"] {
       --bg: #000;
@@ -45,157 +27,289 @@
       --inp-bg: #1c1c1e;
       --inp-border: #3a3a3c;
       --primary: #0a84ff;
-      --danger: #ff453a;
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
       background: var(--bg);
       color: var(--fg);
-      max-width: 500px; margin: 0 auto;
+      max-width: 500px;
+      margin: 0 auto;
       padding: env(safe-area-inset-top) 15px 30px env(safe-area-inset-left);
       padding-bottom: env(safe-area-inset-bottom);
     }
 
     /* 상단 바 */
     .top-bar {
-      display: flex; align-items: center; justify-content: space-between; margin: 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 20px 0;
     }
     .top-bar h1 {
-      font-size: 28px; font-weight: 600; cursor: pointer;
+      font-size: 28px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: 10px;
     }
     .top-controls button {
-      background: transparent; color: var(--primary);
-      border: 1px solid var(--primary); border-radius: 8px;
-      font-size: 14px; height: 30px; line-height: 30px; padding: 0 10px;
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      border-radius: 8px;
+      font-size: 14px;
+      height: 30px;
+      line-height: 30px;
+      padding: 0 10px;
       cursor: pointer;
     }
-    .top-controls button:active { background: rgba(0,122,255,0.1); }
+    .top-controls button:active {
+      background: rgba(0,122,255,0.1);
+    }
 
     /* 공통 박스 */
     .box {
-      background: var(--box-bg); backdrop-filter: blur(20px);
-      border-radius: 16px; padding: 20px; margin-bottom: 20px;
+      background: var(--box-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
       border: 1px solid rgba(255,255,255,0.6);
     }
 
     /* 입력 칸 */
+    .count-container { display: flex; gap: 12px; }
+    .count-container .half { flex: 1; }
+    .count-container .half label {
+      display: block;
+      font-size: 15px;
+      color: #8e8e93;
+      margin-bottom: 6px;
+    }
+    .count-container .half input {
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      font-size: 16px;
+      background: var(--inp-bg);
+      border: 1px solid var(--inp-border);
+      border-radius: 10px;
+      color: var(--fg);
+    }
+
     .entry {
-      display: grid; grid-template-columns: 100px 1fr; gap: 8px;
-      align-items: center; margin-bottom: 16px;
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      grid-template-rows: auto auto;
+      column-gap: 8px;
+      row-gap: 8px;
+      align-items: center;
+      margin-bottom: 16px;
     }
     .entry label { font-size: 15px; color: #8e8e93; }
     .entry input {
-      width: 100%; height: 44px; padding: 0 12px; font-size: 16px;
-      background: var(--inp-bg); border: 1px solid var(--inp-border);
-      border-radius: 10px; color: var(--fg);
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      font-size: 16px;
+      background: var(--inp-bg);
+      border: 1px solid var(--inp-border);
+      border-radius: 10px;
+      color: var(--fg);
     }
 
     /* 버튼 */
     .btn {
-      display: block; width: 100%; height: 44px;
-      font-size: 17px; font-weight: 600; text-align: center;
-      border-radius: 12px; margin: 12px 0; line-height: 44px;
-      background: var(--primary); color: #fff; border: none; cursor: pointer;
+      display: block;
+      width: 100%;
+      height: 44px;
+      font-size: 17px;
+      font-weight: 600;
+      text-align: center;
+      border-radius: 12px;
+      margin: 12px 0;
+      line-height: 44px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      cursor: pointer;
     }
     .btn:active { filter: brightness(0.9); }
 
     #result {
-      font-size: 17px; text-align: center; line-height: 1.5;
-      margin-bottom: 20px; word-break: keep-all;
+      font-size: 17px;
+      text-align: center;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      word-break: keep-all;
     }
 
     /* 히스토리 & 테이블 */
     .history-header {
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 12px;
     }
     .history-header span {
-      font-size: 17px; font-weight: 600; color: var(--fg);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--fg);
     }
     .history-header .btn-outline {
-      background: transparent; color: var(--primary);
-      border: 1px solid var(--primary); border-radius: 8px;
-      font-size: 14px; height: 30px; line-height: 30px; padding: 0 10px;
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      border-radius: 8px;
+      font-size: 14px;
+      height: 30px;
+      line-height: 30px;
+      padding: 0 10px;
       cursor: pointer;
     }
 
     .table-container {
-      background: var(--inp-bg); border-radius: 12px;
-      overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      background: var(--inp-bg);
+      border-radius: 12px;
+      overflow-x: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .record-table {
-      width: 100%; border-collapse: collapse;
+      width: 100%;
+      border-collapse: collapse;
     }
-    .record-table th, .record-table td {
-      padding: 12px 8px; text-align: center; font-size: 14px;
-      color: var(--fg); border: none;
+    .record-table th,
+    .record-table td {
+      padding: 12px 8px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--fg);
+      border: none;
     }
-    .record-table thead th { font-weight: 600; }
-    .record-table tbody tr:nth-child(even) td { background: #f2f2f7; }
-    .record-table tbody tr:hover td { background: #e5e5ea; }
-    .record-table td.subject { text-align: left; padding-left: 16px; }
-
-    /* 정보 버튼 */
-    .info-btn {
-      background: var(--primary); color: #fff; border: none;
-      border-radius: 6px; padding: 4px 8px; font-size: 13px;
+    .record-table thead th {
+      color: var(--fg);
+      font-weight: 600;
+    }
+    .record-table tbody tr:nth-child(even) td {
+      background: #f2f2f7;
+    }
+    .record-table tbody tr:hover td {
+      background: #e5e5ea;
+    }
+    .record-table td.subject {
+      text-align: left;
+      padding-left: 16px;
+    }
+    .delete-btn {
+      color: #ff3b30;
       cursor: pointer;
+      font-size: 14px;
+      opacity: 1;
+    }
+    .info-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 13px;
+      cursor: pointer;
+      opacity: 1;
     }
     .info-btn:active { filter: brightness(0.9); }
 
-    /* 삭제 버튼 (info와 동일한 스타일, 색상만 다르게) */
-    .delete-btn {
-      background: var(--danger); color: #fff; border: none;
-      border-radius: 6px; padding: 4px 8px; font-size: 13px;
-      cursor: pointer;
-    }
-    .delete-btn:active { filter: brightness(0.9); }
-
     @media (max-width:400px) {
+      .count-container { flex-direction: column; }
       .entry { grid-template-columns: 100% !important; }
     }
 
-    /* 모달 */
+    /* 다크모드용 테이블 배경 덮어쓰기 */
+    [data-theme="dark"] .record-table tbody tr:nth-child(even) td {
+      background: var(--inp-bg);
+    }
+    [data-theme="dark"] .record-table tbody tr:hover td {
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* ─── 모달 스타일 ─── */
     .modal {
-      display: none; position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%; background: rgba(0,0,0,0.5);
-      align-items: center; justify-content: center; padding: 20px;
-      box-sizing: border-box; z-index: 1000;
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+      z-index: 1000;
     }
     .modal-content {
-      background: var(--box-bg); backdrop-filter: blur(20px);
-      border-radius: 16px; width: 100%; max-width: 500px;
-      max-height: 90%; overflow-y: auto; padding: 20px;
+      background: var(--box-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90%;
+      overflow-y: auto;
+      padding: 20px;
       position: relative;
     }
     #modalCloseBtn {
-      position: absolute; top: 12px; right: 12px;
-      background: transparent; border: none; font-size: 16px;
-      color: var(--primary); cursor: pointer; padding: 4px 8px;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: transparent;
+      border: none;
+      font-size: 16px;
+      color: var(--primary);
+      cursor: pointer;
+      padding: 4px 8px;
     }
 
+    /* iOS 스타일 세부표 */
     .table-group {
-      border-radius: 12px; overflow: hidden; margin-bottom: 20px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     .table-group table {
-      width: 100%; border-collapse: collapse; background: var(--inp-bg);
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--inp-bg);
     }
-    .table-group th, .table-group td {
-      padding: 16px; font-size: 16px; text-align: left;
+    .table-group th,
+    .table-group td {
+      padding: 16px;
+      font-size: 16px;
+      text-align: left;
     }
     .table-group tr:not(:last-child) td {
       border-bottom: 1px solid rgba(0,0,0,0.1);
     }
-    .table-group thead { background: rgba(0,0,0,0.05); }
+    .table-group thead {
+      background: rgba(0,0,0,0.05);
+    }
+    [data-theme="dark"] .table-group tr:not(:last-child) td {
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    [data-theme="dark"] .table-group thead {
+      background: rgba(255,255,255,0.1);
+    }
 
-    /* 제목/소제목 간격 */
-    .modal-content h2 { margin: 0 0 24px; }
-    .modal-content h3 { margin: 24px 0 12px; }
+    /* 제목과 소제목 사이 여백 늘리기 */
+    .modal-content h2 {
+      margin-top: 0;
+      margin-bottom: 24px;
+    }
+    .modal-content h3 {
+      margin-top: 24px;
+      margin-bottom: 12px;
+    }
   </style>
 </head>
-<body data-theme="light">
+<body>
 
   <div class="top-bar">
     <h1 onclick="location.reload()">성적 계산기</h1>
@@ -214,11 +328,11 @@
 
     <div id="countBox" class="box">
       <div class="count-container">
-        <div class="entry half">
+        <div class="half">
           <label for="sCount">수행평가 개수</label>
           <input type="number" id="sCount" value="2" min="1" onchange="generateInputs()">
         </div>
-        <div class="entry half">
+        <div class="half">
           <label for="tCount">지필평가 개수</label>
           <input type="number" id="tCount" value="2" min="1" max="2" onchange="generateInputs()">
         </div>
@@ -226,7 +340,6 @@
     </div>
 
     <div id="inputs" class="box"></div>
-
     <button id="calcBtn" class="btn">계산하기</button>
     <div id="result"></div>
 
@@ -239,14 +352,9 @@
         <table class="record-table">
           <thead>
             <tr>
-              <th>일시</th>
-              <th>과목명</th>
-              <th>최종점수</th>
-              <th>등급</th>
-              <th>다음등급필요점수</th>
-              <th>떨어질기준</th>
-              <th>삭제</th>
-              <th>정보</th>
+              <th>일시</th><th>과목<br>명</th><th>최종<br>점수</th><th>등급</th>
+              <th>다음<br>등급<br>필요<br>점수</th><th>떨어질<br>기준</th>
+              <th>삭<br>제</th><th>정<br>보</th>
             </tr>
           </thead>
           <tbody id="historyBody"></tbody>
@@ -264,27 +372,31 @@
   </div>
 
   <script>
-    // 테마 토글 및 시스템 프리퍼런스
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const toggle = document.getElementById('themeToggle');
-    function applyTheme(t) {
-      document.body.setAttribute('data-theme', t);
-      toggle.textContent = t === 'dark' ? '라이트 모드' : '다크 모드';
-      localStorage.setItem('theme', t);
+    // 다크 모드 토글 및 시스템 설정 자동 반영
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const themeToggle = document.getElementById('themeToggle');
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      themeToggle.textContent = theme === 'dark' ? '라이트 모드' : '다크 모드';
+      localStorage.setItem('theme', theme);
     }
-    const saved = localStorage.getItem('theme');
-    applyTheme(saved || (mq.matches ? 'dark' : 'light'));
-    mq.addEventListener('change', e => {
-      if(!localStorage.getItem('theme')) applyTheme(e.matches ? 'dark' : 'light');
+    const savedTheme = localStorage.getItem('theme');
+    const initTheme = savedTheme || (mediaQuery.matches ? 'dark' : 'light');
+    applyTheme(initTheme);
+    mediaQuery.addEventListener('change', e => {
+      if (!localStorage.getItem('theme')) applyTheme(e.matches ? 'dark' : 'light');
     });
-    toggle.onclick = () => applyTheme(document.body.getAttribute('data-theme')==='dark'?'light':'dark');
+    themeToggle.onclick = () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    };
 
-    // generate 입력칸
+    // 입력칸 생성
     function generateInputs() {
       const sCnt = +document.getElementById('sCount').value;
       const tCnt = +document.getElementById('tCount').value;
-      let html = '<h3>수행평가</h3>';
-      for(let i=0;i<sCnt;i++){
+      let html = '<h2>수행평가</h2>';
+      for (let i = 0; i < sCnt; i++) {
         html += `
           <div class="entry">
             <label>수행${i+1}</label>
@@ -293,9 +405,9 @@
             <input type="number" id="sw${i}" placeholder="%">
           </div>`;
       }
-      html += '<h3>지필평가</h3>';
-      for(let i=0;i<tCnt;i++){
-        const lbl = tCnt===1?'기말고사':i===0?'중간고사':'기말고사';
+      html += '<h2>지필평가</h2>';
+      for (let i = 0; i < tCnt; i++) {
+        const lbl = tCnt === 1 ? '기말고사' : (i === 0 ? '중간고사' : '기말고사');
         html += `
           <div class="entry">
             <label>${lbl}</label>
@@ -307,125 +419,139 @@
       document.getElementById('inputs').innerHTML = html;
     }
 
-    // 로컬스토리지 함수
+    // 로컬스토리지 관리
     function loadHistory() {
       return JSON.parse(localStorage.getItem('gradeHistory')||'[]');
     }
-    function saveHistory(e) {
-      const h = loadHistory(); h.unshift(e);
+    function saveHistory(entry) {
+      const h = loadHistory();
+      h.unshift(entry);
       localStorage.setItem('gradeHistory', JSON.stringify(h.slice(0,50)));
     }
-    function deleteHistory(i) {
-      const h = loadHistory(); h.splice(i,1);
+    function deleteHistory(idx) {
+      const h = loadHistory();
+      h.splice(idx,1);
       localStorage.setItem('gradeHistory', JSON.stringify(h));
       renderHistory();
     }
 
-    // 기록 렌더
+    // 렌더
     function renderHistory() {
       const tb = document.getElementById('historyBody');
       tb.innerHTML = '';
-      loadHistory().forEach((it,i) => {
+      loadHistory().forEach((it,i)=>{
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${it.time}</td>
-          <td>${it.subject}</td>
-          <td>${it.final}점</td>
+          <td class="subject">${it.subject}</td>
+          <td>${it.final}</td>
           <td><strong style="color:${
             {A:'#2ecc71',B:'#007aff',C:'#ffcc00',D:'#ff9500',E:'#ff3b30'}[it.grade]
           }">${it.grade}</strong></td>
           <td>${it.nextMsg}</td>
           <td>${it.dropMsg}</td>
-          <td><button class="delete-btn" onclick="deleteHistory(${i})">삭제</button></td>
+          <td><div class="delete-btn" onclick="deleteHistory(${i})">삭제</div></td>
           <td><button class="info-btn" data-idx="${i}">정보</button></td>`;
         tb.appendChild(tr);
       });
-      document.querySelectorAll('.info-btn').forEach(b => {
-        b.onclick = () => showInfo(+b.dataset.idx);
-      });
+      document.querySelectorAll('.info-btn').forEach(b=>b.onclick=()=>showInfo(+b.dataset.idx));
     }
 
-    // 모달
+    // 모달 제어
     const modal = document.getElementById('detailModal'),
           inner = document.getElementById('modalInnerContent'),
           closeBtn = document.getElementById('modalCloseBtn');
     closeBtn.onclick = () => modal.style.display = 'none';
-    window.onclick = e => { if(e.target === modal) modal.style.display = 'none'; };
+    window.onclick = e => { if (e.target === modal) modal.style.display = 'none'; };
 
-    function showInfo(idx) {
-      const e = loadHistory()[idx];
-      if(!e) return;
+    // 상세정보 표시
+    function showInfo(idx){
+      const e = loadHistory()[idx]; if(!e)return;
       let html = `<h2>${e.subject} 상세 정보</h2>
         <h3>수행평가</h3>
         <div class="table-group"><table>
           <thead><tr><th>회차</th><th>점수</th><th>비중(%)</th></tr></thead>
-          <tbody>${e.performances.map((p,j)=>
-            `<tr><td>${j+1}</td><td>${p.score}점</td><td>${p.weight}%</td></tr>`
-          ).join('')}</tbody></table></div>
+          <tbody>
+            ${e.performances.map((p,i)=>`<tr><td>${i+1}</td><td>${p.score}점</td><td>${p.weight}%</td></tr>`).join('')}
+          </tbody></table></div>
         <h3>지필평가</h3>
         <div class="table-group"><table>
           <thead><tr><th>구분</th><th>점수</th><th>비중(%)</th></tr></thead>
-          <tbody>${e.exams.map(ex=>
-            `<tr><td>${ex.label}</td><td>${ex.score}점</td><td>${ex.weight}%</td></tr>`
-          ).join('')}</tbody></table></div>`;
+          <tbody>
+            ${e.exams.map(ex=>`<tr><td>${ex.label}</td><td>${ex.score}점</td><td>${ex.weight}%</td></tr>`).join('')}
+          </tbody></table></div>`;
       inner.innerHTML = html;
       modal.style.display = 'flex';
     }
 
     // 계산
-    function calculate() {
-      const subject = document.getElementById('subjectName').value||'-';
-      const sCnt = +document.getElementById('sCount').value;
-      const tCnt = +document.getElementById('tCount').value;
-      let sSum=0, wSum=0, mid=0, finalW=0, tSum=0;
-      const performances = [], exams = [];
+    function calculate(){
+      const subj = document.getElementById('subjectName').value || '-',
+            sCnt = +document.getElementById('sCount').value,
+            tCnt = +document.getElementById('tCount').value;
+      let sSum = 0, wSum = 0, mid = 0, finalW = 0, tSum = 0;
+      const perf = [], exms = [];
+
       for(let i=0;i<sCnt;i++){
-        const sc = +document.getElementById(`s${i}`).value||0;
-        const w  = +document.getElementById(`sw${i}`).value||0;
-        performances.push({ score: sc, weight: w });
+        const sc = +document.getElementById(`s${i}`).value || 0,
+              w  = +document.getElementById(`sw${i}`).value || 0;
+        perf.push({score:sc,weight:w});
         sSum += sc*(w/100); wSum += w;
       }
       for(let i=0;i<tCnt;i++){
-        const sc    = +document.getElementById(`t${i}`).value||0;
-        const w     = +document.getElementById(`tw${i}`).value||0;
-        const label = (tCnt===1)?'기말고사':(i===0?'중간고사':'기말고사');
-        exams.push({ label, score: sc, weight: w });
+        const sc = +document.getElementById(`t${i}`).value || 0,
+              w  = +document.getElementById(`tw${i}`).value || 0,
+              lbl = (tCnt===1?'기말고사':i===0?'중간고사':'기말고사');
+        exms.push({label:lbl,score:sc,weight:w});
         if(tCnt===1||i===tCnt-1) finalW = w/100;
         else mid += sc*(w/100);
         tSum += sc*(w/100); wSum += w;
       }
-      if(wSum!==100){
+      if(wSum !== 100){
         document.getElementById('result').textContent =
           `❗ 총 비중이 100%가 아닙니다 (현재 ${wSum}%).`;
         return;
       }
-      const final = +(sSum + tSum).toFixed(2);
-      const grade = final>=90?'A': final>=80?'B': final>=70?'C': final>=60?'D':'E';
-      const nextTh = {A:null,B:90,C:80,D:70,E:60}[grade];
-      const currTh = {A:90,B:80,C:70,D:60,E:0}[grade];
+
+      const final = +(sSum + tSum).toFixed(2),
+            grade = final>=90?'A':final>=80?'B':final>=70?'C':final>=60?'D':'E',
+            nextTh = {A:null,B:90,C:80,D:70,E:60}[grade],
+            currTh = {A:90,B:80,C:70,D:60,E:0}[grade];
+
       let nextMsg, dropMsg;
       if(nextTh){
-        const need = (nextTh - sSum - mid)/finalW;
-        const nG = {90:'A',80:'B',70:'C',60:'D'}[nextTh];
+        const need = (nextTh - sSum - mid)/finalW,
+              nG = {90:'A',80:'B',70:'C',60:'D'}[nextTh];
         nextMsg = need>100?`${nG} 등급 불가`:`${nG} 위해 ${need.toFixed(2)}점↑`;
       } else nextMsg = '최고 등급!';
+
       const drop = (currTh - 0.01 - sSum - mid)/finalW;
-      if(drop<0) dropMsg = '떨어질 등급 없음';
-      else {
-        const dG = {90:'B',80:'C',70:'D',60:'E'}[currTh];
-        dropMsg = `${drop.toFixed(2)}점↓ (이하 ${dG})`;
-      }
+      dropMsg = drop<0?'떨어질 등급 없음':`${drop.toFixed(2)}점↓ (이하 ${
+        {90:'B',80:'C',70:'D',60:'E'}[currTh]
+      })`;
+
       document.getElementById('result').innerHTML =
         `최종: <strong>${final}점</strong><br>${grade} 등급<br>${nextMsg}<br>${dropMsg}`;
+
+      // ★ 여기서 시간 포맷을 “YYYY.MM.DD HH:MM”만 저장
+      const now = new Date();
+      const formattedTime =
+        now.getFullYear() + '.' +
+        String(now.getMonth()+1).padStart(2,'0') + '.' +
+        String(now.getDate()).padStart(2,'0') + ' ' +
+        String(now.getHours()).padStart(2,'0') + ':' +
+        String(now.getMinutes()).padStart(2,'0');
+
       saveHistory({
-        time: new Date().toLocaleString('ko-KR'),
-        subject, final, grade, nextMsg, dropMsg,
-        performances, exams
+        time: formattedTime,
+        subject: subj,
+        final, grade, nextMsg, dropMsg,
+        performances: perf, exams: exms
       });
       renderHistory();
     }
 
-    // 초기화 및 SW 등록
+    // 초기화
     window.onload = () => {
       generateInputs();
       renderHistory();
@@ -437,22 +563,6 @@
         }
       };
     };
-
-    // Service Worker 등록 (오프라인 지원)
-    if('serviceWorker' in navigator){
-      window.addEventListener('load', ()=>{
-        const swCode = `
-          const CACHE_NAME='gc-v1';
-          const ASSETS=['./'];
-          self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
-          self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
-          self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));
-        `;
-        const blob = new Blob([swCode],{type:'application/javascript'});
-        navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(console.error);
-      });
-    }
   </script>
-
 </body>
 </html>
