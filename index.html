@@ -8,7 +8,6 @@
   <style>
     /* reset & box-sizing */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     /* 테마 변수 */
     :root {
       --bg: #f2f2f7; --fg: #1c1c1e;
@@ -22,7 +21,6 @@
       --inp-bg: #1c1c1e; --inp-border: #3a3a3c;
       --primary: #0a84ff;
     }
-
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
       background: var(--bg); color: var(--fg);
@@ -30,42 +28,28 @@
       padding: env(safe-area-inset-top) 15px 30px env(safe-area-inset-left);
       padding-bottom: env(safe-area-inset-bottom);
     }
-
-    .top-bar {
-      display: flex; align-items: center; justify-content: space-between;
-      margin: 20px 0;
-    }
-    .top-bar h1 {
-      font-size: 28px; font-weight: 600; cursor: pointer; margin-left: 10px;
-    }
+    .top-bar { display: flex; align-items: center; justify-content: space-between; margin: 20px 0; }
+    .top-bar h1 { font-size: 28px; font-weight: 600; cursor: pointer; margin-left: 10px; }
     .top-controls button {
       background: transparent; color: var(--primary);
       border: 1px solid var(--primary); border-radius: 8px;
       font-size: 14px; height: 30px; line-height: 30px;
       padding: 0 10px; cursor: pointer;
     }
-    .top-controls button:active {
-      background: rgba(0,122,255,0.1);
-    }
-
     .box {
       background: var(--box-bg); backdrop-filter: blur(20px);
       border-radius: 16px; padding: 20px; margin-bottom: 20px;
       border: 1px solid rgba(255,255,255,0.6);
     }
-
     .count-container { display: flex; gap: 12px; }
     .count-container .half { flex: 1; }
-    .count-container .half label {
-      display: block; font-size: 15px; color: #8e8e93; margin-bottom: 6px;
-    }
+    .count-container .half label { display: block; font-size: 15px; color: #8e8e93; margin-bottom: 6px; }
     .count-container .half input {
       width: 100%; height: 44px; padding: 0 12px;
       font-size: 16px; background: var(--inp-bg);
       border: 1px solid var(--inp-border); border-radius: 10px;
       color: var(--fg);
     }
-
     .entry {
       display: grid; grid-template-columns: 100px 1fr;
       grid-template-rows: auto auto; column-gap: 8px;
@@ -78,7 +62,6 @@
       border: 1px solid var(--inp-border); border-radius: 10px;
       color: var(--fg);
     }
-
     .btn {
       display: block; width: 100%; height: 44px;
       font-size: 17px; font-weight: 600; text-align: center;
@@ -87,76 +70,54 @@
       cursor: pointer;
     }
     .btn:active { filter: brightness(0.9); }
-
     #result {
       font-size: 17px; text-align: center;
       line-height: 1.5; margin-bottom: 20px; word-break: keep-all;
     }
-
     .history-header {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 12px;
     }
-    .history-header span {
-      font-size: 17px; font-weight: 600; color: var(--fg);
-    }
+    .history-header span { font-size: 17px; font-weight: 600; color: var(--fg); }
     .btn-outline {
       background: transparent; color: var(--primary);
       border: 1px solid var(--primary); border-radius: 8px;
       font-size: 14px; height: 30px; line-height: 30px;
       padding: 0 10px; cursor: pointer;
     }
-
     .table-container {
       background: var(--inp-bg); border-radius: 12px;
       overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    .record-table {
-      width: 100%; border-collapse: collapse;
-    }
+    .record-table { width: 100%; border-collapse: collapse; }
     .record-table th, .record-table td {
       padding: 12px 8px; text-align: center;
       font-size: 14px; color: var(--fg); border: none;
     }
-    .record-table thead th {
-      font-weight: 600;
-    }
-    .record-table tbody tr:nth-child(even) td {
-      background: #f2f2f7;
-    }
-    .record-table tbody tr:hover td {
-      background: #e5e5ea;
-    }
-    .record-table td.subject {
-      text-align: left; padding-left: 16px;
-    }
-
-    .delete-btn {
-      color: #ff3b30; cursor: pointer; font-size: 14px; opacity: 1;
-    }
+    .record-table thead th { font-weight: 600; }
+    .record-table tbody tr:nth-child(even) td { background: #f2f2f7; }
+    .record-table tbody tr:hover td { background: #e5e5ea; }
+    .record-table td.subject { text-align: left; padding-left: 16px; }
+    .delete-btn { color: #ff3b30; cursor: pointer; font-size: 14px; opacity: 1; }
     .info-btn {
       background: var(--primary); color: #fff; border: none;
       border-radius: 6px; padding: 4px 8px; font-size: 13px;
       cursor: pointer; opacity: 1;
     }
     .info-btn:active { filter: brightness(0.9); }
-
     @media (max-width:400px) {
       .count-container { flex-direction: column; }
       .entry { grid-template-columns: 100% !important; }
     }
-
     [data-theme="dark"] .record-table tbody tr:nth-child(even) td {
       background: var(--inp-bg);
     }
     [data-theme="dark"] .record-table tbody tr:hover td {
       background: rgba(255,255,255,0.1);
     }
-
-    /* ─── D-Day 리스트 구분선 ─── */
+    /* D-Day */
     #ddayList li + li { border-top: 1px solid rgba(0,0,0,0.1); padding-top: 8px; }
     [data-theme="dark"] #ddayList li + li { border-color: rgba(255,255,255,0.1); }
-
     /* 모달 */
     .modal {
       display: none; position: fixed; top: 0; left: 0;
@@ -176,7 +137,6 @@
       font-size: 16px; color: var(--primary);
       cursor: pointer; padding: 4px 8px;
     }
-
     .table-group {
       border-radius: 12px; overflow: hidden;
       margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
@@ -197,7 +157,6 @@
     [data-theme="dark"] .table-group thead {
       background: rgba(255,255,255,0.1);
     }
-
     .modal-content h2 { margin-top: 0; margin-bottom: 24px; }
     .modal-content h3 { margin-top: 24px; margin-bottom: 12px; }
   </style>
@@ -359,7 +318,7 @@
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${it.time}</td>
-          <td class="subject">${it.subject}</td>
+          <td class="subject">${it.subject || '-'}</td>
           <td>${it.final}</td>
           <td><strong style="color:${
             {A:'#2ecc71',B:'#007aff',C:'#ffcc00',D:'#ff9500',E:'#ff3b30'}[it.grade]
@@ -380,82 +339,95 @@
     closeBtn.onclick = () => modal.style.display = 'none';
     window.onclick = e => { if (e.target === modal) modal.style.display = 'none'; };
 
+    // 과목명 수정 함수
+    function updateSubjectName(idx){
+      const list = loadHistory();
+      const newName = document.getElementById('editSubject').value.trim();
+      if (!newName) {
+        alert('과목명을 입력하세요.');
+        return;
+      }
+      list[idx].subject = newName;
+      localStorage.setItem('gradeHistory', JSON.stringify(list));
+      modal.style.display = 'none';
+      renderHistory();
+    }
+
+    // 정보(모달) 표시 함수
     function showInfo(idx){
-      const e = loadHistory()[idx]; if(!e)return;
-      let html = `<h2>${e.subject} 상세 정보</h2>
+      const e = loadHistory()[idx];
+      if (!e) return;
+      let html = `
+        <h2>과목명 수정</h2>
+        <input type="text" id="editSubject" value="${e.subject || ''}" style="width:100%; font-size:18px; padding:8px; margin-bottom:16px;">
         <h3>수행평가</h3>
         <div class="table-group"><table>
           <thead><tr><th>회차</th><th>점수</th><th>비중(%)</th></tr></thead>
           <tbody>
-            ${e.performances.map((p,i)=>`<tr><td>${i+1}</td><td>${p.score}점</td><td>${p.weight}%</td></tr>`).join('')}
+            ${e.performances.map((p,i)=>`<tr><td>${i+1}</td><td>${p.score}</td><td>${p.weight}</td></tr>`).join('')}
           </tbody></table></div>
         <h3>지필평가</h3>
         <div class="table-group"><table>
           <thead><tr><th>구분</th><th>점수</th><th>비중(%)</th></tr></thead>
           <tbody>
-            ${e.exams.map(ex=>`<tr><td>${ex.label}</td><td>${ex.score}점</td><td>${ex.weight}%</td></tr>`).join('')}
-          </tbody></table></div>`;
+            ${e.exams.map(ex=>`<tr><td>${ex.label}</td><td>${ex.score}</td><td>${ex.weight}</td></tr>`).join('')}
+          </tbody></table></div>
+        <button class="btn" onclick="updateSubjectName(${idx})">과목명 저장</button>
+      `;
       inner.innerHTML = html;
       modal.style.display = 'flex';
     }
 
     // 성적 계산
     function calculate(){
-      const subj = document.getElementById('subjectName').value || '-',
+      const subj = document.getElementById('subjectName').value.trim() || '-',
             sCnt = +document.getElementById('sCount').value,
             tCnt = +document.getElementById('tCount').value;
-      let sSum = 0, wSum = 0, mid = 0, finalW = 0, tSum = 0;
-      const perf = [], exms = [];
-
+      let sSum=0, wSum=0, mid=0, finalW=0, tSum=0;
+      const perf=[], exms=[];
       for(let i=0;i<sCnt;i++){
-        const sc = +document.getElementById(`s${i}`).value || 0,
-              w  = +document.getElementById(`sw${i}`).value || 0;
+        const sc=+document.getElementById(`s${i}`).value||0,
+              w=+document.getElementById(`sw${i}`).value||0;
         perf.push({score:sc,weight:w});
-        sSum += sc*(w/100); wSum += w;
+        sSum+=sc*(w/100); wSum+=w;
       }
       for(let i=0;i<tCnt;i++){
-        const sc = +document.getElementById(`t${i}`).value || 0,
-              w  = +document.getElementById(`tw${i}`).value || 0,
-              lbl = (tCnt===1?'기말고사':i===0?'중간고사':'기말고사');
+        const sc=+document.getElementById(`t${i}`).value||0,
+              w=+document.getElementById(`tw${i}`).value||0,
+              lbl=(tCnt===1?'기말고사':i===0?'중간고사':'기말고사');
         exms.push({label:lbl,score:sc,weight:w});
-        if(tCnt===1||i===tCnt-1) finalW = w/100;
-        else mid += sc*(w/100);
-        tSum += sc*(w/100); wSum += w;
+        if(tCnt===1||i===tCnt-1) finalW=w/100;
+        else mid+=sc*(w/100);
+        tSum+=sc*(w/100); wSum+=w;
       }
-      if(wSum !== 100){
-        document.getElementById('result').textContent =
+      if(wSum!==100){
+        document.getElementById('result').textContent=
           `❗ 총 비중이 100%가 아닙니다 (현재 ${wSum}%).`;
         return;
       }
-
-      const final = +(sSum + tSum).toFixed(2),
-            grade = final>=90?'A':final>=80?'B':final>=70?'C':final>=60?'D':'E',
-            nextTh = {A:null,B:90,C:80,D:70,E:60}[grade],
-            currTh = {A:90,B:80,C:70,D:60,E:0}[grade];
-
+      const final=+(sSum+tSum).toFixed(2),
+            grade=final>=90?'A':final>=80?'B':final>=70?'C':final>=60?'D':'E',
+            nextTh={A:null,B:90,C:80,D:70,E:60}[grade],
+            currTh={A:90,B:80,C:70,D:60,E:0}[grade];
       let nextMsg, dropMsg;
       if(nextTh){
-        const need = (nextTh - sSum - mid)/finalW,
-              nG = {90:'A',80:'B',70:'C',60:'D'}[nextTh];
-        nextMsg = need>100?`${nG} 등급 불가`:`${nG} 위해 ${need.toFixed(2)}점↑`;
-      } else nextMsg = '최고 등급!';
-
-      const drop = (currTh - 0.01 - sSum - mid)/finalW;
-      dropMsg = drop<0?'떨어질 등급 없음':`${drop.toFixed(2)}점↓ (이하 ${
+        const need=(nextTh-sSum-mid)/finalW,
+              nG={90:'A',80:'B',70:'C',60:'D'}[nextTh];
+        nextMsg=need>100?`${nG} 등급 불가`:`${nG} 위해 ${need.toFixed(2)}점↑`;
+      } else nextMsg='최고 등급!';
+      const drop=(currTh-0.01-sSum-mid)/finalW;
+      dropMsg=drop<0?'떨어질 등급 없음':`${drop.toFixed(2)}점↓ (이하 ${
         {90:'B',80:'C',70:'D',60:'E'}[currTh]
       })`;
-
-      document.getElementById('result').innerHTML =
+      document.getElementById('result').innerHTML=
         `최종: <strong>${final}점</strong><br>${grade} 등급<br>${nextMsg}<br>${dropMsg}`;
-
-      const now = new Date();
-      const formattedTime =
-        now.getFullYear() + '.' +
-        String(now.getMonth()+1).padStart(2,'0') + '.' +
-        String(now.getDate()).padStart(2,'0') + ' ' +
-        String(now.getHours()).padStart(2,'0') + ':' +
+      const now=new Date();
+      const formattedTime=
+        now.getFullYear()+'.'+
+        String(now.getMonth()+1).padStart(2,'0')+'.'+
+        String(now.getDate()).padStart(2,'0')+' '+
+        String(now.getHours()).padStart(2,'0')+':'+
         String(now.getMinutes()).padStart(2,'0');
-
       saveHistory({
         time: formattedTime, subject: subj,
         final, grade, nextMsg, dropMsg,
@@ -464,7 +436,7 @@
       renderHistory();
     }
 
-    // ─── D-Day 카운터 ───
+    // D-Day
     const DEFAULT_DDAYS = [{ name: '방학식', date: '2025-07-18' }];
     function loadDdays() {
       const stored = localStorage.getItem('ddayList');
@@ -505,9 +477,7 @@
         li.style.display = 'flex';
         li.style.justifyContent = 'space-between';
         li.innerHTML = `
-          <span>
-            <strong>${e.name}</strong> (${e.date}) → ${calcDday(e.date)}
-          </span>
+          <span><strong>${e.name}</strong> (${e.date}) → ${calcDday(e.date)}</span>
           <button class="delete-btn" data-i="${i}">삭제</button>
         `;
         ul.appendChild(li);
