@@ -158,6 +158,14 @@
     }
     .modal-content h2 { margin-top: 0; margin-bottom: 24px; }
     .modal-content h3 { margin-top: 24px; margin-bottom: 12px; }
+
+    /* 수정된 weightSumDisplay 스타일 */
+    #weightSumDisplay {
+      color: rgba(0, 0, 0, 0.6);
+    }
+    [data-theme="dark"] #weightSumDisplay {
+      color: rgba(255, 255, 255, 0.6);
+    }
   </style>
 </head>
 <body data-theme="light">
@@ -188,6 +196,7 @@
           <input type="number" id="tCount" value="2" min="1" max="2" onchange="generateInputs()">
         </div>
       </div>
+      <!-- 수정: 연한 검은색, 문구 변경 -->
       <div id="weightSumDisplay" style="text-align: center; margin-top: 15px; font-weight: 600; font-size: 16px;"></div>
     </div>
 
@@ -278,7 +287,8 @@
         }
 
         const display = document.getElementById('weightSumDisplay');
-        display.textContent = `현재 총 비중 합계: ${totalWeight}%`;
+-       display.textContent = `현재 총 비중 합계: ${totalWeight}%`;
++       display.textContent = `총 퍼센트: ${totalWeight}%`;
 
         // 비중 합계가 100%이면 파란색(primary), 아니면 빨간색으로 표시
         if (totalWeight === 100) {
@@ -488,7 +498,7 @@
     }
     function calcDday(target) {
       const today = new Date();
-      today.setHours(0, 0, 0, 0); // 오늘 날짜의 시작으로 설정
+      today.setHours(0, 0, 0, 0);
       const t = new Date(target + 'T00:00');
       const diff = Math.ceil((t - today)/(1000*60*60*24));
       if (diff > 0) return `D-${diff}`;
