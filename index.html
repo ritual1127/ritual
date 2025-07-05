@@ -1,8 +1,8 @@
+```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <!-- 확대/축소 방지 -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>성적 계산기 + D-Day 카운터</title>
   <style>
@@ -171,7 +171,6 @@
   </div>
 
   <div id="calcView">
-    <!-- 과목 입력 -->
     <div class="box">
       <div class="entry">
         <label for="subjectName">과목명</label>
@@ -179,7 +178,6 @@
       </div>
     </div>
 
-    <!-- 수행/지필 개수 설정 -->
     <div id="countBox" class="box">
       <div class="count-container">
         <div class="half">
@@ -191,14 +189,13 @@
           <input type="number" id="tCount" value="2" min="1" max="2" onchange="generateInputs()">
         </div>
       </div>
+      <div id="weightSumDisplay" style="text-align: center; margin-top: 15px; font-weight: 600; font-size: 16px;"></div>
     </div>
 
-    <!-- 동적 입력 -->
     <div id="inputs" class="box"></div>
     <button id="calcBtn" class="btn">계산하기</button>
     <div id="result"></div>
 
-    <!-- 계산 기록 -->
     <div id="history" class="box">
       <div class="history-header">
         <span>계산 기록</span>
@@ -218,7 +215,6 @@
       </div>
     </div>
 
-    <!-- D-Day 카운터 -->
     <div id="ddayBox" class="box">
       <div class="history-header">
         <span>시험 일정 & D-Day</span>
@@ -239,7 +235,6 @@
     </div>
   </div>
 
-  <!-- 모달 -->
   <div id="detailModal" class="modal">
     <div class="modal-content">
       <button id="modalCloseBtn">닫기</button>
@@ -267,6 +262,36 @@
       applyTheme(next);
     };
 
+    // 비중 합계 실시간 업데이트 함수
+    function updateWeightSum() {
+      try {
+        const sCnt = +document.getElementById('sCount').value;
+        const tCnt = +document.getElementById('tCount').value;
+        let totalWeight = 0;
+
+        // 수행평가 비중 합산
+        for (let i = 0; i < sCnt; i++) {
+          totalWeight += +document.getElementById(`sw${i}`).value || 0;
+        }
+        // 지필평가 비중 합산
+        for (let i = 0; i < tCnt; i++) {
+          totalWeight += +document.getElementById(`tw${i}`).value || 0;
+        }
+
+        const display = document.getElementById('weightSumDisplay');
+        display.textContent = `현재 총 비중 합계: ${totalWeight}%`;
+
+        // 비중 합계가 100%이면 파란색(primary), 아니면 빨간색으로 표시
+        if (totalWeight === 100) {
+          display.style.color = 'var(--primary)';
+        } else {
+          display.style.color = '#ff3b30'; // 경고를 의미하는 빨간색
+        }
+      } catch (e) {
+        // generateInputs가 미처 실행되기 전에 호출될 경우를 대비
+      }
+    }
+
     // 수행/지필 입력 생성
     function generateInputs() {
       const sCnt = +document.getElementById('sCount').value;
@@ -278,7 +303,7 @@
             <label>수행${i+1}</label>
             <input type="number" id="s${i}" placeholder="점수">
             <label>비중(%)</label>
-            <input type="number" id="sw${i}" placeholder="%">
+            <input type="number" id="sw${i}" placeholder="%" oninput="updateWeightSum()">
           </div>`;
       }
       html += '<h2>지필평가</h2>';
@@ -289,10 +314,11 @@
             <label>${lbl}</label>
             <input type="number" id="t${i}" placeholder="점수">
             <label>비중(%)</label>
-            <input type="number" id="tw${i}" placeholder="%">
+            <input type="number" id="tw${i}" placeholder="%" oninput="updateWeightSum()">
           </div>`;
       }
       document.getElementById('inputs').innerHTML = html;
+      updateWeightSum(); // 입력 필드 생성 후 즉시 합계 업데이트
     }
 
     // 로컬스토리지 - 성적
@@ -463,6 +489,7 @@
     }
     function calcDday(target) {
       const today = new Date();
+      today.setHours(0, 0, 0, 0); // 오늘 날짜의 시작으로 설정
       const t = new Date(target + 'T00:00');
       const diff = Math.ceil((t - today)/(1000*60*60*24));
       if (diff > 0) return `D-${diff}`;
@@ -476,6 +503,7 @@
         const li = document.createElement('li');
         li.style.display = 'flex';
         li.style.justifyContent = 'space-between';
+        li.style.padding = '8px 0';
         li.innerHTML = `
           <span><strong>${e.name}</strong> (${e.date}) → ${calcDday(e.date)}</span>
           <button class="delete-btn" data-i="${i}">삭제</button>
