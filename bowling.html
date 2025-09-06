@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>볼링 내기 점수판 (모바일 v9)</title>
+<style>
+  :root{
+    --bg:#f7fafc; --card:#ffffff; --muted:#eef2f7; --text:#0f172a; --sub:#64748b;
+    --accent:#5b9df9; --good:#16a34a; --bad:#ef4444;
+    --shadow:0 12px 24px rgba(15,23,42,.08); --radius:18px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family: ui-sans-serif, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", Roboto, "Segoe UI", Arial;
+    background:linear-gradient(180deg,#f9fbff, #f2f5fb 40%, #eef2ff);
+    color:var(--text);
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:14px;display:grid;gap:14px}
+  @media(min-width:900px){ .wrap{grid-template-columns:1fr .9fr} }
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
+  .head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+  .title{font-size:18px;font-weight:800}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  .field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:140px}
+  label{font-size:12px;color:var(--sub);font-weight:700}
+  select,input[type="number"]{width:100%;padding:12px;border-radius:12px;border:1px solid #e5e7eb;background:#fbfcff;font-size:15px}
+  .btn{appearance:none;border:0;border-radius:14px;padding:12px 14px;background:#eef2ff;color:#1f2937;font-weight:800;cursor:pointer;transition:.15s;box-shadow: inset 0 -2px 0 rgba(0,0,0,.05)}
+  .btn:active{transform:translateY(1px)}
+  .btn.primary{background:var(--accent);color:white}
+  .btn.ghost{background:transparent;border:1px solid #e5e7eb}
+  .btn.small{padding:8px 10px;border-radius:12px;font-size:13px}
+  .stack{display:grid;gap:10px}
+  .muted{color:var(--sub)}
+
+  .table-wrap{overflow:auto;border-radius:14px;border:1px solid #e5e7eb}
+  table{width:100%;border-collapse:separate;border-spacing:0;background:white}
+  th,td{padding:10px 10px;border-bottom:1px solid #eef1f6;text-align:center;white-space:nowrap}
+  thead th{position:sticky;top:0;background:#f7f9ff;color:#334155;font-size:13px;z-index:1}
+  tbody tr:hover{background:#fafcff}
+
+  .badge{display:inline-flex;gap:6px;align-items:center;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800}
+  .badge.A{background:#eaf6ff;color:#1e40af}
+  .badge.B{background:#ffecec;color:#7f1d1d}
+  .rank{width:28px;height:28px;border-radius:8px;display:inline-grid;place-items:center;font-weight:900;background:#eef2ff}
+
+  .list{display:grid;gap:10px}
+  .line{display:flex;justify-content:space-between;align-items:center;background:var(--muted);border-radius:12px;padding:10px}
+  .name{font-weight:900}
+  .sub{font-size:12px;color:#6b7280}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800}
+  .pill.info{background:#eaf2ff;color:#1e3a8a}
+  .pill.good{background:#e8f7ee;color:#166534}
+  .pill.bad{background:#ffe8e8;color:#7f1d1d}
+
+  .row-win{background:#f0fff4}
+  .row-lose{background:#fff5f5}
+  .row-tie{background:#f8fafc}
+
+  .toolbar{
+    position:sticky; bottom:0; z-index:3; display:flex; gap:8px; flex-wrap:wrap;
+    background:rgba(255,255,255,.85); backdrop-filter: blur(10px);
+    padding:10px; border:1px solid #e5e7eb; border-radius:14px; box-shadow:var(--shadow)
+  }
+  .toolbar .btn{flex:1}
+
+  .hidden{display:none}
+
+  /* 팀전 이름 입력 섹션 */
+  .team-grid{display:grid;grid-template-columns:1fr;gap:10px}
+  @media(min-width:700px){ .team-grid{grid-template-columns:1fr 1fr} }
+  .team-col{border:1px solid #e5e7eb;border-radius:12px;padding:10px}
+  .team-col h4{margin:0 0 8px 0;font-size:14px}
+
+  /* 개인전일 때 팀 영역 완전 숨김(우선순위 강제) */
+  .team-grid.hidden, #nameFieldsTeam.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- ===== 설정 화면 ===== -->
+<div id="setupScreen" class="wrap">
+  <div class="card">
+    <div class="head">
+      <div class="title">설정</div>
+    </div>
+
+    <div class="stack">
+      <div class="row">
+        <div class="field">
+          <label>모드</label>
+          <select id="mode">
+            <option value="solo">개인전</option>
+            <option value="team">팀전 (2팀)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>인원 수</label>
+          <input id="playerCount" type="number" min="2" max="16" value="6">
+        </div>
+        <div class="field">
+          <label>라운드 수</label>
+          <input id="roundCount" type="number" min="1" max="10" value="3">
+        </div>
+      </div>
+
+      <!-- 개인전: 하위 인원만 -->
+      <div class="row" id="soloPenaltyRow">
+        <div class="field">
+          <label>하위 인원(돈 내는 사람 수)</label>
+          <input id="bottomPayCount" type="number" min="1" value="2">
+        </div>
+      </div>
+
+      <!-- 팀전 옵션 -->
+      <div class="row hidden" id="teamPenaltyRow">
+        <div class="field">
+          <label>팀전 1인당 벌금(원)</label>
+          <input id="teamFinePerPerson" type="number" min="0" step="1000" value="5000">
+        </div>
+        <div class="field">
+          <label>핸디캡(작은 팀 가산점)</label>
+          <input id="teamHandicap" type="number" min="0" step="1" value="0">
+        </div>
+        <div class="field" style="align-self:flex-end">
+          <button id="randomTeamsBtn" class="btn">팀 랜덤 배정</button>
+        </div>
+      </div>
+
+      <!-- 이름 선택 -->
+      <div class="card" style="padding:12px;margin:6px 0">
+        <!-- 개인전 -->
+        <div id="nameFieldsSolo" class="row"></div>
+
+        <!-- 팀전: A/B 팀 칼럼 -->
+        <div id="nameFieldsTeam" class="team-grid hidden">
+          <div class="team-col">
+            <h4>A팀</h4>
+            <div id="teamAFields" class="row"></div>
+          </div>
+          <div class="team-col">
+            <h4>B팀</h4>
+            <div id="teamBFields" class="row"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <button id="toGameBtn" class="btn primary">설정 확인</button>
+        <button id="resetSetupBtn" class="btn ghost">초기화</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 경기 화면 ===== -->
+<div id="gameScreen" class="wrap hidden">
+  <div class="card">
+    <div class="head">
+      <div class="title">볼링 내기 점수판</div>
+      <div class="row">
+        <button id="backToSetupBtn" class="btn ghost small">설정 다시하기</button>
+        <button id="resetScoresBtn" class="btn ghost small">점수 초기화</button>
+      </div>
+    </div>
+
+    <!-- 점수판 -->
+    <div class="table-wrap">
+      <table id="scoreTable"></table>
+    </div>
+
+    <div class="toolbar">
+      <button id="toggleResultBtn" class="btn">결과 보기(순위+정산)</button>
+      <button id="saveResultJpgBtn" class="btn primary" disabled>결과 이미지 저장(JPG)</button>
+    </div>
+  </div>
+
+  <!-- 결과 패널(순위 + 정산 + 이체 안내 토글) -->
+  <div id="resultCard" class="card hidden">
+    <div class="head">
+      <div class="title">결과</div>
+      <div class="row">
+        <button id="toggleTransferBtn" class="btn small">이체 안내 보기</button>
+      </div>
+    </div>
+
+    <div id="liveList" class="list" style="margin-bottom:10px"></div>
+    <hr style="border:none;border-top:1px solid #e5e7eb;margin:8px 0">
+    <div>
+      <div class="title" style="font-size:16px;margin-bottom:6px">정산</div>
+      <div class="sub" id="settleInfo"></div>
+      <div id="settleList" class="list" style="margin-top:8px"></div>
+    </div>
+
+    <div id="transferSection" class="hidden">
+      <hr style="border:none;border-top:1px solid #e5e7eb;margin:8px 0">
+      <div>
+        <div class="title" style="font-size:16px;margin-bottom:6px">계좌 이체 안내</div>
+        <div id="transferList" class="list"></div>
+      </div>
+    </div>
+
+    <div class="row" style="justify-content:flex-end;margin-top:8px">
+      <button id="closeResultBtn" class="btn small">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- html2canvas -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<script>
+  // ===== 규칙 상수 =====
+  // 개인전: 승자(상위)는 1인당 +5,000원 고정
+  const SOLO_WINNER_BONUS = 5000;
+
+  // ===== 프리셋 이름 =====
+  const PRESET_NAMES = ["김무성","김승준","박신후","박지완","손광덕","은대규","이원진","조세기","최민재","최우영","최지호"];
+
+  // ===== 상태 =====
+  const state = {
+    mode:'solo',
+    playerCount:6,
+    roundCount:3,
+    bottomPayCount:2,
+    teamFinePerPerson:5000,
+    teamHandicap:0,
+    names:[],
+    scores:[],
+    teams:{A:[],B:[]},
+  };
+
+  // ===== 엘리먼트 =====
+  const els = {
+    setupScreen: document.getElementById('setupScreen'),
+    gameScreen: document.getElementById('gameScreen'),
+    mode: document.getElementById('mode'),
+    playerCount: document.getElementById('playerCount'),
+    roundCount: document.getElementById('roundCount'),
+    bottomPayCount: document.getElementById('bottomPayCount'),
+    teamFinePerPerson: document.getElementById('teamFinePerPerson'),
+    teamHandicap: document.getElementById('teamHandicap'),
+    soloPenaltyRow: document.getElementById('soloPenaltyRow'),
+    teamPenaltyRow: document.getElementById('teamPenaltyRow'),
+    nameFieldsSolo: document.getElementById('nameFieldsSolo'),
+    nameFieldsTeam: document.getElementById('nameFieldsTeam'),
+    teamAFields: document.getElementById('teamAFields'),
+    teamBFields: document.getElementById('teamBFields'),
+    randomTeamsBtn: document.getElementById('randomTeamsBtn'),
+    toGameBtn: document.getElementById('toGameBtn'),
+    resetSetupBtn: document.getElementById('resetSetupBtn'),
+    backToSetupBtn: document.getElementById('backToSetupBtn'),
+    resetScoresBtn: document.getElementById('resetScoresBtn'),
+    scoreTable: document.getElementById('scoreTable'),
+    toggleResultBtn: document.getElementById('toggleResultBtn'),
+    saveResultJpgBtn: document.getElementById('saveResultJpgBtn'),
+    resultCard: document.getElementById('resultCard'),
+    closeResultBtn: document.getElementById('closeResultBtn'),
+    liveList: document.getElementById('liveList'),
+    settleInfo: document.getElementById('settleInfo'),
+    settleList: document.getElementById('settleList'),
+    transferSection: document.getElementById('transferSection'),
+    transferList: document.getElementById('transferList'),
+    toggleTransferBtn: document.getElementById('toggleTransferBtn'),
+  };
+
+  // ===== 유틸 =====
+  const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
+  function formatKRW(n){const sign=n<0?'-':'';const v=Math.abs(n|0);return sign+v.toString().replace(/\B(?=(\d{3})+(?!\d))/g,',')+'원';}
+  function hide(el){ el.classList.add('hidden'); }
+  function show(el){ el.classList.remove('hidden'); }
+  function isHidden(el){ return el.classList.contains('hidden'); }
+
+  // 금액 분배 매칭: payers[{name,amount}], receivers[{name,amount}] → {from,to,amount}[]
+  function buildTransfers(payers, receivers){
+    const transfers=[];
+    let i=0, j=0;
+    while(i<payers.length && j<receivers.length){
+      let due = payers[i].amount;
+      let need = receivers[j].amount;
+      if(due<=0){ i++; continue; }
+      if(need<=0){ j++; continue; }
+      const x = Math.min(due, need);
+      transfers.push({from:payers[i].name, to:receivers[j].name, amount:x});
+      payers[i].amount -= x;
+      receivers[j].amount -= x;
+      if(payers[i].amount===0) i++;
+      if(receivers[j].amount===0) j++;
+    }
+    return transfers;
+  }
+
+  // ===== 초기화 =====
+  function initNames(){ state.names = Array.from({length: state.playerCount}, (_,i)=> `플레이어 ${i+1}`); }
+  function initScores(){ state.scores = Array.from({length: state.playerCount}, ()=> Array.from({length: state.roundCount}, ()=> null)); }
+  function resetTeamsDefault(){
+    const idxs=[...Array(state.playerCount).keys()];
+    const half=Math.floor(state.playerCount/2);
+    state.teams.A = idxs.slice(0,half);
+    state.teams.B = idxs.slice(half);
+  }
+
+  // ===== 이름 선택 UI =====
+  function makeSelect(idx,labelText){
+    const field=document.createElement('div'); field.className='field';
+    const lab=document.createElement('label'); lab.textContent=labelText;
+    const sel=document.createElement('select');
+    sel.innerHTML = `<option value="">선택</option>` + PRESET_NAMES.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
+    sel.addEventListener('change', ()=>{ state.names[idx] = sel.value===''? `플레이어 ${idx+1}` : PRESET_NAMES[+sel.value]; });
+    field.appendChild(lab); field.appendChild(sel);
+    return field;
+  }
+
+  function renderNameFields(){
+    els.nameFieldsSolo.innerHTML=''; els.teamAFields.innerHTML=''; els.teamBFields.innerHTML='';
+    if(state.mode==='team'){
+      const aCount = Math.ceil(state.playerCount/2);
+      const bCount = Math.floor(state.playerCount/2);
+      for(let i=0;i<aCount;i++) els.teamAFields.appendChild(makeSelect(i, `A팀 이름.${i+1}`));
+      for(let j=0;j<bCount;j++) els.teamBFields.appendChild(makeSelect(aCount+j, `B팀 이름.${j+1}`));
+      show(els.nameFieldsTeam); hide(els.nameFieldsSolo);
+      state.teams.A = [...Array(aCount).keys()];
+      state.teams.B = [...Array(bCount).keys()].map(x=> aCount + x);
+    }else{
+      for(let i=0;i<state.playerCount;i++) els.nameFieldsSolo.appendChild(makeSelect(i, `이름.${i+1}`));
+      hide(els.nameFieldsTeam); els.teamAFields.innerHTML=''; els.teamBFields.innerHTML='';
+      show(els.nameFieldsSolo);
+    }
+  }
+
+  // ===== 화면 전환 =====
+  function goToGame(){
+    hide(els.setupScreen); show(els.gameScreen);
+  }
+  function backToSetup(){
+    // 결과/저장 버튼 상태도 리셋
+    hide(els.resultCard);
+    hide(els.transferSection);
+    els.toggleResultBtn.textContent='결과 보기(순위+정산)';
+    els.saveResultJpgBtn.disabled=true;
+
+    hide(els.gameScreen); show(els.setupScreen);
+  }
+
+  // ===== 계산 =====
+  function sumRow(r){ const arr=state.scores[r].filter(v=>v!==null); if(arr.length===0) return NaN; return arr.reduce((a,b)=>a+b,0); }
+  function averageRow(r){ const arr=state.scores[r].filter(v=>v!==null); if(arr.length===0) return NaN; return arr.reduce((a,b)=>a+b,0)/arr.length; }
+  function teamSum(teamIdxs){ const s=teamIdxs.map(idx=> sumRow(idx)).filter(v=>!isNaN(v)); return s.length? s.reduce((a,b)=>a+b,0):NaN; }
+
+  // ===== 점수판 =====
+  function renderTable(){
+    const thead=`
+      <thead>
+        <tr>
+          <th style="text-align:left">이름</th>
+          ${Array.from({length:state.roundCount},(_,i)=>`<th>라운드${i+1}</th>`).join('')}
+          <th>합계</th><th>평균</th>
+        </tr>
+      </thead>`;
+    const tbody=`
+      <tbody>
+        ${state.names.map((name,r)=>{
+          const sum=sumRow(r), avg=averageRow(r);
+          const teamBadge=(state.mode==='team')?(state.teams.A.includes(r)?`<span class="badge A">A팀</span>`:`<span class="badge B">B팀</span>`):'';
+          return `<tr data-row="${r}">
+            <td style="text-align:left;font-weight:800;display:flex;align-items:center;gap:8px">${name}${state.mode==='team' ? ' · '+teamBadge : ''}</td>
+            ${state.scores[r].map((v,c)=>{
+              const val=(v??'');
+              return `<td><input data-r="${r}" data-c="${c}" type="number" inputmode="numeric" min="0" max="300" step="1"
+                         value="${val}" style="width:90px;max-width:26vw;padding:10px;border:1px solid #e5e7eb;border-radius:10px;background:#fbfcff;font-size:16px"></td>`;
+            }).join('')}
+            <td><span class="pill info">${isNaN(sum)?'-':sum}</span></td>
+            <td><span class="pill">${isNaN(avg)?'-':avg.toFixed(1)}</span></td>
+          </tr>`;
+        }).join('')}
+      </tbody>`;
+    els.scoreTable.innerHTML=thead+tbody;
+
+    els.scoreTable.querySelectorAll('input[type="number"]').forEach(inp=>{
+      inp.addEventListener('input',(e)=>{
+        const r=+e.target.dataset.r, c=+e.target.dataset.c;
+        const raw=e.target.value.trim();
+        const val=raw===''? null : Math.max(0,Math.min(300,parseInt(raw)));
+        state.scores[r][c]=(val===null? null: val);
+        updateRowFooter(r);
+        applyTeamRowColors();
+      },{passive:true});
+    });
+
+    applyTeamRowColors();
+  }
+
+  function updateRowFooter(r){
+    const sum=sumRow(r), avg=averageRow(r);
+    const row=els.scoreTable.querySelector(`tbody tr[data-row="${r}"]`);
+    if(!row) return;
+    row.querySelectorAll('td').item(state.roundCount+1).innerHTML=`<span class="pill info">${isNaN(sum)?'-':sum}</span>`;
+    row.querySelectorAll('td').item(state.roundCount+2).innerHTML=`<span class="pill">${isNaN(avg)?'-':avg.toFixed(1)}</span>`;
+  }
+
+  function applyTeamRowColors(){
+    if(state.mode!=='team'){
+      els.scoreTable.querySelectorAll('tbody tr').forEach(tr=>tr.className='');
+      return;
+    }
+    const A=teamSum(state.teams.A), B=teamSum(state.teams.B);
+    const aSize=state.teams.A.length, bSize=state.teams.B.length;
+    const hc = +els.teamHandicap.value || +state.teamHandicap || 0;
+    const Aadj = (aSize<bSize)? A + hc : A;
+    const Badj = (bSize<aSize)? B + hc : B;
+
+    let aClass='row-tie', bClass='row-tie';
+    if(!(isNaN(Aadj)&&isNaN(Badj))){
+      if(Aadj===Badj){ aClass='row-tie'; bClass='row-tie'; }
+      else if(Aadj>Badj){ aClass='row-win'; bClass='row-lose'; }
+      else{ aClass='row-lose'; bClass='row-win'; }
+    }
+    els.scoreTable.querySelectorAll('tbody tr').forEach((tr,i)=>{
+      if(state.teams.A.includes(i)) tr.className=aClass;
+      else if(state.teams.B.includes(i)) tr.className=bClass;
+      else tr.className='row-tie';
+    });
+  }
+
+  // ===== 결과(순위+정산+이체) =====
+  function renderResult(){
+    // 순위
+    const entries=state.names.map((name,i)=>({i,name,sum:sumRow(i),avg:averageRow(i)}));
+    if(state.mode==='team'){
+      const A=teamSum(state.teams.A), B=teamSum(state.teams.B);
+      const aSize=state.teams.A.length, bSize=state.teams.B.length;
+      const hc = state.teamHandicap;
+      const Aadj = (aSize<bSize)? A + hc : A;
+      const Badj = (bSize<aSize)? B + hc : B;
+      const leader=(isNaN(Aadj)&&isNaN(Badj))?'점수를 입력해 주세요':(Aadj===Badj?'동점!':(Aadj>Badj?'A팀 리드':'B팀 리드'));
+
+      els.liveList.innerHTML=`
+        <div class="line">
+          <div><div class="name">A팀 합계${(aSize<bSize&&hc>0)?' (+핸디캡)':''}</div><div class="sub">${state.teams.A.map(i=>state.names[i]).join(' · ')||'-'}</div></div>
+          <div class="pill info" style="font-weight:900">${isNaN(Aadj)?'-':Aadj}</div>
+        </div>
+        <div class="line">
+          <div><div class="name">B팀 합계${(bSize<aSize&&hc>0)?' (+핸디캡)':''}</div><div class="sub">${state.teams.B.map(i=>state.names[i]).join(' · ')||'-'}</div></div>
+          <div class="pill info" style="font-weight:900">${isNaN(Badj)?'-':Badj}</div>
+        </div>
+        <div class="line" style="justify-content:center"><span class="pill ${leader.includes('리드')?'good':''}">${leader}</span></div>
+      `;
+    }else{
+      const valid=entries.filter(e=>!isNaN(e.sum));
+      valid.sort((a,b)=>{
+        if(b.sum!==a.sum) return b.sum-a.sum;
+        if(isNaN(a.avg)&&isNaN(b.avg)) return 0;
+        if(isNaN(a.avg)) return 1;
+        if(isNaN(b.avg)) return -1;
+        return b.avg-a.avg;
+      });
+
+      els.liveList.innerHTML = valid.map((e,idx)=>{
+        const medal = idx===0?'🥇':idx===1?'🥈':idx===2?'🥉':'';
+        return `
+        <div class="line">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="rank">${idx+1}</span>
+            <div>
+              <div class="name">${medal? medal+' ':''}${e.name}</div>
+              <div class="sub">합계 ${e.sum}${isNaN(e.avg)?'':` · 평균 ${e.avg.toFixed(1)}`}</div>
+            </div>
+          </div>
+          <div class="pill ${idx===0?'good':''}">${idx===0?'TOP':''}</div>
+        </div>`;
+      }).join('') || `<div class="sub">점수를 입력해 주세요</div>`;
+    }
+
+    // 정산 + 이체 안내
+    if(state.mode==='team'){
+      const A=teamSum(state.teams.A), B=teamSum(state.teams.B);
+      const aSize=state.teams.A.length, bSize=state.teams.B.length;
+      const hc = state.teamHandicap;
+      const Aadj = (aSize<bSize)? A + hc : A;
+      const Badj = (bSize<aSize)? B + hc : B;
+
+      els.settleList.innerHTML=''; els.transferList.innerHTML='';
+
+      if(isNaN(Aadj)&&isNaN(Badj)){ els.settleInfo.textContent='점수를 입력해 주세요.'; return; }
+      if(Aadj===Badj){ els.settleInfo.textContent='동점입니다. 패배 팀 없음.'; return; }
+
+      const loserTeam = (Aadj>Badj)? 'B':'A';
+      const loserIdxs = loserTeam==='A'? state.teams.A : state.teams.B;
+      const winnerIdxs = loserTeam==='A'? state.teams.B : state.teams.A;
+      const eachPay = Math.max(0, state.teamFinePerPerson|0);
+      const pot = loserIdxs.length * eachPay;
+      const winnersCount = winnerIdxs.length;
+
+      const baseGet = winnersCount>0 ? Math.floor(pot / winnersCount) : 0;
+      let remainder = winnersCount>0 ? pot % winnersCount : 0;
+
+      els.settleInfo.textContent = `${loserTeam}팀 패배 · 패배 팀 각자 ${formatKRW(eachPay)} 납부 · 승리 팀 각자 약 ${formatKRW(baseGet)} 수령`;
+
+      const items=[];
+      loserIdxs.forEach(i=> items.push({name:state.names[i], tag:`${loserTeam}팀`, amount:-eachPay}));
+      winnerIdxs.forEach((i,idx)=>{
+        const extra = (remainder>0)? 1:0; if(remainder>0) remainder--;
+        items.push({name:state.names[i], tag:(loserTeam==='A'?'B':'A')+'팀', amount:+(baseGet+extra)});
+      });
+      els.settleList.innerHTML = items.map(o=>`
+        <div class="line">
+          <div><div class="name">${o.name}</div><div class="sub">${o.tag}</div></div>
+          <div class="pill ${o.amount>=0?'good':'bad'}">${o.amount>=0?'+':''}${formatKRW(o.amount)}</div>
+        </div>
+      `).join('');
+
+      // 이체 매칭
+      const payers = loserIdxs.map(i=>({name:state.names[i], amount:eachPay}));
+      const receivers = winnerIdxs.map((i)=>({
+        name:state.names[i],
+        amount: items.find(x=>x.name===state.names[i]).amount
+      }));
+      const transfers = buildTransfers(payers, receivers);
+      els.transferList.innerHTML = transfers.map(t=>`
+        <div class="line">
+          <div><div class="name">${t.from}</div><div class="sub">→ ${t.to}</div></div>
+          <div class="pill bad">-${formatKRW(t.amount)}</div>
+        </div>
+      `).join('');
+
+    }else{
+      // 개인전: 승자 +5,000, 패자가 총액 균등 부담 → 이체는 패자 → 승자
+      const ranked = state.names.map((name,i)=>({i,name,sum:sumRow(i),avg:averageRow(i)})).filter(e=>!isNaN(e.sum));
+      const N=ranked.length;
+      if(N===0){ els.settleInfo.textContent='점수를 입력해 주세요.'; els.settleList.innerHTML=''; els.transferList.innerHTML=''; return; }
+
+      // 하위 L명
+      const L=Math.min(state.bottomPayCount, Math.max(1,N-1));
+      ranked.sort((a,b)=>{
+        if(a.sum!==b.sum) return a.sum-b.sum;
+        if(isNaN(a.avg)&&isNaN(b.avg)) return 0;
+        if(isNaN(a.avg)) return 1;
+        if(isNaN(b.avg)) return -1;
+        return a.avg-b.avg;
+      });
+      const losersIdx = ranked.slice(0,L).map(e=>e.i);
+      const winnersIdx = ranked.slice(L).map(e=>e.i);
+      const winnersCount = winnersIdx.length;
+
+      const totalPayout = winnersCount * SOLO_WINNER_BONUS;
+      const baseLoserPay = Math.floor(totalPayout / L);
+      let remainder = totalPayout % L;
+
+      els.settleInfo.textContent = `승자 ${winnersCount}명 각 +${formatKRW(SOLO_WINNER_BONUS)} · 패자 ${L}명 합계 ${formatKRW(totalPayout)} 균등 분담`;
+
+      // 개별 정산표
+      const items=[];
+      winnersIdx.forEach(i=> items.push({name:state.names[i], tag:'상위', amount:+SOLO_WINNER_BONUS}));
+      losersIdx.forEach((i,idx)=>{
+        const extra = (remainder>0)? 1:0; if(remainder>0) remainder--;
+        items.push({name:state.names[i], tag:'하위', amount:-(baseLoserPay+extra)});
+      });
+      els.settleList.innerHTML = items.map(o=>`
+        <div class="line">
+          <div><div class="name">${o.name}</div><div class="sub">${o.tag}</div></div>
+          <div class="pill ${o.amount>=0?'good':'bad'}">${o.amount>=0?'+':''}${formatKRW(o.amount)}</div>
+        </div>
+      `).join('');
+
+      // 이체 매칭: 패자 → 승자
+      const payers = losersIdx.map(i=>{
+        const amt = Math.abs(items.find(x=>x.name===state.names[i]).amount);
+        return {name:state.names[i], amount:amt};
+      });
+      const receivers = winnersIdx.map(i=>({name:state.names[i], amount:SOLO_WINNER_BONUS}));
+      const transfers = buildTransfers(payers, receivers);
+      els.transferList.innerHTML = transfers.map(t=>`
+        <div class="line">
+          <div><div class="name">${t.from}</div><div class="sub">→ ${t.to}</div></div>
+          <div class="pill bad">-${formatKRW(t.amount)}</div>
+        </div>
+      `).join('');
+    }
+  }
+
+  // ===== JPG 저장(결과 패널만) =====
+  async function saveResultAsJPG(){
+    if(isHidden(els.resultCard)) return;
+    const canvas=await html2canvas(els.resultCard,{scale:2,backgroundColor:'#ffffff',useCORS:true,logging:false});
+    const dataUrl=canvas.toDataURL('image/jpeg',0.92);
+    const a=document.createElement('a');
+    a.href=dataUrl; a.download=`bowling_result_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.jpg`;
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  // ===== 이벤트 =====
+  // 모드 전환
+  els.mode.addEventListener('change', ()=>{
+    state.mode = els.mode.value;
+    els.soloPenaltyRow.classList.toggle('hidden', state.mode==='team');
+    els.teamPenaltyRow.classList.toggle('hidden', state.mode!=='team');
+    renderNameFields();
+  });
+
+  // 인원 변경
+  els.playerCount.addEventListener('input', ()=>{
+    state.playerCount = clamp(+els.playerCount.value,2,16);
+    initNames(); renderNameFields();
+  });
+
+  // 팀 랜덤
+  els.randomTeamsBtn && els.randomTeamsBtn.addEventListener('click', ()=>{
+    const idxs=[...Array(state.playerCount).keys()];
+    for(let i=idxs.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [idxs[i],idxs[j]]=[idxs[j],idxs[i]]; }
+    const aCount = Math.ceil(state.playerCount/2);
+    state.teams.A = idxs.slice(0,aCount);
+    state.teams.B = idxs.slice(aCount);
+    alert('팀이 랜덤으로 배정되었습니다. 각 팀 칸에서 이름을 선택해 주세요.');
+  });
+
+  // 설정 초기화
+  els.resetSetupBtn.addEventListener('click', ()=>{
+    els.mode.value='solo'; state.mode='solo';
+    els.playerCount.value=6; els.roundCount.value=3;
+    els.bottomPayCount.value=2;
+    els.teamFinePerPerson.value=5000; els.teamHandicap.value=0;
+    state.playerCount=6; state.roundCount=3; state.bottomPayCount=2;
+    state.teamFinePerPerson=5000; state.teamHandicap=0;
+    initNames(); resetTeamsDefault(); renderNameFields();
+    els.soloPenaltyRow.classList.remove('hidden'); els.teamPenaltyRow.classList.add('hidden');
+  });
+
+  // 설정 확인 → 게임 화면
+  els.toGameBtn.addEventListener('click', ()=>{
+    state.mode=els.mode.value;
+    state.playerCount=clamp(+els.playerCount.value,2,16);
+    state.roundCount=clamp(+els.roundCount.value,1,10);
+    state.bottomPayCount=Math.max(1,Math.min(state.playerCount-1,+els.bottomPayCount.value||1));
+    state.teamFinePerPerson=Math.max(0,+els.teamFinePerPerson.value||0);
+    state.teamHandicap=Math.max(0,+els.teamHandicap.value||0);
+
+    initScores(); renderTable(); goToGame();
+
+    // 결과/저장 버튼 상태 리셋
+    hide(els.resultCard);
+    els.toggleResultBtn.textContent='결과 보기(순위+정산)';
+    els.saveResultJpgBtn.disabled=true;
+    hide(els.transferSection);
+    els.toggleTransferBtn.textContent='이체 안내 보기';
+  });
+
+  // 설정 다시하기 (버튼 고장 방지: 확실히 동작하도록 상태/뷰 모두 리셋)
+  els.backToSetupBtn.addEventListener('click', backToSetup);
+
+  // 점수 초기화 (버튼 고장 방지: 점수/뷰/결과 모두 리셋)
+  els.resetScoresBtn.addEventListener('click', ()=>{
+    initScores(); renderTable();
+    hide(els.resultCard);
+    els.toggleResultBtn.textContent='결과 보기(순위+정산)';
+    els.saveResultJpgBtn.disabled=true;
+    hide(els.transferSection);
+    els.toggleTransferBtn.textContent='이체 안내 보기';
+  });
+
+  // 결과 열고/닫기 + 저장 버튼 상태
+  els.toggleResultBtn.addEventListener('click', ()=>{
+    const open = isHidden(els.resultCard);
+    if(open){
+      renderResult();
+      show(els.resultCard);
+      els.toggleResultBtn.textContent='결과 닫기';
+      els.saveResultJpgBtn.disabled=false;
+    }else{
+      hide(els.resultCard);
+      els.toggleResultBtn.textContent='결과 보기(순위+정산)';
+      els.saveResultJpgBtn.disabled=true;
+    }
+  });
+  els.closeResultBtn.addEventListener('click', ()=>{ els.toggleResultBtn.click(); });
+  els.saveResultJpgBtn.addEventListener('click', saveResultAsJPG);
+
+  // 이체 안내 토글
+  els.toggleTransferBtn.addEventListener('click', ()=>{
+    if(isHidden(els.transferSection)){
+      show(els.transferSection);
+      els.toggleTransferBtn.textContent='이체 안내 숨기기';
+    }else{
+      hide(els.transferSection);
+      els.toggleTransferBtn.textContent='이체 안내 보기';
+    }
+  });
+
+  // ===== 부트스트랩 =====
+  (function bootstrap(){
+    state.mode = els.mode.value;
+    initNames(); resetTeamsDefault(); renderNameFields();
+  })();
+</script>
+</body>
+</html>
