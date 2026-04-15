@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>얼굴 때리기!</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #1a1a2e;
+    font-family: 'Jua', sans-serif;
+    overflow: hidden;
+    cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><text y='30' font-size='30'>👋</text></svg>") 20 20, auto;
+    user-select: none;
+  }
+
+  .title {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    color: #ff6b6b;
+    text-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+    margin-bottom: 15px;
+    text-align: center;
+    animation: titlePulse 2s ease-in-out infinite;
+  }
+
+  @keyframes titlePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .score-board {
+    font-size: 1.2rem;
+    color: #ffd93d;
+    margin-bottom: 15px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .score-board span {
+    background: rgba(255, 217, 61, 0.1);
+    border: 2px solid rgba(255, 217, 61, 0.3);
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.95rem;
+  }
+
+  .damage-label {
+    color: #ff6b6b !important;
+    border-color: rgba(255, 107, 107, 0.4) !important;
+    background: rgba(255, 107, 107, 0.1) !important;
+  }
+
+  .face-container {
+    position: relative;
+    width: 300px;
+    height: 340px;
+    cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'><text y='38' font-size='38'>✊</text></svg>") 25 25, pointer;
+  }
+
+  .face {
+    position: absolute;
+    width: 280px;
+    height: 320px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.08s ease;
+  }
+
+  .face.slapped-left { transform: translate(-50%, -50%) rotate(-15deg) translateX(-20px); }
+  .face.slapped-right { transform: translate(-50%, -50%) rotate(15deg) translateX(20px); }
+
+  .head {
+    position: absolute;
+    width: 220px;
+    height: 240px;
+    background: #ffcc99;
+    border-radius: 50% 50% 45% 45%;
+    left: 50%;
+    top: 40px;
+    transform: translateX(-50%);
+    box-shadow: inset -10px -10px 20px rgba(0,0,0,0.1), 0 10px 30px rgba(0,0,0,0.3);
+    overflow: hidden;
+    transition: background 0.5s;
+  }
+
+  .head::before {
+    content: '';
+    position: absolute;
+    width: 240px;
+    height: 100px;
+    background: #4a3728;
+    top: -15px;
+    left: -10px;
+    border-radius: 50% 50% 0 0;
+    z-index: 5;
+  }
+
+  .bruise {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    transition: all 0.3s;
+    z-index: 2;
+  }
+
+  .swelling {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 3;
+    background: radial-gradient(circle, rgba(255,180,140,0.9) 0%, rgba(255,160,120,0.6) 50%, transparent 70%);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transition: all 0.3s;
+  }
+
+  .black-eye-overlay {
+    position: absolute;
+    width: 50px;
+    height: 40px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 3;
+    transition: all 0.5s;
+    opacity: 0;
+  }
+  .black-eye-overlay.left { left: 32px; top: 92px; }
+  .black-eye-overlay.right { right: 32px; top: 92px; }
+
+  .nosebleed {
+    position: absolute;
+    width: 6px;
+    height: 0;
+    background: linear-gradient(to bottom, #cc3333, #aa2222);
+    left: 50%;
+    top: 165px;
+    transform: translateX(-50%);
+    border-radius: 0 0 3px 3px;
+    transition: height 0.5s;
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  .nosebleed-drip {
+    position: absolute;
+    width: 5px;
+    height: 8px;
+    background: #cc3333;
+    border-radius: 50%;
+    animation: dripFall 1.2s ease-in forwards;
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  @keyframes dripFall {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(100px); opacity: 0; }
+  }
+
+  .bandaid {
+    position: absolute;
+    width: 45px;
+    height: 18px;
+    background: #f0d0a0;
+    border-radius: 4px;
+    z-index: 6;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .bandaid::before, .bandaid::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 100%;
+    background: #e8c090;
+    top: 0;
+  }
+  .bandaid::before { left: 0; border-radius: 4px 0 0 4px; }
+  .bandaid::after { right: 0; border-radius: 0 4px 4px 0; }
+  .bandaid .dots {
+    position: absolute;
+    width: 25px;
+    height: 100%;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+  }
+  .bandaid .dots::before, .bandaid .dots::after {
+    content: '';
+    width: 4px;
+    height: 4px;
+    background: rgba(0,0,0,0.15);
+    border-radius: 50%;
+  }
+  .bandaid-1 { left: 25px; top: 120px; transform: rotate(-25deg); }
+  .bandaid-2 { right: 20px; top: 105px; transform: rotate(20deg); }
+  .bandaid-3 { left: 50%; top: 140px; transform: translateX(-50%) rotate(-5deg); }
+
+  .cheek {
+    position: absolute;
+    width: 45px;
+    height: 30px;
+    background: rgba(255, 150, 150, 0.4);
+    border-radius: 50%;
+    top: 155px;
+    transition: all 0.15s;
+    z-index: 2;
+  }
+  .cheek.left { left: 20px; }
+  .cheek.right { right: 20px; }
+  .cheek.red { background: rgba(255, 50, 50, 0.7); width: 55px; height: 40px; }
+
+  .eye {
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    background: white;
+    border-radius: 50%;
+    top: 105px;
+    overflow: hidden;
+    transition: all 0.2s;
+    z-index: 4;
+  }
+  .eye.left { left: 42px; }
+  .eye.right { right: 42px; }
+  .eye.swollen { height: 22px; top: 112px; }
+
+  .pupil {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #2d2d2d;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.1s;
+  }
+  .pupil::after {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: white;
+    border-radius: 50%;
+    top: 2px;
+    right: 2px;
+  }
+
+  .eye.dizzy { background: white; }
+  .eye.dizzy .pupil { width: 25px; height: 25px; background: transparent; animation: spin 0.5s linear infinite; }
+  .eye.dizzy .pupil::before {
+    content: '×';
+    position: absolute;
+    font-size: 28px;
+    color: #2d2d2d;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+  }
+  .eye.dizzy .pupil::after { display: none; }
+
+  @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+  .eyebrow {
+    position: absolute;
+    width: 40px;
+    height: 8px;
+    background: #4a3728;
+    border-radius: 4px;
+    top: 90px;
+    transition: all 0.15s;
+    z-index: 6;
+  }
+  .eyebrow.left { left: 40px; transform: rotate(-5deg); }
+  .eyebrow.right { right: 40px; transform: rotate(5deg); }
+  .eyebrow.angry-left { transform: rotate(15deg) translateY(-5px); }
+  .eyebrow.angry-right { transform: rotate(-15deg) translateY(-5px); }
+
+  .nose {
+    position: absolute;
+    width: 20px;
+    height: 25px;
+    background: #e8b88a;
+    border-radius: 50%;
+    left: 50%;
+    top: 140px;
+    transform: translateX(-50%);
+    transition: all 0.3s;
+    z-index: 3;
+  }
+  .nose.swollen { width: 26px; height: 30px; background: #e0a0a0; }
+
+  .mouth {
+    position: absolute;
+    width: 50px;
+    height: 25px;
+    border-bottom: 5px solid #cc6666;
+    border-radius: 0 0 50% 50%;
+    left: 50%;
+    top: 180px;
+    transform: translateX(-50%);
+    transition: all 0.15s;
+    z-index: 3;
+  }
+  .mouth.ouch { width: 35px; height: 35px; background: #aa4444; border: none; border-radius: 50%; top: 175px; }
+  .mouth.cry { width: 60px; height: 15px; border-bottom: none; border-top: 5px solid #cc6666; border-radius: 50% 50% 0 0; top: 185px; }
+  .mouth.missing-tooth { width: 40px; height: 30px; background: #aa4444; border: none; border-radius: 50%; top: 175px; }
+  .mouth.missing-tooth::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 8px;
+    background: #333;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 0 0 2px 2px;
+  }
+
+  .slap-mark {
+    position: absolute;
+    font-size: 60px;
+    pointer-events: none;
+    animation: slapPop 0.5s ease-out forwards;
+    z-index: 10;
+  }
+  @keyframes slapPop {
+    0% { transform: scale(0.3) rotate(-20deg); opacity: 1; }
+    50% { transform: scale(1.3) rotate(10deg); opacity: 0.9; }
+    100% { transform: scale(1) rotate(0deg) translateY(-40px); opacity: 0; }
+  }
+
+  .float-text {
+    position: absolute;
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: 1.8rem;
+    color: #ff6b6b;
+    pointer-events: none;
+    animation: floatUp 1s ease-out forwards;
+    text-shadow: 0 0 10px rgba(255, 107, 107, 0.8);
+    z-index: 20;
+    white-space: nowrap;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(0) scale(0.5); opacity: 1; }
+    100% { transform: translateY(-120px) scale(1.2); opacity: 0; }
+  }
+
+  .star { position: absolute; font-size: 24px; pointer-events: none; z-index: 15; }
+  .shake { animation: screenShake 0.3s ease; }
+  @keyframes screenShake {
+    0%, 100% { transform: translate(-50%, -50%); }
+    10% { transform: translate(-53%, -52%); }
+    20% { transform: translate(-48%, -50%); }
+    30% { transform: translate(-50%, -48%); }
+    40% { transform: translate(-52%, -52%); }
+    50% { transform: translate(-48%, -50%); }
+    60% { transform: translate(-50%, -52%); }
+    70% { transform: translate(-52%, -48%); }
+    80% { transform: translate(-48%, -50%); }
+    90% { transform: translate(-52%, -50%); }
+  }
+
+  .hint { margin-top: 20px; color: rgba(255,255,255,0.4); font-size: 1rem; animation: blink 2s ease-in-out infinite; }
+  @keyframes blink { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+
+  .combo-bar {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+    background: rgba(255,255,255,0.05); border: 2px solid rgba(255, 107, 107, 0.3);
+    border-radius: 50px; padding: 4px; width: min(300px, 80vw); height: 30px; overflow: hidden; opacity: 0; transition: opacity 0.3s;
+  }
+  .combo-bar.active { opacity: 1; }
+  .combo-fill { height: 100%; background: linear-gradient(90deg, #ff6b6b, #ffd93d); border-radius: 50px; width: 0%; transition: width 0.15s ease; }
+  .combo-text {
+    position: fixed; top: 55px; left: 50%; transform: translateX(-50%);
+    font-family: 'Black Han Sans', sans-serif; font-size: 1.2rem; color: #ffd93d; opacity: 0; transition: opacity 0.3s;
+  }
+  .combo-text.active { opacity: 1; }
+
+  .tear {
+    position: absolute; width: 8px; height: 12px;
+    background: rgba(100, 180, 255, 0.8);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation: tearDrop 0.8s ease-in forwards;
+    pointer-events: none; z-index: 5;
+  }
+  @keyframes tearDrop { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(80px); opacity: 0; } }
+
+  .reset-btn {
+    margin-top: 15px; padding: 8px 24px; background: transparent;
+    border: 2px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.4);
+    font-family: 'Jua', sans-serif; font-size: 0.9rem; border-radius: 50px; cursor: pointer; transition: all 0.3s;
+  }
+  .reset-btn:hover { border-color: rgba(255,255,255,0.5); color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.05); }
+
+  .damage-stage {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    font-family: 'Black Han Sans', sans-serif; font-size: 1rem;
+    padding: 6px 20px; border-radius: 50px; opacity: 0; transition: all 0.5s; white-space: nowrap;
+  }
+  .damage-stage.show { opacity: 1; }
+  .damage-stage.mild { background: rgba(255,200,100,0.2); color: #ffcc66; border: 1px solid rgba(255,200,100,0.3); }
+  .damage-stage.medium { background: rgba(255,130,80,0.2); color: #ff8855; border: 1px solid rgba(255,130,80,0.3); }
+  .damage-stage.severe { background: rgba(200,80,80,0.2); color: #dd5555; border: 1px solid rgba(200,80,80,0.3); }
+  .damage-stage.critical { background: rgba(150,50,150,0.2); color: #cc55cc; border: 1px solid rgba(150,50,150,0.3); }
+</style>
+</head>
+<body>
+
+<div class="combo-bar" id="comboBar"><div class="combo-fill" id="comboFill"></div></div>
+<div class="combo-text" id="comboText"></div>
+
+<div class="title">👋 얼굴을 때려보세요!</div>
+
+<div class="score-board">
+  <span>때린 횟수: <strong id="slapCount">0</strong></span>
+  <span>최대 콤보: <strong id="maxCombo">0</strong></span>
+  <span class="damage-label">피해도: <strong id="damageLevel">0%</strong></span>
+</div>
+
+<div class="face-container" id="faceContainer">
+  <div class="face" id="face">
+    <div class="head" id="head">
+      <div class="eyebrow left" id="ebLeft"></div>
+      <div class="eyebrow right" id="ebRight"></div>
+      <div class="black-eye-overlay left" id="blackEyeLeft"></div>
+      <div class="black-eye-overlay right" id="blackEyeRight"></div>
+      <div class="eye left" id="eyeLeft"><div class="pupil"></div></div>
+      <div class="eye right" id="eyeRight"><div class="pupil"></div></div>
+      <div class="cheek left" id="cheekLeft"></div>
+      <div class="cheek right" id="cheekRight"></div>
+      <div class="nose" id="nose"></div>
+      <div class="nosebleed" id="nosebleed"></div>
+      <div class="mouth" id="mouth"></div>
+      <div class="bandaid bandaid-1" id="bandaid1"><div class="dots"></div></div>
+      <div class="bandaid bandaid-2" id="bandaid2"><div class="dots"></div></div>
+      <div class="bandaid bandaid-3" id="bandaid3"><div class="dots"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="hint">👆 얼굴을 클릭하거나 탭하세요!</div>
+<button class="reset-btn" id="resetBtn">🩹 치료하기 (리셋)</button>
+
+<div class="damage-stage" id="damageStage"></div>
+
+<script>
+  const face = document.getElementById('face');
+  const container = document.getElementById('faceContainer');
+  const head = document.getElementById('head');
+  const mouth = document.getElementById('mouth');
+  const nose = document.getElementById('nose');
+  const nosebleed = document.getElementById('nosebleed');
+  const eyeLeft = document.getElementById('eyeLeft');
+  const eyeRight = document.getElementById('eyeRight');
+  const blackEyeLeft = document.getElementById('blackEyeLeft');
+  const blackEyeRight = document.getElementById('blackEyeRight');
+  const cheekLeft = document.getElementById('cheekLeft');
+  const cheekRight = document.getElementById('cheekRight');
+  const ebLeft = document.getElementById('ebLeft');
+  const ebRight = document.getElementById('ebRight');
+  const slapCountEl = document.getElementById('slapCount');
+  const maxComboEl = document.getElementById('maxCombo');
+  const damageLevelEl = document.getElementById('damageLevel');
+  const comboBar = document.getElementById('comboBar');
+  const comboFill = document.getElementById('comboFill');
+  const comboText = document.getElementById('comboText');
+  const damageStage = document.getElementById('damageStage');
+  const resetBtn = document.getElementById('resetBtn');
+
+  let slapCount = 0, combo = 0, maxCombo = 0, comboTimer = null, isSlapping = false;
+  let damage = 0, leftHits = 0, rightHits = 0, bruises = [];
+
+  const slapTexts = ['찰싹!', '퍽!', '딱!', '탁!', '쎄게!', '아야!', '으악!', '살려줘!'];
+  const bigComboTexts = ['콤보!', '대단해!', '무자비!', '폭풍때리기!', '전설이다!'];
+  const damageTexts = [
+    { threshold: 10, text: '살짝 빨개짐...', cls: 'mild' },
+    { threshold: 25, text: '멍이 들기 시작!', cls: 'mild' },
+    { threshold: 40, text: '얼굴이 퉁퉁 부어오름...', cls: 'medium' },
+    { threshold: 55, text: '코피가 나기 시작!', cls: 'medium' },
+    { threshold: 70, text: '눈이 멍...심각해요!', cls: 'severe' },
+    { threshold: 85, text: '만신창이...', cls: 'critical' },
+    { threshold: 95, text: '더 이상은... 제발...', cls: 'critical' },
+  ];
+
+  const sounds = {
+    slap: () => {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        const i = Math.min(damage / 100, 1);
+        o.frequency.setValueAtTime(150 + Math.random()*200 + i*200, ctx.currentTime);
+        o.frequency.exponentialRampToValueAtTime(30 + i*30, ctx.currentTime + 0.12);
+        g.gain.setValueAtTime(0.2 + i*0.2, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+        o.start(); o.stop(ctx.currentTime + 0.15);
+      } catch(e){}
+    }
+  };
+
+  function addBruise(x, y) {
+    const size = 20 + Math.random()*25 + (damage/100)*15;
+    const intensity = Math.min(0.15 + damage/200, 0.7);
+    let r, g, b;
+    if (damage < 30) { r = 220; g = 100+Math.random()*40; b = 100+Math.random()*40; }
+    else if (damage < 60) { r = 140+Math.random()*30; g = 60+Math.random()*30; b = 140+Math.random()*30; }
+    else { r = 80+Math.random()*40; g = 40+Math.random()*30; b = 120+Math.random()*40; }
+    const el = document.createElement('div');
+    el.className = 'bruise';
+    el.style.width = size+'px';
+    el.style.height = size*(0.7+Math.random()*0.3)+'px';
+    el.style.left = (x-size/2)+'px';
+    el.style.top = (y-size/2)+'px';
+    el.style.background = `radial-gradient(ellipse, rgba(${r},${g},${b},${intensity}) 0%, rgba(${r},${g},${b},${intensity*0.5}) 50%, transparent 70%)`;
+    el.style.transform = `rotate(${Math.random()*60-30}deg)`;
+    head.appendChild(el);
+    bruises.push(el);
+  }
+
+  function addSwelling(x, y) {
+    if (damage < 35) return;
+    const size = 15 + (damage/100)*25;
+    const el = document.createElement('div');
+    el.className = 'swelling';
+    el.style.width = size+'px';
+    el.style.height = size*0.6+'px';
+    el.style.left = (x-size/2)+'px';
+    el.style.top = (y-size/3)+'px';
+    head.appendChild(el);
+    bruises.push(el);
+  }
+
+  function updateDamageEffects(isLeftSide) {
+    const pct = Math.min(damage, 100);
+    damageLevelEl.textContent = Math.round(pct)+'%';
+    head.style.background = `rgb(${255-pct*0.5}, ${204-pct*0.8}, ${153-pct*0.3})`;
+
+    if (damage > 25) {
+      const ei = Math.min((damage-25)/75, 0.8);
+      if (leftHits > 3) { blackEyeLeft.style.opacity = ei; blackEyeLeft.style.background = `radial-gradient(ellipse, rgba(80,40,100,${ei}) 0%, rgba(60,20,80,${ei*0.6}) 50%, transparent 70%)`; }
+      if (rightHits > 3) { blackEyeRight.style.opacity = ei; blackEyeRight.style.background = `radial-gradient(ellipse, rgba(80,40,100,${ei}) 0%, rgba(60,20,80,${ei*0.6}) 50%, transparent 70%)`; }
+    }
+    if (damage > 50) {
+      if (leftHits > rightHits) eyeLeft.classList.add('swollen');
+      if (rightHits > leftHits) eyeRight.classList.add('swollen');
+      if (damage > 75) { eyeLeft.classList.add('swollen'); eyeRight.classList.add('swollen'); }
+    }
+    if (damage > 40) nose.classList.add('swollen');
+    if (damage > 50) {
+      nosebleed.style.height = Math.min((damage-50)/50*40, 40)+'px';
+      if (Math.random() < 0.3 && damage > 60) {
+        const d = document.createElement('div');
+        d.className = 'nosebleed-drip';
+        d.style.left = (110-3+Math.random()*6)+'px';
+        d.style.top = (165+parseFloat(nosebleed.style.height))+'px';
+        head.appendChild(d);
+        setTimeout(()=>d.remove(), 1200);
+      }
+    }
+    if (damage > 60) document.getElementById('bandaid1').style.opacity = '1';
+    if (damage > 75) document.getElementById('bandaid2').style.opacity = '1';
+    if (damage > 90) document.getElementById('bandaid3').style.opacity = '1';
+
+    let si = null;
+    for (let i = damageTexts.length-1; i >= 0; i--) { if (damage >= damageTexts[i].threshold) { si = damageTexts[i]; break; } }
+    if (si) { damageStage.textContent = si.text; damageStage.className = 'damage-stage show '+si.cls; }
+  }
+
+  container.addEventListener('click', (e) => {
+    if (isSlapping) return;
+    isSlapping = true;
+
+    const rect = container.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const isLeftSide = x < rect.width/2;
+
+    slapCount++; combo++;
+    slapCountEl.textContent = slapCount;
+    if (isLeftSide) leftHits++; else rightHits++;
+    damage = Math.min(damage + 2 + (combo > 3 ? combo*0.5 : 0), 100);
+    if (combo > maxCombo) { maxCombo = combo; maxComboEl.textContent = maxCombo; }
+
+    clearTimeout(comboTimer);
+    comboBar.classList.add('active'); comboText.classList.add('active');
+    comboFill.style.width = Math.min(combo*10, 100)+'%';
+    comboText.textContent = combo >= 5
+      ? `🔥 ${combo} 콤보! ${bigComboTexts[Math.min(Math.floor(combo/5)-1, bigComboTexts.length-1)]}`
+      : `${combo} 콤보`;
+    comboTimer = setTimeout(()=>{ combo=0; comboBar.classList.remove('active'); comboText.classList.remove('active'); comboFill.style.width='0%'; }, 1500);
+
+    sounds.slap();
+    face.className = 'face'; void face.offsetWidth;
+    face.classList.add(isLeftSide ? 'slapped-right' : 'slapped-left');
+    if (isLeftSide) cheekLeft.classList.add('red'); else cheekRight.classList.add('red');
+    mouth.className = damage > 80 ? 'mouth missing-tooth' : 'mouth ouch';
+    if (combo >= 10 || damage > 70) { eyeLeft.classList.add('dizzy'); eyeRight.classList.add('dizzy'); }
+    ebLeft.classList.add('angry-left'); ebRight.classList.add('angry-right');
+
+    // Bruises
+    const headEl = head.getBoundingClientRect();
+    const hitX = Math.max(20, Math.min(e.clientX - headEl.left, 200));
+    const hitY = Math.max(70, Math.min(e.clientY - headEl.top, 210));
+    addBruise(hitX, hitY);
+    if (damage > 35 && Math.random() < 0.4) addSwelling(hitX+Math.random()*20-10, hitY+Math.random()*10);
+    updateDamageEffects(isLeftSide);
+
+    // Effects
+    const slap = document.createElement('div');
+    slap.className = 'slap-mark'; slap.textContent = isLeftSide ? '👋' : '🤚';
+    slap.style.left = (x-30)+'px'; slap.style.top = (e.clientY-rect.top-30)+'px';
+    container.appendChild(slap);
+
+    const text = document.createElement('div');
+    text.className = 'float-text';
+    text.textContent = damage > 85 ? '제발 그만...😭' : combo >= 5 ? bigComboTexts[Math.min(Math.floor(combo/5)-1, bigComboTexts.length-1)] : slapTexts[Math.floor(Math.random()*slapTexts.length)];
+    text.style.left = (x-30)+'px'; text.style.top = (e.clientY-rect.top-50)+'px';
+    container.appendChild(text);
+
+    for (let i = 0; i < 5; i++) {
+      const star = document.createElement('div');
+      star.className = 'star'; star.textContent = damage > 60 ? '💫' : '⭐';
+      const angle = (Math.PI*2/5)*i + Math.random()*0.5;
+      const dist = 60+Math.random()*40;
+      star.style.left = x+'px'; star.style.top = (e.clientY-rect.top)+'px';
+      container.appendChild(star);
+      requestAnimationFrame(()=>{ star.style.transition='all 0.5s ease-out'; star.style.transform=`translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px) scale(1.5)`; star.style.opacity='0'; });
+      setTimeout(()=>star.remove(), 600);
+    }
+
+    if (combo >= 7 || damage > 45) {
+      [eyeLeft, eyeRight].forEach(eye => {
+        const t = document.createElement('div'); t.className = 'tear';
+        const er = eye.getBoundingClientRect(), hr = head.getBoundingClientRect();
+        t.style.left = (er.left-hr.left+10)+'px'; t.style.top = (er.top-hr.top+30)+'px';
+        head.appendChild(t); setTimeout(()=>t.remove(), 800);
+      });
+    }
+
+    face.classList.add('shake');
+
+    setTimeout(()=>{
+      slap.remove(); text.remove();
+      face.classList.remove('slapped-left','slapped-right','shake');
+      mouth.className = damage > 80 ? 'mouth missing-tooth' : damage > 30 ? 'mouth cry' : 'mouth';
+      ebLeft.classList.remove('angry-left'); ebRight.classList.remove('angry-right');
+      if (combo < 10 && damage < 70) { eyeLeft.classList.remove('dizzy'); eyeRight.classList.remove('dizzy'); }
+      isSlapping = false;
+    }, 300);
+    setTimeout(()=>{ cheekLeft.classList.remove('red'); cheekRight.classList.remove('red'); }, 1000);
+  });
+
+  resetBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    slapCount=0; combo=0; maxCombo=0; damage=0; leftHits=0; rightHits=0;
+    slapCountEl.textContent='0'; maxComboEl.textContent='0'; damageLevelEl.textContent='0%';
+    bruises.forEach(b=>b.remove()); bruises=[];
+    head.style.background='#ffcc99';
+    eyeLeft.classList.remove('swollen','dizzy'); eyeRight.classList.remove('swollen','dizzy');
+    blackEyeLeft.style.opacity='0'; blackEyeRight.style.opacity='0';
+    nose.classList.remove('swollen'); nosebleed.style.height='0';
+    mouth.className='mouth';
+    document.getElementById('bandaid1').style.opacity='0';
+    document.getElementById('bandaid2').style.opacity='0';
+    document.getElementById('bandaid3').style.opacity='0';
+    head.querySelectorAll('.nosebleed-drip,.tear').forEach(d=>d.remove());
+    damageStage.className='damage-stage';
+    comboBar.classList.remove('active'); comboText.classList.remove('active');
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (eyeLeft.classList.contains('dizzy')) return;
+    document.querySelectorAll('.pupil').forEach(p => {
+      const eye = p.parentElement;
+      if (eye.classList.contains('swollen')) return;
+      const r = eye.getBoundingClientRect();
+      const a = Math.atan2(e.clientY-r.top-r.height/2, e.clientX-r.left-r.width/2);
+      p.style.transform = `translate(calc(-50% + ${Math.cos(a)*5}px), calc(-50% + ${Math.sin(a)*5}px))`;
+    });
+  });
+</script>
+</body>
+</html>
