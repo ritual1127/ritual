@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>얼굴 때리기!</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:#0e0e14;font-family:'Jua',sans-serif;overflow:hidden;user-select:none;
+  }
+  .scr{display:flex;flex-direction:column;align-items:center;gap:18px;animation:fi .4s ease}
+  .scr.hide{display:none}
+  @keyframes fi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+  .ut{font-family:'Black Han Sans',sans-serif;font-size:clamp(1.8rem,5.5vw,3rem);color:#ff4444;text-shadow:0 0 35px rgba(255,60,60,.3)}
+  .us{color:rgba(255,255,255,.4);font-size:1rem}
+  .dz{
+    width:min(290px,82vw);height:250px;border:3px dashed rgba(255,60,60,.28);border-radius:18px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+    cursor:pointer;transition:all .25s;background:rgba(255,60,60,.015);position:relative;overflow:hidden;
+  }
+  .dz:hover,.dz.ov{border-color:rgba(255,60,60,.65);background:rgba(255,60,60,.05);transform:scale(1.02)}
+  .dz .ic{font-size:3.2rem}.dz .la{color:rgba(255,255,255,.5);font-size:.95rem}
+  .dz .sl{color:rgba(255,255,255,.22);font-size:.78rem}
+  .dz input{display:none}
+  .dz img{width:100%;height:100%;object-fit:cover;border-radius:15px;display:none}
+  .dz.has img{display:block}.dz.has .ic,.dz.has .la,.dz.has .sl{display:none}
+  .loading-text{color:rgba(255,255,255,.6);font-size:.95rem;display:none}
+  .loading-text.show{display:block;animation:pulse 1s infinite}
+  @keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+  .gobtn{
+    padding:12px 44px;background:linear-gradient(135deg,#ff4444,#cc2222);color:#fff;border:none;
+    border-radius:50px;font-family:'Black Han Sans',sans-serif;font-size:1.2rem;cursor:pointer;
+    box-shadow:0 5px 28px rgba(255,50,50,.35);transition:all .25s;display:none;
+  }
+  .gobtn.sh{display:block;animation:fi .3s ease}
+  .gobtn:hover{transform:translateY(-2px);box-shadow:0 8px 38px rgba(255,50,50,.5)}
+
+  /* GAME */
+  .gm{display:none;flex-direction:column;align-items:center}.gm.on{display:flex;animation:fi .4s ease}
+  .gt{font-family:'Black Han Sans',sans-serif;font-size:clamp(1.2rem,3vw,1.8rem);color:#ff4444;margin-bottom:6px}
+  .hud{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;justify-content:center}
+  .hud span{font-size:.78rem;padding:3px 11px;border-radius:50px;background:rgba(255,200,50,.07);border:1.5px solid rgba(255,200,50,.22);color:#ffc83d}
+  .hud .dm{color:#ff4444;border-color:rgba(255,60,60,.28);background:rgba(255,60,60,.07)}
+
+  .fw{
+    position:relative;width:min(310px,84vw);height:min(370px,84vw);border-radius:14px;overflow:hidden;
+    cursor:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'><text y='34' font-size='34'>✊</text></svg>") 22 22,pointer;
+    box-shadow:0 0 0 rgba(255,0,0,0);transition:box-shadow .3s;
+  }
+  .fw.gl{box-shadow:0 0 50px rgba(255,40,40,.45)}
+  .fi2{width:100%;height:100%;object-fit:cover;display:block;transition:transform .06s,filter .4s}
+  .ly{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;border-radius:14px}
+
+  /* Face landmark debug dots (hidden by default) */
+  .ldot{position:absolute;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:30;opacity:0}
+
+  /* Part label on hit */
+  .part-label{
+    position:absolute;pointer-events:none;z-index:25;
+    font-family:'Black Han Sans',sans-serif;font-size:1rem;
+    padding:3px 10px;border-radius:20px;
+    background:rgba(0,0,0,.6);color:#ffd700;
+    animation:plbl .7s ease-out forwards;white-space:nowrap;
+  }
+  @keyframes plbl{0%{transform:translateY(0) scale(.7);opacity:1}100%{transform:translateY(-50px) scale(1);opacity:0}}
+
+  .fl{
+    position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;border-radius:14px;
+    background:radial-gradient(circle,rgba(255,255,255,.6),transparent 55%);opacity:0;transition:opacity .04s;
+  }
+  .fl.on{opacity:1}
+
+  .hp{position:absolute;pointer-events:none;z-index:8;font-size:75px;opacity:0;animation:hs .4s ease-out forwards;filter:drop-shadow(0 0 12px rgba(255,0,0,.4))}
+  @keyframes hs{0%{transform:scale(2.2) rotate(-25deg);opacity:.85}25%{transform:scale(1) rotate(8deg);opacity:.65}100%{transform:scale(.7) rotate(0) translateY(-25px);opacity:0}}
+
+  .ir{position:absolute;pointer-events:none;z-index:7;border:3px solid rgba(255,80,80,.65);border-radius:50%;opacity:0;animation:rb .38s ease-out forwards}
+  @keyframes rb{0%{width:8px;height:8px;opacity:.75}100%{width:130px;height:130px;margin-left:-65px;margin-top:-65px;opacity:0;border-width:1px}}
+
+  .bl{position:absolute;pointer-events:none;z-index:9;border-radius:50%;background:radial-gradient(circle,#cc2222,#880000)}
+
+  .ftx{
+    position:absolute;pointer-events:none;z-index:20;
+    font-family:'Black Han Sans',sans-serif;font-size:1.9rem;color:#ff3333;white-space:nowrap;
+    text-shadow:0 0 14px rgba(255,40,40,.75),0 2px 5px rgba(0,0,0,.55);
+    animation:tu .85s ease-out forwards;
+  }
+  @keyframes tu{0%{transform:translateY(0) scale(.55) rotate(-6deg);opacity:1}100%{transform:translateY(-105px) scale(1.25) rotate(4deg);opacity:0}}
+
+  .st{position:absolute;pointer-events:none;z-index:15}
+
+  .sf{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,0,0,.12);pointer-events:none;z-index:100;opacity:0;transition:opacity .04s}
+  .sf.on{opacity:1}
+
+  .cb{position:fixed;top:10px;left:50%;transform:translateX(-50%);width:min(250px,68vw);height:22px;border-radius:50px;background:rgba(255,255,255,.03);border:1.5px solid rgba(255,60,60,.22);padding:3px;opacity:0;transition:opacity .3s;z-index:50;overflow:hidden}
+  .cb.on{opacity:1}
+  .cf{height:100%;border-radius:50px;background:linear-gradient(90deg,#ff4444,#ffaa22);width:0;transition:width .1s}
+  .ct{position:fixed;top:36px;left:50%;transform:translateX(-50%);font-family:'Black Han Sans',sans-serif;font-size:.95rem;color:#ffcc22;opacity:0;transition:opacity .3s;z-index:50}
+  .ct.on{opacity:1}
+
+  .bd{position:absolute;pointer-events:none;z-index:12;width:50px;height:20px;background:#f0d0a0;border-radius:4px;box-shadow:0 2px 5px rgba(0,0,0,.3);opacity:0;transition:opacity .5s}
+  .bd::before,.bd::after{content:'';position:absolute;width:12px;height:100%;background:#e0be85;top:0}
+  .bd::before{left:0;border-radius:4px 0 0 4px}.bd::after{right:0;border-radius:0 4px 4px 0}
+  .bd1{top:10%;left:7%;transform:rotate(-22deg)}.bd2{top:20%;right:5%;transform:rotate(16deg)}.bd3{bottom:22%;left:50%;transform:translateX(-50%) rotate(-5deg)}
+
+  .btns{display:flex;gap:8px;margin-top:10px}
+  .bn{padding:6px 18px;background:transparent;border:1.5px solid rgba(255,255,255,.16);color:rgba(255,255,255,.4);font-family:'Jua',sans-serif;font-size:.82rem;border-radius:50px;cursor:pointer;transition:all .25s}
+  .bn:hover{border-color:rgba(255,255,255,.4);color:rgba(255,255,255,.7);background:rgba(255,255,255,.03)}
+
+  .sg{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);font-family:'Black Han Sans',sans-serif;font-size:.9rem;padding:4px 16px;border-radius:50px;opacity:0;transition:all .5s;z-index:50;white-space:nowrap}
+  .sg.sh{opacity:1}
+  .sg.s1{background:rgba(255,200,80,.13);color:#ffcc44;border:1px solid rgba(255,200,80,.22)}
+  .sg.s2{background:rgba(255,120,60,.13);color:#ff8833;border:1px solid rgba(255,120,60,.22)}
+  .sg.s3{background:rgba(200,50,50,.13);color:#dd3333;border:1px solid rgba(200,50,50,.22)}
+  .sg.s4{background:rgba(140,35,140,.13);color:#cc33cc;border:1px solid rgba(140,35,140,.22)}
+
+  @keyframes hvShk{
+    0%,100%{transform:translate(0)}
+    5%{transform:translate(-9px,-7px) rotate(-1.5deg)}
+    10%{transform:translate(8px,6px) rotate(1.2deg)}
+    15%{transform:translate(-7px,5px) rotate(-.8deg)}
+    20%{transform:translate(6px,-8px) rotate(.8deg)}
+    30%{transform:translate(-5px,4px)}
+    40%{transform:translate(4px,-3px)}
+    55%{transform:translate(-3px,2px)}
+    70%{transform:translate(2px,-1px)}
+    85%{transform:translate(-1px,1px)}
+  }
+  .shk{animation:hvShk .35s ease}
+</style>
+</head>
+<body>
+
+<div class="sf" id="sf"></div>
+
+<!-- UPLOAD -->
+<div class="scr" id="uScr">
+  <div class="ut">👊 얼굴 때리기</div>
+  <div class="us">때리고 싶은 얼굴을 올려주세요</div>
+  <div class="dz" id="dz">
+    <div class="ic">📸</div>
+    <div class="la">사진을 드래그하거나 클릭</div>
+    <div class="sl">JPG · PNG</div>
+    <img id="pv">
+    <input type="file" id="fin" accept="image/*">
+  </div>
+  <div class="loading-text" id="loadTxt">🔍 얼굴 인식 중...</div>
+  <button class="gobtn" id="go">👊 때리러 가기!</button>
+</div>
+
+<!-- GAME -->
+<div class="gm" id="gm">
+  <div class="cb" id="cb"><div class="cf" id="cfx"></div></div>
+  <div class="ct" id="ctx2"></div>
+  <div class="gt">👋 때려보세요!</div>
+  <div class="hud">
+    <span>횟수 <strong id="hS">0</strong></span>
+    <span>콤보 <strong id="hC">0</strong></span>
+    <span class="dm">피해 <strong id="hD">0%</strong></span>
+  </div>
+  <div class="fw" id="fw">
+    <img class="fi2" id="fi2">
+    <canvas class="ly" id="cB" style="mix-blend-mode:multiply"></canvas>
+    <canvas class="ly" id="cS" style="mix-blend-mode:overlay;opacity:.65"></canvas>
+    <canvas class="ly" id="cW" style="opacity:.4"></canvas>
+    <div class="ly" id="tn" style="background:rgba(150,25,25,0);transition:background .4s;mix-blend-mode:color"></div>
+    <div class="fl" id="flx"></div>
+    <div class="bd bd1" id="b1"></div><div class="bd bd2" id="b2"></div><div class="bd bd3" id="b3"></div>
+  </div>
+  <div class="btns">
+    <button class="bn" id="hlBtn">🩹 치료</button>
+    <button class="bn" id="chBtn">📸 사진 변경</button>
+  </div>
+  <div class="sg" id="sg"></div>
+</div>
+
+<script>
+// ========== FACE DETECTION (face-api.js via TF) ==========
+// We'll use a lightweight approach: use the browser canvas to find face features
+// Since we can't load face-api.js from CDN due to network restrictions,
+// we'll implement manual face landmark estimation based on common proportions
+// OR let the user tap to mark key points.
+// BETTER: Use a simple heuristic face detector using canvas pixel analysis.
+
+// Actually, let's implement a smart approach:
+// We analyze the image to find skin-tone regions and estimate face landmarks.
+
+let faceLandmarks = null; // {leftEye, rightEye, nose, mouth, leftCheek, rightCheek, forehead, chin}
+let imgW, imgH, CW, CH, scaleX, scaleY;
+
+function detectFace(img) {
+  // Create offscreen canvas
+  const c = document.createElement('canvas');
+  const size = 200; // downscale for speed
+  const aspect = img.naturalWidth / img.naturalHeight;
+  c.width = aspect >= 1 ? size : size * aspect;
+  c.height = aspect >= 1 ? size / aspect : size;
+  const cx = c.getContext('2d');
+  cx.drawImage(img, 0, 0, c.width, c.height);
+  const data = cx.getImageData(0, 0, c.width, c.height).data;
+
+  // Find skin-tone pixels
+  const skinMap = [];
+  for (let y = 0; y < c.height; y++) {
+    for (let x = 0; x < c.width; x++) {
+      const i = (y * c.width + x) * 4;
+      const r = data[i], g = data[i+1], b = data[i+2];
+      // Skin tone detection (works for various skin tones)
+      const isSkin = (
+        r > 60 && g > 40 && b > 20 &&
+        r > g && r > b &&
+        Math.abs(r - g) > 10 &&
+        r - b > 15 &&
+        Math.max(r, g, b) - Math.min(r, g, b) > 15
+      ) || (
+        // Darker skin tones
+        r > 45 && g > 30 && b > 15 &&
+        r > b && g > b &&
+        r - b > 5 &&
+        Math.max(r, g, b) - Math.min(r, g, b) > 10 &&
+        Math.max(r, g, b) < 200
+      );
+      if (isSkin) skinMap.push({ x, y });
+    }
+  }
+
+  if (skinMap.length < 20) {
+    // Fallback: assume face fills most of the image
+    return defaultLandmarks(img.naturalWidth, img.naturalHeight);
+  }
+
+  // Find bounding box of skin region (largest cluster = face)
+  let minX = Infinity, maxX = 0, minY = Infinity, maxY = 0;
+  // Use top-heavy clustering (face usually in upper portion)
+  const upperSkin = skinMap.filter(p => p.y < c.height * 0.75);
+  const target = upperSkin.length > 30 ? upperSkin : skinMap;
+
+  target.forEach(p => {
+    if (p.x < minX) minX = p.x;
+    if (p.x > maxX) maxX = p.x;
+    if (p.y < minY) minY = p.y;
+    if (p.y > maxY) maxY = p.y;
+  });
+
+  const faceW = maxX - minX;
+  const faceH = maxY - minY;
+  const faceCX = (minX + maxX) / 2;
+  const faceCY = (minY + maxY) / 2;
+
+  // Now detect dark regions within face area for eyes
+  // Eyes are typically in the upper 1/3 of the face
+  const eyeRegionTop = minY + faceH * 0.2;
+  const eyeRegionBot = minY + faceH * 0.45;
+  const darkPixels = [];
+
+  for (let y = Math.floor(eyeRegionTop); y < Math.floor(eyeRegionBot); y++) {
+    for (let x = Math.floor(minX); x < Math.floor(maxX); x++) {
+      const i = (y * c.width + x) * 4;
+      const r = data[i], g = data[i+1], b = data[i+2];
+      const brightness = (r + g + b) / 3;
+      if (brightness < 80) darkPixels.push({ x, y, b: brightness });
+    }
+  }
+
+  let leftEyeX, leftEyeY, rightEyeX, rightEyeY;
+
+  if (darkPixels.length > 5) {
+    // Split left/right
+    const leftDark = darkPixels.filter(p => p.x < faceCX);
+    const rightDark = darkPixels.filter(p => p.x >= faceCX);
+
+    const avg = (arr) => {
+      if (arr.length === 0) return null;
+      const sx = arr.reduce((s, p) => s + p.x, 0) / arr.length;
+      const sy = arr.reduce((s, p) => s + p.y, 0) / arr.length;
+      return { x: sx, y: sy };
+    };
+
+    const le = avg(leftDark);
+    const re = avg(rightDark);
+
+    if (le) { leftEyeX = le.x; leftEyeY = le.y; }
+    if (re) { rightEyeX = re.x; rightEyeY = re.y; }
+  }
+
+  // Fallback positions based on face proportions
+  if (!leftEyeX) { leftEyeX = minX + faceW * 0.3; leftEyeY = minY + faceH * 0.33; }
+  if (!rightEyeX) { rightEyeX = minX + faceW * 0.7; rightEyeY = minY + faceH * 0.33; }
+
+  // Scale back to original image coordinates
+  const sx = img.naturalWidth / c.width;
+  const sy = img.naturalHeight / c.height;
+
+  return {
+    leftEye: { x: leftEyeX * sx, y: leftEyeY * sy },
+    rightEye: { x: rightEyeX * sx, y: rightEyeY * sy },
+    nose: { x: faceCX * sx, y: (minY + faceH * 0.55) * sy },
+    mouth: { x: faceCX * sx, y: (minY + faceH * 0.72) * sy },
+    leftCheek: { x: (minX + faceW * 0.15) * sx, y: (minY + faceH * 0.55) * sy },
+    rightCheek: { x: (minX + faceW * 0.85) * sx, y: (minY + faceH * 0.55) * sy },
+    forehead: { x: faceCX * sx, y: (minY + faceH * 0.12) * sy },
+    chin: { x: faceCX * sx, y: (maxY) * sy },
+    bounds: { x: minX * sx, y: minY * sy, w: faceW * sx, h: faceH * sy }
+  };
+}
+
+function defaultLandmarks(w, h) {
+  const cx = w / 2, cy = h * 0.42;
+  return {
+    leftEye: { x: cx - w * 0.12, y: cy - h * 0.03 },
+    rightEye: { x: cx + w * 0.12, y: cy - h * 0.03 },
+    nose: { x: cx, y: cy + h * 0.07 },
+    mouth: { x: cx, y: cy + h * 0.16 },
+    leftCheek: { x: cx - w * 0.2, y: cy + h * 0.05 },
+    rightCheek: { x: cx + w * 0.2, y: cy + h * 0.05 },
+    forehead: { x: cx, y: cy - h * 0.12 },
+    chin: { x: cx, y: cy + h * 0.25 },
+    bounds: { x: w * 0.2, y: h * 0.1, w: w * 0.6, h: h * 0.7 }
+  };
+}
+
+// ========== UPLOAD ==========
+const uScr=document.getElementById('uScr'),gm=document.getElementById('gm');
+const dz=document.getElementById('dz'),fin=document.getElementById('fin');
+const pv=document.getElementById('pv'),go=document.getElementById('go');
+const loadTxt=document.getElementById('loadTxt');
+const fi2=document.getElementById('fi2');
+let imgData=null;
+
+dz.onclick=()=>fin.click();
+dz.ondragover=e=>{e.preventDefault();dz.classList.add('ov')};
+dz.ondragleave=()=>dz.classList.remove('ov');
+dz.ondrop=e=>{e.preventDefault();dz.classList.remove('ov');if(e.dataTransfer.files[0])loadF(e.dataTransfer.files[0])};
+fin.onchange=()=>{if(fin.files[0])loadF(fin.files[0])};
+
+function loadF(f){
+  if(!f.type.startsWith('image/'))return;
+  const r=new FileReader();
+  r.onload=e=>{
+    imgData=e.target.result;
+    pv.src=imgData;
+    dz.classList.add('has');
+    // Detect face
+    loadTxt.classList.add('show');
+    go.classList.remove('sh');
+    const img=new Image();
+    img.onload=()=>{
+      faceLandmarks=detectFace(img);
+      imgW=img.naturalWidth; imgH=img.naturalHeight;
+      loadTxt.classList.remove('show');
+      loadTxt.textContent='✅ 얼굴 인식 완료!';
+      loadTxt.classList.add('show');
+      setTimeout(()=>loadTxt.classList.remove('show'),1500);
+      go.classList.add('sh');
+    };
+    img.src=imgData;
+  };
+  r.readAsDataURL(f);
+}
+
+go.onclick=()=>{
+  if(!imgData)return;
+  fi2.src=imgData;
+  uScr.classList.add('hide');
+  gm.classList.add('on');
+  setTimeout(()=>{initC();computeScale()},60);
+};
+document.getElementById('chBtn').onclick=()=>{gm.classList.remove('on');uScr.classList.remove('hide');resetAll();loadTxt.textContent='🔍 얼굴 인식 중...';};
+
+// ========== CANVAS ==========
+const cB=document.getElementById('cB'),xB=cB.getContext('2d');
+const cS=document.getElementById('cS'),xS=cS.getContext('2d');
+const cW=document.getElementById('cW'),xW=cW.getContext('2d');
+const fw=document.getElementById('fw');
+
+function initC(){
+  CW=fw.offsetWidth;CH=fw.offsetHeight;
+  [cB,cS,cW].forEach(c=>{c.width=CW*2;c.height=CH*2;c.style.width=CW+'px';c.style.height=CH+'px';c.getContext('2d').scale(2,2)});
+  xB.clearRect(0,0,CW,CH);xS.clearRect(0,0,CW,CH);xW.clearRect(0,0,CW,CH);
+}
+function computeScale(){
+  // Map face landmarks from image coords to display coords
+  if(!faceLandmarks)return;
+  scaleX=CW/imgW; scaleY=CH/imgH;
+  // Account for object-fit:cover
+  const imgAspect=imgW/imgH, contAspect=CW/CH;
+  if(imgAspect>contAspect){
+    // Image wider: height fills, width cropped
+    const displayH=CH, displayW=CH*imgAspect;
+    scaleY=CH/imgH; scaleX=scaleY;
+    const offsetX=(displayW-CW)/2;
+    // Adjust: displayX = imgX * scale - offsetX
+    faceLandmarks._offsetX=offsetX; faceLandmarks._offsetY=0; faceLandmarks._scale=scaleY;
+  } else {
+    const displayW=CW, displayH=CW/imgAspect;
+    scaleX=CW/imgW; scaleY=scaleX;
+    const offsetY=(displayH-CH)/2;
+    faceLandmarks._offsetX=0; faceLandmarks._offsetY=offsetY; faceLandmarks._scale=scaleX;
+  }
+}
+function toDisplay(pt){
+  if(!faceLandmarks)return pt;
+  const s=faceLandmarks._scale||1;
+  const ox=faceLandmarks._offsetX||0;
+  const oy=faceLandmarks._offsetY||0;
+  return{x:pt.x*s-ox, y:pt.y*s-oy};
+}
+
+// ========== SOUND ENGINE ==========
+let audioCtx;
+function getCtx(){
+  if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function slapSound(intensity){
+  const c=getCtx(),t=c.currentTime;
+  // Noise burst
+  const buf=c.createBuffer(1,c.sampleRate*.07,c.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,1.8);
+  const n=c.createBufferSource();n.buffer=buf;
+  const gn=c.createGain();gn.gain.setValueAtTime(.3+intensity*.15,t);
+  const hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=700+intensity*300;
+  n.connect(hp);hp.connect(gn);gn.connect(c.destination);n.start();
+  // Thud
+  const o=c.createOscillator(),g=c.createGain();
+  o.connect(g);g.connect(c.destination);
+  o.frequency.setValueAtTime(70+Math.random()*30,t);
+  o.frequency.exponentialRampToValueAtTime(20,t+.12);
+  g.gain.setValueAtTime(.18+intensity*.1,t);
+  g.gain.exponentialRampToValueAtTime(.001,t+.13);
+  o.start();o.stop(t+.13);
+  // Skin slap (mid freq)
+  const o2=c.createOscillator(),g2=c.createGain();
+  o2.connect(g2);g2.connect(c.destination);
+  o2.type='triangle';
+  o2.frequency.setValueAtTime(300+Math.random()*200,t);
+  o2.frequency.exponentialRampToValueAtTime(80,t+.06);
+  g2.gain.setValueAtTime(.12+intensity*.08,t);
+  g2.gain.exponentialRampToValueAtTime(.001,t+.08);
+  o2.start();o2.stop(t+.08);
+}
+
+// Voice/scream synthesizer using formant synthesis
+function voiceScream(type){
+  const c=getCtx(),t=c.currentTime;
+
+  // Different scream types
+  const screams={
+    yelp:{f:400,dur:.25,mod:800,rise:true},    // 악!
+    ouch:{f:300,dur:.35,mod:500,rise:false},    // 아야!
+    scream:{f:500,dur:.5,mod:1000,rise:true},   // 으아악!
+    whimper:{f:250,dur:.4,mod:300,rise:false},  // 으으...
+    cry:{f:350,dur:.6,mod:600,rise:true},       // 살려줘!
+    grunt:{f:150,dur:.2,mod:200,rise:false},    // 퍽!
+    highyelp:{f:600,dur:.3,mod:1200,rise:true}, // 끼야!
+    moan:{f:200,dur:.5,mod:400,rise:false},     // 으으으
+  };
+  const s=screams[type]||screams.yelp;
+
+  // Base voice oscillator
+  const o=c.createOscillator();
+  o.type='sawtooth';
+  o.frequency.setValueAtTime(s.f+Math.random()*50,t);
+  if(s.rise){
+    o.frequency.linearRampToValueAtTime(s.f+s.mod,t+s.dur*.3);
+    o.frequency.linearRampToValueAtTime(s.f+s.mod*.3,t+s.dur);
+  } else {
+    o.frequency.linearRampToValueAtTime(s.f-80,t+s.dur);
+  }
+
+  // Vibrato
+  const vib=c.createOscillator();
+  const vibG=c.createGain();
+  vib.frequency.value=5+Math.random()*3;
+  vibG.gain.value=15+Math.random()*10;
+  vib.connect(vibG);vibG.connect(o.frequency);
+  vib.start();vib.stop(t+s.dur+.1);
+
+  // Formant filters (simulate vowels)
+  const f1=c.createBiquadFilter();f1.type='bandpass';f1.frequency.value=700+Math.random()*300;f1.Q.value=5;
+  const f2=c.createBiquadFilter();f2.type='bandpass';f2.frequency.value=1200+Math.random()*500;f2.Q.value=5;
+
+  // Volume envelope
+  const g=c.createGain();
+  g.gain.setValueAtTime(0,t);
+  g.gain.linearRampToValueAtTime(.08+Math.random()*.04,t+.03);
+  g.gain.linearRampToValueAtTime(.06,t+s.dur*.5);
+  g.gain.linearRampToValueAtTime(0,t+s.dur);
+
+  o.connect(f1);f1.connect(f2);f2.connect(g);g.connect(c.destination);
+  o.start();o.stop(t+s.dur+.05);
+}
+
+const screamTypes=['yelp','ouch','scream','whimper','cry','grunt','highyelp','moan'];
+let lastScreamIdx=-1;
+function randomScream(){
+  let idx;
+  do{idx=Math.floor(Math.random()*screamTypes.length)}while(idx===lastScreamIdx);
+  lastScreamIdx=idx;
+  return screamTypes[idx];
+}
+
+// ========== GAME STATE ==========
+const tn=document.getElementById('tn'),flx=document.getElementById('flx'),sf=document.getElementById('sf');
+const hS=document.getElementById('hS'),hC=document.getElementById('hC'),hD=document.getElementById('hD');
+const cb=document.getElementById('cb'),cfx=document.getElementById('cfx'),ctx2=document.getElementById('ctx2');
+const sg=document.getElementById('sg');
+
+let slaps=0,combo=0,maxC=0,dmg=0,cT=null,busy=false;
+let leftHits=0,rightHits=0;
+
+const txts=['찰싹!','퍽!','딱!','탁!','아야!','으악!','헉!','악!','끼야악!','으으...'];
+const eyeTxts=['눈을 맞았다! 👁️','아 눈!!','시야가...!'];
+const noseTxts=['코가! 🩸','코피 터진다!','으악 코!'];
+const mouthTxts=['입술이...!','이빨이!','으으 입!'];
+const cheekTxts=['뺨을 후려!','찰싹!!','빠악!'];
+const foreheadTxts=['이마를 강타!','머리가 띵!','두개골이...!'];
+const bigTxts=['콤보!','대단해!','무자비!','학대!','전설!'];
+const stages=[
+  {t:6,txt:'빨개지는 중...',c:'s1'},
+  {t:16,txt:'멍이 생기기 시작!',c:'s1'},
+  {t:30,txt:'퉁퉁 부어오름!',c:'s2'},
+  {t:45,txt:'피가 나기 시작...',c:'s2'},
+  {t:60,txt:'심각한 멍투성이!',c:'s3'},
+  {t:76,txt:'만신창이...',c:'s4'},
+  {t:90,txt:'제발 그만해줘...😭',c:'s4'},
+];
+
+// ========== HIT DETECTION ==========
+function getHitPart(x,y){
+  if(!faceLandmarks)return{part:'face',label:'얼굴'};
+  const pts={
+    leftEye:toDisplay(faceLandmarks.leftEye),
+    rightEye:toDisplay(faceLandmarks.rightEye),
+    nose:toDisplay(faceLandmarks.nose),
+    mouth:toDisplay(faceLandmarks.mouth),
+    leftCheek:toDisplay(faceLandmarks.leftCheek),
+    rightCheek:toDisplay(faceLandmarks.rightCheek),
+    forehead:toDisplay(faceLandmarks.forehead),
+    chin:toDisplay(faceLandmarks.chin),
+  };
+
+  const dist=(a,b)=>Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2);
+  const threshold=CW*0.12;
+
+  const d=[
+    {part:'leftEye',d:dist({x,y},pts.leftEye)},
+    {part:'rightEye',d:dist({x,y},pts.rightEye)},
+    {part:'nose',d:dist({x,y},pts.nose)},
+    {part:'mouth',d:dist({x,y},pts.mouth)},
+    {part:'leftCheek',d:dist({x,y},pts.leftCheek)},
+    {part:'rightCheek',d:dist({x,y},pts.rightCheek)},
+    {part:'forehead',d:dist({x,y},pts.forehead)},
+  ].sort((a,b)=>a.d-b.d);
+
+  const closest=d[0];
+  if(closest.d>threshold*2)return{part:'face',label:'얼굴'};
+
+  const labels={
+    leftEye:'왼쪽 눈 👁️',rightEye:'오른쪽 눈 👁️',
+    nose:'코 👃',mouth:'입 👄',
+    leftCheek:'왼뺨',rightCheek:'오른뺨',
+    forehead:'이마',
+  };
+  return{part:closest.part,label:labels[closest.part]||'얼굴'};
+}
+
+function getPartText(part){
+  if(part.includes('Eye'))return eyeTxts[Math.floor(Math.random()*eyeTxts.length)];
+  if(part==='nose')return noseTxts[Math.floor(Math.random()*noseTxts.length)];
+  if(part==='mouth')return mouthTxts[Math.floor(Math.random()*mouthTxts.length)];
+  if(part.includes('Cheek'))return cheekTxts[Math.floor(Math.random()*cheekTxts.length)];
+  if(part==='forehead')return foreheadTxts[Math.floor(Math.random()*foreheadTxts.length)];
+  return txts[Math.floor(Math.random()*txts.length)];
+}
+
+function getPartScream(part){
+  if(part.includes('Eye'))return Math.random()>.5?'highyelp':'scream';
+  if(part==='nose')return Math.random()>.5?'yelp':'cry';
+  if(part==='mouth')return Math.random()>.5?'grunt':'ouch';
+  if(part.includes('Cheek'))return Math.random()>.5?'yelp':'ouch';
+  if(part==='forehead')return Math.random()>.5?'scream':'grunt';
+  return randomScream();
+}
+
+// ========== BRUISE RENDERING ==========
+function renderBruise(x,y,partName){
+  const intensity=.1+dmg/130;
+  const layers=3+Math.floor(dmg/18);
+  const isEye=partName.includes('Eye');
+  const isNose=partName==='nose';
+
+  for(let l=0;l<layers;l++){
+    const sz=(10+Math.random()*16+(dmg/100)*24)*(1-l*.1);
+    const ox=(Math.random()-.5)*12,oy=(Math.random()-.5)*12;
+    let r,g,b;
+    const ph=dmg/100;
+    if(ph<.2){r=210+Math.random()*25;g=95+Math.random()*25;b=95+Math.random()*25;}
+    else if(ph<.45){r=145+Math.random()*25;g=45+Math.random()*20;b=125+Math.random()*25;}
+    else if(ph<.7){r=85+Math.random()*25;g=25+Math.random()*18;b=95+Math.random()*35;}
+    else{r=45+Math.random()*25;g=12+Math.random()*12;b=55+Math.random()*35;}
+
+    // Eyes get blacker faster
+    if(isEye){r=Math.max(r-40,20);g=Math.max(g-20,5);b+=20;}
+    // Nose gets redder
+    if(isNose){r=Math.min(r+30,255);g=Math.max(g-10,10);}
+
+    const gr=xB.createRadialGradient(x+ox,y+oy,0,x+ox,y+oy,sz);
+    gr.addColorStop(0,`rgba(${r},${g},${b},${intensity})`);
+    gr.addColorStop(.35,`rgba(${r},${g},${b},${intensity*.6})`);
+    gr.addColorStop(.65,`rgba(${r},${g},${b},${intensity*.2})`);
+    gr.addColorStop(1,`rgba(${r},${g},${b},0)`);
+    xB.save();
+    xB.translate(x+ox,y+oy);xB.rotate((Math.random()-.5)*1.3);
+    xB.scale(1,.6+Math.random()*.35);xB.translate(-(x+ox),-(y+oy));
+    xB.fillStyle=gr;xB.beginPath();xB.ellipse(x+ox,y+oy,sz,sz*.7,0,0,Math.PI*2);xB.fill();
+    xB.restore();
+  }
+
+  // Dark overlay
+  if(dmg>12){
+    const ds=xS.createRadialGradient(x,y,0,x,y,16+(dmg/100)*14);
+    ds.addColorStop(0,`rgba(35,8,35,${.05+dmg/350})`);
+    ds.addColorStop(.5,`rgba(25,4,25,${.025+dmg/500})`);
+    ds.addColorStop(1,'rgba(25,4,25,0)');
+    xS.fillStyle=ds;xS.beginPath();xS.ellipse(x,y,20+(dmg/100)*14,14+(dmg/100)*10,0,0,Math.PI*2);xS.fill();
+  }
+  // Swelling
+  if(dmg>25){
+    const sw=xW.createRadialGradient(x,y-3,0,x,y,12+(dmg/100)*10);
+    sw.addColorStop(0,`rgba(255,225,205,${.1+dmg/450})`);
+    sw.addColorStop(.35,`rgba(255,195,175,${.05+dmg/550})`);
+    sw.addColorStop(1,'rgba(255,195,175,0)');
+    xW.fillStyle=sw;xW.beginPath();xW.ellipse(x,y-3,14+(dmg/100)*9,9+(dmg/100)*6,0,0,Math.PI*2);xW.fill();
+  }
+}
+
+// ========== EFFECTS ==========
+function spawnBlood(x,y,n){
+  for(let i=0;i<n;i++){
+    const b=document.createElement('div');b.className='bl';
+    const sz=2+Math.random()*5;b.style.width=sz+'px';b.style.height=sz+'px';
+    b.style.left=x+'px';b.style.top=y+'px';
+    const a=Math.random()*Math.PI*2,d=25+Math.random()*55+(dmg/100)*35;
+    fw.appendChild(b);
+    requestAnimationFrame(()=>{
+      b.style.transition='all .45s cubic-bezier(.15,.75,.25,1)';
+      b.style.transform=`translate(${Math.cos(a)*d}px,${Math.sin(a)*d-15}px) scale(.2)`;
+      b.style.opacity='0';
+    });
+    setTimeout(()=>b.remove(),500);
+  }
+}
+
+fw.addEventListener('click',e=>{
+  if(busy)return;busy=true;
+  const rect=fw.getBoundingClientRect();
+  const x=e.clientX-rect.left,y=e.clientY-rect.top;
+  const isLeft=x<CW/2;
+
+  slaps++;combo++;
+  hS.textContent=slaps;
+  if(isLeft)leftHits++;else rightHits++;
+  dmg=Math.min(dmg+0.1+(combo>3?combo*.02:0),100);
+  if(combo>maxC){maxC=combo;hC.textContent=maxC;}
+
+  // Combo
+  clearTimeout(cT);
+  cb.classList.add('on');ctx2.classList.add('on');
+  cfx.style.width=Math.min(combo*10,100)+'%';
+  ctx2.textContent=combo>=5?`🔥 ${combo}콤보! ${bigTxts[Math.min(Math.floor(combo/5)-1,bigTxts.length-1)]}`:`${combo}콤보`;
+  cT=setTimeout(()=>{combo=0;cb.classList.remove('on');ctx2.classList.remove('on');cfx.style.width='0%'},1100);
+
+  // Hit detection
+  const hit=getHitPart(x,y);
+  const intensity=Math.min(dmg/100,1);
+
+  // === SOUNDS ===
+  slapSound(intensity);
+  // Voice scream (not every hit, increases with damage)
+  if(Math.random()<.4+dmg/200||combo>=3){
+    setTimeout(()=>voiceScream(getPartScream(hit.part)),30+Math.random()*40);
+  }
+  // Extra scream on heavy combo
+  if(combo>=8&&Math.random()<.6){
+    setTimeout(()=>voiceScream('scream'),80);
+  }
+
+  // Photo recoil
+  const deg=7+dmg/12+combo;
+  const tx=8+dmg/8;
+  fi2.style.filter=`brightness(${1-dmg/280}) saturate(${1-dmg/350}) contrast(${1+dmg/450})`;
+  fi2.style.transform=isLeft?`rotate(${deg}deg) translateX(${tx}px)`:`rotate(-${deg}deg) translateX(-${tx}px)`;
+  setTimeout(()=>{fi2.style.transform=''},75);
+
+  // Shake + flash
+  fw.classList.remove('shk');void fw.offsetWidth;fw.classList.add('shk');
+  flx.style.background=`radial-gradient(circle at ${x/CW*100}% ${y/CH*100}%,rgba(255,255,255,.65),transparent 50%)`;
+  flx.classList.add('on');setTimeout(()=>flx.classList.remove('on'),55);
+  if(combo>=3||dmg>25){sf.classList.add('on');setTimeout(()=>sf.classList.remove('on'),70);}
+
+  // Bruise
+  renderBruise(x,y,hit.part);
+  if(dmg>18)renderBruise(x+(Math.random()-.5)*28,y+(Math.random()-.5)*28,hit.part);
+
+  // Blood
+  if(dmg>32||(hit.part==='nose'&&dmg>15))spawnBlood(x,y,Math.floor(2+dmg/12));
+  // Blood drip from nose
+  if(hit.part==='nose'&&dmg>20){
+    const np=toDisplay(faceLandmarks.nose);
+    for(let i=0;i<2;i++){
+      const dr=document.createElement('div');dr.className='bl';
+      dr.style.width='3px';dr.style.height='3px';dr.style.left=(np.x+Math.random()*8-4)+'px';dr.style.top=(np.y+10)+'px';
+      fw.appendChild(dr);
+      requestAnimationFrame(()=>{
+        dr.style.transition=`all ${.8+Math.random()*.5}s ease-in`;
+        dr.style.transform=`translateY(${60+Math.random()*50}px)`;
+        dr.style.height='14px';dr.style.borderRadius='40%';dr.style.opacity='0';
+      });
+      setTimeout(()=>dr.remove(),1400);
+    }
+  }
+
+  // Impact ring
+  const ir=document.createElement('div');ir.className='ir';ir.style.left=x+'px';ir.style.top=y+'px';
+  fw.appendChild(ir);setTimeout(()=>ir.remove(),400);
+
+  // HUD
+  hD.textContent=dmg<1?dmg.toFixed(2)+'%':dmg<10?dmg.toFixed(1)+'%':Math.round(dmg)+'%';
+  tn.style.background=`rgba(150,25,25,${dmg/260})`;
+  if(dmg>38)fw.classList.add('gl');else fw.classList.remove('gl');
+  if(dmg>50)document.getElementById('b1').style.opacity='1';
+  if(dmg>68)document.getElementById('b2').style.opacity='1';
+  if(dmg>85)document.getElementById('b3').style.opacity='1';
+  let si=null;
+  for(let i=stages.length-1;i>=0;i--){if(dmg>=stages[i].t){si=stages[i];break;}}
+  if(si){sg.textContent=si.text;sg.className='sg sh '+si.c;}
+
+  // Part label
+  const pl=document.createElement('div');pl.className='part-label';
+  pl.textContent=hit.label;pl.style.left=(x-20)+'px';pl.style.top=(y+20)+'px';
+  fw.appendChild(pl);
+
+  // Hand
+  const h=document.createElement('div');h.className='hp';h.textContent=isLeft?'👋':'🤚';
+  h.style.left=(x-38)+'px';h.style.top=(y-38)+'px';fw.appendChild(h);
+
+  // Text
+  const ft=document.createElement('div');ft.className='ftx';
+  ft.textContent=dmg>86?'제발 그만😭':combo>=5?bigTxts[Math.min(Math.floor(combo/5)-1,bigTxts.length-1)]:getPartText(hit.part);
+  ft.style.left=(x-30)+'px';ft.style.top=(y-35)+'px';fw.appendChild(ft);
+
+  // Stars
+  for(let i=0;i<3+Math.floor(combo/2);i++){
+    const s=document.createElement('div');s.className='st';
+    s.textContent=dmg>50?'💫':'⭐';s.style.fontSize=(16+Math.random()*12)+'px';
+    s.style.left=x+'px';s.style.top=y+'px';
+    const a=Math.random()*Math.PI*2,d=35+Math.random()*45;
+    fw.appendChild(s);
+    requestAnimationFrame(()=>{
+      s.style.transition='all .45s ease-out';
+      s.style.transform=`translate(${Math.cos(a)*d}px,${Math.sin(a)*d}px) scale(1.3) rotate(${Math.random()*360}deg)`;
+      s.style.opacity='0';
+    });
+    setTimeout(()=>s.remove(),500);
+  }
+
+  setTimeout(()=>{h.remove();ft.remove();pl.remove();fw.classList.remove('shk');busy=false},320);
+});
+
+// ========== RESET ==========
+function resetAll(){
+  slaps=0;combo=0;maxC=0;dmg=0;leftHits=0;rightHits=0;
+  hS.textContent='0';hC.textContent='0';hD.textContent='0%';
+  if(CW){xB.clearRect(0,0,CW,CH);xS.clearRect(0,0,CW,CH);xW.clearRect(0,0,CW,CH);}
+  tn.style.background='rgba(150,25,25,0)';
+  fi2.style.filter='';fi2.style.transform='';
+  fw.classList.remove('gl');
+  document.getElementById('b1').style.opacity='0';
+  document.getElementById('b2').style.opacity='0';
+  document.getElementById('b3').style.opacity='0';
+  fw.querySelectorAll('.bl,.hp,.ftx,.st,.ir,.part-label').forEach(e=>e.remove());
+  sg.className='sg';cb.classList.remove('on');ctx2.classList.remove('on');
+}
+document.getElementById('hlBtn').onclick=e=>{e.stopPropagation();resetAll();initC()};
+window.addEventListener('resize',()=>{if(gm.classList.contains('on')){initC();computeScale();}});
+</script>
+</body>
+</html>
