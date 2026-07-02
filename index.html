@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>성적 계산기 + D-Day 카운터</title>
+  <title>1학기 성적 계산기</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -11,39 +11,34 @@
       --bg: #f2f2f7; --fg: #1c1c1e;
       --box-bg: rgba(255,255,255,0.8);
       --inp-bg: #fff; --inp-border: #c6c6c8;
-      --primary: #007aff;
-      --muted: #8e8e93;
-      --max-w: 500px;
+      --primary: #007aff; --success: #34c759; --danger: #ff3b30;
+      --muted: #8e8e93; --max-w: 500px;
     }
     [data-theme="dark"] {
       --bg: #000; --fg: #f2f2f7;
       --box-bg: rgba(28,28,30,0.8);
       --inp-bg: #1c1c1e; --inp-border: #3a3a3c;
-      --primary: #0a84ff;
-      --muted: #98989d;
+      --primary: #0a84ff; --muted: #98989d;
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--bg); color: var(--fg);
       max-width: var(--max-w); margin: 0 auto;
-      padding: env(safe-area-inset-top) 15px 30px 15px;
-      padding-bottom: env(safe-area-inset-bottom);
+      padding: env(safe-area-inset-top) 15px 30px;
       min-height: 100vh;
     }
-
     @media (min-width: 768px) {
       :root { --max-w: 1100px; }
       body { padding: 32px 40px 48px; }
       .desktop-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        align-items: start;
+        display: grid; grid-template-columns: 1fr 1fr;
+        gap: 20px; align-items: start;
       }
       .desktop-grid .span-full { grid-column: 1 / -1; }
-      .desktop-grid .left-col { display: flex; flex-direction: column; gap: 0; }
-      .desktop-grid .right-col { display: flex; flex-direction: column; gap: 0; }
+      .desktop-grid .left-col, .desktop-grid .right-col {
+        display: flex; flex-direction: column;
+      }
     }
 
     .top-bar {
@@ -51,21 +46,15 @@
       margin: 20px 0 12px; flex-wrap: wrap; gap: 10px;
     }
     .top-bar h1 { font-size: 28px; font-weight: 600; cursor: pointer; margin-left: 10px; }
-    .top-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+    .top-controls { display: flex; gap: 8px; }
 
-    .nav-tabs {
-      display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
-    }
+    .nav-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
     .nav-tab {
       flex: 1; min-width: 120px; height: 40px;
-      font-size: 15px; font-weight: 600;
-      border-radius: 10px; cursor: pointer;
-      border: 1px solid var(--inp-border);
-      background: var(--inp-bg); color: var(--fg);
+      font-size: 15px; font-weight: 600; border-radius: 10px; cursor: pointer;
+      border: 1px solid var(--inp-border); background: var(--inp-bg); color: var(--fg);
     }
-    .nav-tab.active {
-      background: var(--primary); color: #fff; border-color: var(--primary);
-    }
+    .nav-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
     .top-controls button, .btn-outline {
       background: transparent; color: var(--primary);
@@ -81,34 +70,33 @@
     }
     [data-theme="dark"] .box { border-color: rgba(255,255,255,0.1); }
 
-    .subject-picker { margin-bottom: 4px; }
-    .subject-picker > label {
-      display: block; font-size: 15px; color: var(--muted); margin-bottom: 10px;
-    }
-    .subject-chips {
-      display: flex; flex-wrap: wrap; gap: 8px;
-    }
+    .subject-picker > label { display: block; font-size: 15px; color: var(--muted); margin-bottom: 10px; }
+    .subject-chips { display: flex; flex-wrap: wrap; gap: 8px; }
     .subject-chip {
-      padding: 8px 14px; border-radius: 20px;
-      font-size: 14px; font-weight: 500; cursor: pointer;
-      border: 1px solid var(--inp-border);
+      padding: 8px 14px; border-radius: 20px; font-size: 14px; font-weight: 500;
+      cursor: pointer; border: 1px solid var(--inp-border);
       background: var(--inp-bg); color: var(--fg);
-      transition: all 0.15s;
     }
-    .subject-chip.active {
-      background: var(--primary); color: #fff; border-color: var(--primary);
-    }
-    .subject-chip:active { filter: brightness(0.92); }
+    .subject-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
     .count-container { display: flex; gap: 12px; }
     .count-container .half { flex: 1; }
     .count-container .half label { display: block; font-size: 15px; color: var(--muted); margin-bottom: 6px; }
     .count-container .half input {
-      width: 100%; height: 44px; padding: 0 12px;
-      font-size: 16px; background: var(--inp-bg);
-      border: 1px solid var(--inp-border); border-radius: 10px; color: var(--fg);
+      width: 100%; height: 44px; padding: 0 12px; font-size: 16px;
+      background: var(--inp-bg); border: 1px solid var(--inp-border);
+      border-radius: 10px; color: var(--fg);
     }
     .count-container .half input:disabled { opacity: 0.6; }
+
+    .weight-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; border-radius: 10px; margin-bottom: 14px;
+      background: var(--inp-bg); border: 1px solid var(--inp-border);
+      font-size: 14px;
+    }
+    .weight-bar.ok { border-color: var(--success); color: var(--success); }
+    .weight-bar.bad { border-color: var(--danger); color: var(--danger); }
 
     .entry {
       display: grid; grid-template-columns: 100px 1fr;
@@ -116,12 +104,38 @@
       row-gap: 8px; align-items: center; margin-bottom: 16px;
     }
     .entry label { font-size: 15px; color: var(--muted); }
-    .entry input {
-      width: 100%; height: 44px; padding: 0 12px;
-      font-size: 16px; background: var(--inp-bg);
-      border: 1px solid var(--inp-border); border-radius: 10px; color: var(--fg);
+    .entry input[type="number"], .entry input[type="text"] {
+      width: 100%; height: 44px; padding: 0 12px; font-size: 16px;
+      background: var(--inp-bg); border: 1px solid var(--inp-border);
+      border-radius: 10px; color: var(--fg);
     }
-    .entry input.weight-filled { color: var(--primary); font-weight: 600; }
+    .entry input::placeholder { color: rgba(142,142,147,0.45); }
+    [data-theme="dark"] .entry input::placeholder { color: rgba(152,152,157,0.4); }
+
+    .score-row { display: flex; gap: 8px; align-items: center; }
+    .score-row input { flex: 1; }
+    .if-btn {
+      flex-shrink: 0; width: 44px; height: 44px;
+      border-radius: 10px; border: 1px solid var(--inp-border);
+      background: var(--inp-bg); color: var(--muted);
+      font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+    .if-btn.active {
+      background: var(--primary); color: #fff; border-color: var(--primary);
+    }
+    .if-btn.active + .if-hint { display: block; }
+    .entry.if-mode input.exam-score { opacity: 0.5; }
+
+    .section-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .section-head h2 { font-size: 18px; }
+    .mini-btn {
+      font-size: 12px; padding: 4px 10px; border-radius: 6px;
+      border: 1px solid var(--inp-border); background: var(--inp-bg);
+      color: var(--primary); cursor: pointer;
+    }
 
     .btn {
       display: block; width: 100%; height: 44px;
@@ -129,16 +143,40 @@
       border-radius: 12px; margin: 12px 0; line-height: 44px;
       background: var(--primary); color: #fff; border: none; cursor: pointer;
     }
-    .btn:active { filter: brightness(0.9); }
 
     #result {
-      font-size: 17px; text-align: center;
-      line-height: 1.5; margin-bottom: 20px; word-break: keep-all;
+      font-size: 16px; line-height: 1.6; margin-bottom: 20px; word-break: keep-all;
+    }
+    .result-main { text-align: center; margin-bottom: 16px; font-size: 17px; }
+    .sim-box {
+      background: var(--inp-bg); border-radius: 12px;
+      border: 1px solid var(--inp-border); padding: 14px; margin-top: 12px;
+    }
+    .sim-box h4 { font-size: 15px; margin-bottom: 10px; color: var(--primary); }
+    .sim-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;
+    }
+    @media (max-width: 400px) { .sim-grid { grid-template-columns: repeat(3, 1fr); } }
+    .sim-cell {
+      text-align: center; padding: 8px 4px; border-radius: 8px;
+      background: var(--bg); font-size: 13px;
+    }
+    .sim-cell .sc { font-weight: 700; font-size: 15px; }
+    .sim-cell .gr { font-size: 12px; margin-top: 2px; }
+
+    .target-box {
+      margin-top: 14px; padding: 14px; border-radius: 12px;
+      background: var(--inp-bg); border: 1px solid var(--inp-border);
+    }
+    .target-box h4 { font-size: 15px; margin-bottom: 10px; }
+    .target-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .target-chip {
+      padding: 8px 12px; border-radius: 8px; font-size: 13px;
+      background: var(--bg); border: 1px solid var(--inp-border);
     }
 
     .history-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 12px;
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
     }
     .history-header span { font-size: 17px; font-weight: 600; }
 
@@ -147,16 +185,10 @@
       overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .record-table { width: 100%; border-collapse: collapse; min-width: 520px; }
-    .record-table th, .record-table td {
-      padding: 12px 8px; text-align: center;
-      font-size: 14px; border: none;
-    }
-    .record-table thead th { font-weight: 600; }
+    .record-table th, .record-table td { padding: 12px 8px; text-align: center; font-size: 14px; }
     .record-table tbody tr:nth-child(even) td { background: #f2f2f7; }
-    .record-table tbody tr:hover td { background: #e5e5ea; }
     .record-table td.subject { text-align: left; padding-left: 16px; }
     [data-theme="dark"] .record-table tbody tr:nth-child(even) td { background: var(--inp-bg); }
-    [data-theme="dark"] .record-table tbody tr:hover td { background: rgba(255,255,255,0.1); }
 
     .delete-btn { color: #ff3b30; cursor: pointer; font-size: 14px; background: none; border: none; }
     .info-btn {
@@ -164,54 +196,39 @@
       border-radius: 6px; padding: 4px 8px; font-size: 13px; cursor: pointer;
     }
 
-    #ddayList li + li { border-top: 1px solid rgba(0,0,0,0.1); padding-top: 8px; margin-top: 8px; }
-    [data-theme="dark"] #ddayList li + li { border-color: rgba(255,255,255,0.1); }
-
     .modal {
-      display: none; position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%; background: rgba(0,0,0,0.5);
-      align-items: center; justify-content: center;
-      padding: 20px; z-index: 1000;
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      align-items: center; justify-content: center; padding: 20px; z-index: 1000;
     }
     .modal-content {
-      background: var(--box-bg); backdrop-filter: blur(20px);
-      border-radius: 16px; width: 100%; max-width: 500px;
+      background: var(--box-bg); border-radius: 16px; width: 100%; max-width: 500px;
       max-height: 90%; overflow-y: auto; padding: 20px; position: relative;
     }
     #modalCloseBtn {
       position: absolute; top: 12px; right: 12px;
-      background: transparent; border: none;
-      font-size: 16px; color: var(--primary); cursor: pointer;
+      background: transparent; border: none; font-size: 16px; color: var(--primary); cursor: pointer;
     }
-    .table-group {
-      border-radius: 12px; overflow: hidden; margin-bottom: 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
+    .table-group { border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
     .table-group table { width: 100%; border-collapse: collapse; background: var(--inp-bg); }
     .table-group th, .table-group td { padding: 16px; font-size: 16px; text-align: left; }
     .table-group tr:not(:last-child) td { border-bottom: 1px solid rgba(0,0,0,0.1); }
-    [data-theme="dark"] .table-group tr:not(:last-child) td { border-bottom: 1px solid rgba(255,255,255,0.1); }
-    .modal-content h2 { margin-top: 0; margin-bottom: 24px; }
-    .modal-content h3 { margin-top: 24px; margin-bottom: 12px; }
 
-    /* Graph page */
     #graphView { display: none; }
-    .graph-summary {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;
-    }
-    @media (min-width: 768px) {
-      .graph-summary { grid-template-columns: repeat(3, 1fr); }
-    }
+    .graph-summary { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+    @media (min-width: 768px) { .graph-summary { grid-template-columns: repeat(3, 1fr); } }
     .summary-card {
       background: var(--inp-bg); border-radius: 12px; padding: 16px;
       border: 1px solid var(--inp-border); text-align: center;
     }
     .summary-card .subj { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
     .summary-card .score { font-size: 28px; font-weight: 700; }
-    .summary-card .grade {
-      font-size: 15px; font-weight: 600; margin-top: 4px;
-    }
     .summary-card.empty .score { font-size: 18px; color: var(--muted); font-weight: 500; }
+
+    .grade-stats {
+      display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;
+      margin-bottom: 16px; font-size: 14px;
+    }
+    .grade-stat { padding: 6px 12px; border-radius: 8px; background: var(--inp-bg); border: 1px solid var(--inp-border); }
 
     .chart-wrap {
       background: var(--inp-bg); border-radius: 12px;
@@ -220,10 +237,18 @@
     .chart-wrap h3 { font-size: 17px; margin-bottom: 16px; text-align: center; }
     #scoreChart { width: 100%; height: 320px; display: block; }
     @media (min-width: 768px) { #scoreChart { height: 400px; } }
+    .avg-box { margin-top: 16px; text-align: center; font-size: 17px; line-height: 1.6; }
 
-    .avg-box {
-      margin-top: 16px; text-align: center; font-size: 17px; line-height: 1.6;
+    .rank-box {
+      margin-top: 16px; padding: 14px; border-radius: 12px;
+      background: var(--box-bg); border: 1px solid var(--inp-border);
     }
+    .rank-box h4 { font-size: 15px; margin-bottom: 10px; }
+    .rank-item {
+      display: flex; justify-content: space-between; padding: 8px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 14px;
+    }
+    .rank-item:last-child { border-bottom: none; }
 
     @media (max-width: 400px) {
       .count-container { flex-direction: column; }
@@ -246,7 +271,6 @@
     <button class="nav-tab" data-view="graph">원점수 그래프</button>
   </div>
 
-  <!-- 계산기 뷰 -->
   <div id="calcView">
     <div class="desktop-grid">
       <div class="left-col">
@@ -299,42 +323,24 @@
             </table>
           </div>
         </div>
-
-        <div id="ddayBox" class="box">
-          <div class="history-header">
-            <span>시험 일정 & D-Day</span>
-            <button id="addDdayBtn" class="btn-outline">일정 추가</button>
-          </div>
-          <div id="ddayForm" style="display:none; margin-bottom:16px;">
-            <div class="entry">
-              <label>시험명</label>
-              <input type="text" id="ddayName" placeholder="예: 방학식">
-            </div>
-            <div class="entry">
-              <label>날짜</label>
-              <input type="date" id="ddayDate">
-            </div>
-            <button id="saveDdayBtn" class="btn">저장</button>
-          </div>
-          <ul id="ddayList" style="list-style:none; padding:0;"></ul>
-        </div>
       </div>
     </div>
   </div>
 
-  <!-- 그래프 뷰 -->
   <div id="graphView">
     <div class="box">
       <div class="history-header">
         <span>6과목 원점수 현황</span>
         <button id="refreshGraphBtn" class="btn-outline">새로고침</button>
       </div>
+      <div class="grade-stats" id="gradeStats"></div>
       <div class="graph-summary" id="graphSummary"></div>
     </div>
     <div class="box chart-wrap">
       <h3>과목별 원점수 비교</h3>
       <canvas id="scoreChart"></canvas>
       <div class="avg-box" id="avgBox"></div>
+      <div class="rank-box" id="rankBox"></div>
     </div>
   </div>
 
@@ -347,70 +353,42 @@
 
   <script>
     const SUBJECT_ORDER = ['수학', '과학', '기계기초공작', '기계제도', '기계소프트웨어', '한국사'];
+    const MSW_PLACEHOLDERS = ['공기압1', '공기압2', '센서1', '센서2', 'HMI1', 'HMI2', '모터제어1', '모터제어2'];
+    const IF_SCENARIOS = [60, 70, 80, 90, 100];
+    const GRADE_COLORS = { A: '#2ecc71', B: '#007aff', C: '#ffcc00', D: '#ff9500', E: '#ff3b30' };
 
     const SUBJECT_PRESETS = {
       '수학': {
-        performances: [
-          { label: '수행1', weight: 20 },
-          { label: '수행2(발표+문제)', weight: 30 }
-        ],
-        exams: [
-          { label: '중간고사', weight: 25 },
-          { label: '기말고사', weight: 25 }
-        ]
+        performances: [{ label: '수행1', weight: 20 }, { label: '수행2(발표+문제)', weight: 30 }],
+        exams: [{ label: '중간고사', weight: 25 }, { label: '기말고사', weight: 25 }]
       },
       '과학': {
-        performances: [
-          { label: '수행1', weight: 20 },
-          { label: '수행2', weight: 20 }
-        ],
-        exams: [
-          { label: '시험1', weight: 30 },
-          { label: '시험2', weight: 30 }
-        ]
+        performances: [{ label: '수행1', weight: 20 }, { label: '수행2', weight: 20 }],
+        exams: [{ label: '시험1', weight: 30 }, { label: '시험2', weight: 30 }]
       },
       '기계기초공작': {
-        performances: [
-          { label: '수행1', weight: 30 },
-          { label: '수행2', weight: 30 }
-        ],
-        exams: [
-          { label: '기말1', weight: 20 },
-          { label: '기말2', weight: 20 }
-        ]
+        performances: [{ label: '수행1', weight: 30 }, { label: '수행2', weight: 30 }],
+        exams: [{ label: '기말1', weight: 20 }, { label: '기말2', weight: 20 }]
       },
       '기계제도': {
-        performances: [
-          { label: '수행1', weight: 40 },
-          { label: '수행2', weight: 40 }
-        ],
-        exams: [
-          { label: '기말1', weight: 20 }
-        ]
+        performances: [{ label: '수행1', weight: 40 }, { label: '수행2', weight: 40 }],
+        exams: [{ label: '기말1', weight: 20 }]
       },
       '기계소프트웨어': {
-        performances: Array.from({ length: 8 }, (_, i) => ({
-          label: `수행${i + 1}`, weight: 7.5
-        })),
-        exams: [
-          { label: '기말1', weight: 20 },
-          { label: '기말2', weight: 20 }
-        ]
+        performances: MSW_PLACEHOLDERS.map((label, i) => ({ label: `수행${i + 1}`, weight: 7.5, placeholder: label })),
+        exams: [{ label: '기말1', weight: 20 }, { label: '기말2', weight: 20 }]
       },
       '한국사': {
-        performances: [
-          { label: '수행1', weight: 20 },
-          { label: '수행2(답사지)', weight: 30 }
-        ],
-        exams: [
-          { label: '기말1', weight: 25 },
-          { label: '기말2', weight: 25 }
-        ]
+        performances: [{ label: '수행1', weight: 20 }, { label: '수행2(답사지)', weight: 30 }],
+        exams: [{ label: '기말1', weight: 25 }, { label: '기말2', weight: 25 }]
       }
     };
 
-    const GRADE_COLORS = { A: '#2ecc71', B: '#007aff', C: '#ffcc00', D: '#ff9500', E: '#ff3b30' };
     let selectedSubject = null;
+
+    function getGrade(score) {
+      return score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'E';
+    }
 
     // Theme
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -422,15 +400,8 @@
       if (document.getElementById('graphView').style.display !== 'none') renderGraph();
     }
     applyTheme(localStorage.getItem('theme') || (mediaQuery.matches ? 'dark' : 'light'));
-    mediaQuery.addEventListener('change', e => {
-      if (!localStorage.getItem('theme')) applyTheme(e.matches ? 'dark' : 'light');
-    });
-    themeToggle.onclick = () => {
-      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      applyTheme(next);
-    };
+    themeToggle.onclick = () => applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
 
-    // View navigation
     document.querySelectorAll('.nav-tab').forEach(tab => {
       tab.onclick = () => {
         document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -442,14 +413,37 @@
       };
     });
 
-    // Subject chips
+    // Draft save per subject
+    function saveDraft() {
+      if (!selectedSubject) return;
+      const sCnt = +document.getElementById('sCount').value;
+      const tCnt = +document.getElementById('tCount').value;
+      const draft = { scores: [], weights: [], examScores: [], examWeights: [], ifModes: [] };
+      for (let i = 0; i < sCnt; i++) {
+        draft.scores.push(document.getElementById(`s${i}`)?.value || '');
+        draft.weights.push(document.getElementById(`sw${i}`)?.value || '');
+      }
+      for (let i = 0; i < tCnt; i++) {
+        draft.examScores.push(document.getElementById(`t${i}`)?.value || '');
+        draft.examWeights.push(document.getElementById(`tw${i}`)?.value || '');
+        draft.ifModes.push(document.getElementById(`if${i}`)?.classList.contains('active') || false);
+      }
+      const all = JSON.parse(localStorage.getItem('subjectDrafts') || '{}');
+      all[selectedSubject] = draft;
+      localStorage.setItem('subjectDrafts', JSON.stringify(all));
+    }
+
+    function loadDraft(name) {
+      return JSON.parse(localStorage.getItem('subjectDrafts') || '{}')[name] || null;
+    }
+
     function renderSubjectChips() {
       const container = document.getElementById('subjectChips');
       container.innerHTML = SUBJECT_ORDER.map(name =>
         `<button type="button" class="subject-chip${selectedSubject === name ? ' active' : ''}" data-subject="${name}">${name}</button>`
       ).join('');
       container.querySelectorAll('.subject-chip').forEach(chip => {
-        chip.onclick = () => selectSubject(chip.dataset.subject);
+        chip.onclick = () => { saveDraft(); selectSubject(chip.dataset.subject); };
       });
     }
 
@@ -461,72 +455,243 @@
       document.getElementById('tCount').value = preset.exams.length;
       renderSubjectChips();
       generateInputs(preset);
+      const draft = loadDraft(name);
+      if (draft) applyDraft(draft);
+    }
+
+    function applyDraft(draft) {
+      draft.scores.forEach((v, i) => { const el = document.getElementById(`s${i}`); if (el) el.value = v; });
+      draft.weights.forEach((v, i) => { const el = document.getElementById(`sw${i}`); if (el) el.value = v; });
+      draft.examScores.forEach((v, i) => { const el = document.getElementById(`t${i}`); if (el) el.value = v; });
+      draft.examWeights.forEach((v, i) => { const el = document.getElementById(`tw${i}`); if (el) el.value = v; });
+      draft.ifModes.forEach((on, i) => {
+        const btn = document.getElementById(`if${i}`);
+        if (btn) { btn.classList.toggle('active', on); toggleIfMode(i, on); }
+      });
+      updateWeightBar();
     }
 
     function generateInputs(preset) {
-      const sCnt = preset
-        ? preset.performances.length
-        : +document.getElementById('sCount').value;
-      const tCnt = preset
-        ? preset.exams.length
-        : +document.getElementById('tCount').value;
+      const sCnt = preset.performances.length;
+      const tCnt = preset.exams.length;
+      let html = `
+        <div id="weightBar" class="weight-bar bad">비중 합계: <strong>0</strong>% / 100%</div>
+        <div class="section-head">
+          <h2>수행평가</h2>
+          <button type="button" class="mini-btn" id="resetWeightsBtn">비중 초기화</button>
+        </div>`;
 
-      let html = '<h2 style="margin-bottom:12px;font-size:18px;">수행평가</h2>';
       for (let i = 0; i < sCnt; i++) {
-        const lbl = preset ? preset.performances[i].label : `수행${i + 1}`;
-        const w = preset ? preset.performances[i].weight : '';
+        const p = preset.performances[i];
+        const ph = p.placeholder || '점수';
         html += `
           <div class="entry">
-            <label>${lbl}</label>
-            <input type="number" id="s${i}" placeholder="점수" min="0" max="100">
+            <label>${p.label}</label>
+            <input type="number" id="s${i}" placeholder="${ph}" min="0" max="100">
             <label>비중(%)</label>
-            <input type="number" id="sw${i}" placeholder="%" value="${w}" class="${w !== '' ? 'weight-filled' : ''}" readonly>
+            <input type="number" id="sw${i}" placeholder="%" value="${p.weight}" min="0" max="100" class="weight-inp">
           </div>`;
       }
+
       html += '<h2 style="margin:16px 0 12px;font-size:18px;">지필평가</h2>';
       for (let i = 0; i < tCnt; i++) {
-        const lbl = preset
-          ? preset.exams[i].label
-          : (tCnt === 1 ? '기말고사' : (i === 0 ? '중간고사' : '기말고사'));
-        const w = preset ? preset.exams[i].weight : '';
+        const ex = preset.exams[i];
         html += `
-          <div class="entry">
-            <label>${lbl}</label>
-            <input type="number" id="t${i}" placeholder="점수" min="0" max="100">
+          <div class="entry" id="examEntry${i}">
+            <label>${ex.label}</label>
+            <div class="score-row">
+              <input type="number" id="t${i}" class="exam-score" placeholder="점수" min="0" max="100">
+              <button type="button" class="if-btn" id="if${i}" title="IF 모드: 시험 점수별 예상 원점수">IF</button>
+            </div>
             <label>비중(%)</label>
-            <input type="number" id="tw${i}" placeholder="%" value="${w}" class="${w !== '' ? 'weight-filled' : ''}" readonly>
+            <input type="number" id="tw${i}" placeholder="%" value="${ex.weight}" min="0" max="100" class="weight-inp">
           </div>`;
       }
+
       document.getElementById('inputs').innerHTML = html;
+
+      document.querySelectorAll('.weight-inp').forEach(inp => inp.addEventListener('input', updateWeightBar));
+      document.getElementById('resetWeightsBtn').onclick = () => {
+        if (!selectedSubject) return;
+        const p = SUBJECT_PRESETS[selectedSubject];
+        p.performances.forEach((item, i) => { document.getElementById(`sw${i}`).value = item.weight; });
+        p.exams.forEach((item, i) => { document.getElementById(`tw${i}`).value = item.weight; });
+        updateWeightBar();
+      };
+
+      for (let i = 0; i < tCnt; i++) {
+        document.getElementById(`if${i}`).onclick = function() {
+          const on = !this.classList.contains('active');
+          this.classList.toggle('active', on);
+          toggleIfMode(i, on);
+        };
+      }
+
+      updateWeightBar();
     }
 
-    // Subject scores for graph
-    function loadSubjectScores() {
-      return JSON.parse(localStorage.getItem('subjectScores') || '{}');
+    function toggleIfMode(i, on) {
+      const entry = document.getElementById(`examEntry${i}`);
+      const inp = document.getElementById(`t${i}`);
+      if (on) {
+        entry.classList.add('if-mode');
+        inp.placeholder = 'IF 시뮬레이션';
+        inp.value = '';
+      } else {
+        entry.classList.remove('if-mode');
+        const lbl = selectedSubject ? SUBJECT_PRESETS[selectedSubject].exams[i].label : '점수';
+        inp.placeholder = lbl === '기말고사' || lbl.startsWith('기말') ? '점수' : '점수';
+        inp.placeholder = '점수';
+      }
     }
+
+    function updateWeightBar() {
+      const bar = document.getElementById('weightBar');
+      if (!bar) return;
+      let sum = 0;
+      document.querySelectorAll('.weight-inp').forEach(inp => { sum += +inp.value || 0; });
+      bar.innerHTML = `비중 합계: <strong>${sum}</strong>% / 100%`;
+      bar.classList.toggle('ok', sum === 100);
+      bar.classList.toggle('bad', sum !== 100);
+    }
+
+    function collectData() {
+      const sCnt = +document.getElementById('sCount').value;
+      const tCnt = +document.getElementById('tCount').value;
+      const perf = [], exms = [];
+      let sSum = 0, wSum = 0, tSum = 0;
+
+      for (let i = 0; i < sCnt; i++) {
+        const sc = +document.getElementById(`s${i}`).value || 0;
+        const w = +document.getElementById(`sw${i}`).value || 0;
+        const lbl = SUBJECT_PRESETS[selectedSubject]?.performances[i]?.label || `수행${i + 1}`;
+        perf.push({ label: lbl, score: sc, weight: w });
+        sSum += sc * (w / 100); wSum += w;
+      }
+
+      const ifActive = [];
+      let mid = 0, finalW = 0;
+      for (let i = 0; i < tCnt; i++) {
+        const ifOn = document.getElementById(`if${i}`).classList.contains('active');
+        ifActive.push(ifOn);
+        const w = +document.getElementById(`tw${i}`).value || 0;
+        const sc = ifOn ? 0 : (+document.getElementById(`t${i}`).value || 0);
+        const lbl = SUBJECT_PRESETS[selectedSubject]?.exams[i]?.label || `시험${i + 1}`;
+        exms.push({ label: lbl, score: sc, weight: w, ifMode: ifOn });
+        if (tCnt === 1 || i === tCnt - 1) finalW = w / 100;
+        else if (!ifOn) mid += sc * (w / 100);
+        if (!ifOn) tSum += sc * (w / 100);
+        wSum += w;
+      }
+
+      return { perf, exms, sSum, tSum, wSum, mid, finalW, ifActive, sCnt, tCnt };
+    }
+
+    function buildSimulations(data) {
+      const { exms, sSum, tSum, ifActive } = data;
+      const sims = [];
+      exms.forEach((ex, i) => {
+        if (!ifActive[i]) return;
+        const base = sSum + tSum; // tSum excludes IF exams (score=0)
+        const w = ex.weight / 100;
+        const rows = IF_SCENARIOS.map(sc => {
+          const final = +(base + sc * w).toFixed(2);
+          const grade = getGrade(final);
+          return { sc, final, grade };
+        });
+        sims.push({ label: ex.label, rows });
+      });
+      return sims;
+    }
+
+    function buildTargetHints(data, final, grade) {
+      const { sSum, mid, finalW, exms, ifActive, tCnt } = data;
+      if (finalW <= 0) return '';
+      const lastIdx = tCnt - 1;
+      const targets = [
+        { g: 'A', th: 90 }, { g: 'B', th: 80 }, { g: 'C', th: 70 }, { g: 'D', th: 60 }
+      ];
+      const chips = targets.map(({ g, th }) => {
+        const need = (th - sSum - mid) / finalW;
+        if (need > 100) return `<span class="target-chip">${g} 등급: 불가</span>`;
+        if (need <= 0) return `<span class="target-chip">${g} 등급: 이미 달성 ✓</span>`;
+        return `<span class="target-chip">${g} 등급: ${exms[lastIdx]?.label || '기말'} <strong>${need.toFixed(1)}점</strong> 필요</span>`;
+      }).join('');
+      return `<div class="target-box"><h4>🎯 목표 등급별 필요 점수 (마지막 시험 기준)</h4><div class="target-chips">${chips}</div></div>`;
+    }
+
+    function calculate() {
+      saveDraft();
+      const subj = document.getElementById('subjectName').value.trim() || '-';
+      const data = collectData();
+      const { perf, exms, sSum, tSum, wSum, mid, finalW, ifActive } = data;
+      const anyIf = ifActive.some(Boolean);
+
+      if (wSum !== 100) {
+        document.getElementById('result').innerHTML = `<div class="result-main">❗ 총 비중이 100%가 아닙니다 (현재 <strong>${wSum}%</strong>)</div>`;
+        return;
+      }
+
+      if (anyIf) {
+        const sims = buildSimulations(data);
+        let html = '<div class="result-main"><strong>📊 IF 시뮬레이션 결과</strong><br><span style="font-size:14px;color:var(--muted)">현재 수행평가 + 입력된 시험 점수 기준</span></div>';
+        sims.forEach(sim => {
+          html += `<div class="sim-box"><h4>${sim.label} 점수별 예상 원점수</h4><div class="sim-grid">`;
+          sim.rows.forEach(r => {
+            html += `<div class="sim-cell"><div>${r.sc}점</div><div class="sc">${r.final}</div><div class="gr" style="color:${GRADE_COLORS[r.grade]}">${r.grade}</div></div>`;
+          });
+          html += '</div></div>';
+        });
+        html += buildTargetHints(data, 0, '');
+        document.getElementById('result').innerHTML = html;
+        return;
+      }
+
+      const final = +(sSum + tSum).toFixed(2);
+      const grade = getGrade(final);
+      const nextTh = { A: null, B: 90, C: 80, D: 70, E: 60 }[grade];
+      const currTh = { A: 90, B: 80, C: 70, D: 60, E: 0 }[grade];
+
+      let nextMsg, dropMsg;
+      if (nextTh) {
+        const need = (nextTh - sSum - mid) / finalW;
+        const nG = { 90: 'A', 80: 'B', 70: 'C', 60: 'D' }[nextTh];
+        nextMsg = need > 100 ? `${nG} 등급 불가` : `${nG} 위해 ${need.toFixed(2)}점↑`;
+      } else nextMsg = '최고 등급!';
+
+      const drop = (currTh - 0.01 - sSum - mid) / finalW;
+      dropMsg = drop < 0 ? '떨어질 등급 없음' : `${drop.toFixed(2)}점↓ (이하 ${{ 90: 'B', 80: 'C', 70: 'D', 60: 'E' }[currTh]})`;
+
+      let html = `<div class="result-main">최종: <strong>${final}점</strong><br><span style="color:${GRADE_COLORS[grade]};font-weight:700;font-size:20px">${grade} 등급</span><br>${nextMsg}<br>${dropMsg}</div>`;
+      html += buildTargetHints(data, final, grade);
+
+      document.getElementById('result').innerHTML = html;
+
+      const now = new Date();
+      const formattedTime = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      saveHistory({ time: formattedTime, subject: subj, final, grade, nextMsg, dropMsg, performances: perf, exams: exms });
+      if (SUBJECT_ORDER.includes(subj)) saveSubjectScore(subj, { final, grade, time: formattedTime });
+      renderHistory();
+    }
+
+    function loadSubjectScores() { return JSON.parse(localStorage.getItem('subjectScores') || '{}'); }
     function saveSubjectScore(name, data) {
-      const scores = loadSubjectScores();
-      scores[name] = data;
-      localStorage.setItem('subjectScores', JSON.stringify(scores));
+      const s = loadSubjectScores(); s[name] = data;
+      localStorage.setItem('subjectScores', JSON.stringify(s));
     }
     function getLatestScoresForGraph() {
       const stored = loadSubjectScores();
-      return SUBJECT_ORDER.map(name => ({
-        name,
-        ...(stored[name] || { final: null, grade: null, time: null })
-      }));
+      return SUBJECT_ORDER.map(name => ({ name, ...(stored[name] || { final: null, grade: null }) }));
     }
 
-    // History
     function loadHistory() { return JSON.parse(localStorage.getItem('gradeHistory') || '[]'); }
     function saveHistory(entry) {
-      const h = loadHistory();
-      h.unshift(entry);
+      const h = loadHistory(); h.unshift(entry);
       localStorage.setItem('gradeHistory', JSON.stringify(h.slice(0, 50)));
     }
     function deleteHistory(idx) {
-      const h = loadHistory();
-      h.splice(idx, 1);
+      const h = loadHistory(); h.splice(idx, 1);
       localStorage.setItem('gradeHistory', JSON.stringify(h));
       renderHistory();
     }
@@ -537,12 +702,9 @@
       loadHistory().forEach((it, i) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${it.time}</td>
-          <td class="subject">${it.subject || '-'}</td>
-          <td>${it.final}</td>
+          <td>${it.time}</td><td class="subject">${it.subject || '-'}</td><td>${it.final}</td>
           <td><strong style="color:${GRADE_COLORS[it.grade]}">${it.grade}</strong></td>
-          <td>${it.nextMsg}</td>
-          <td>${it.dropMsg}</td>
+          <td>${it.nextMsg}</td><td>${it.dropMsg}</td>
           <td><button class="delete-btn" data-i="${i}">삭제</button></td>
           <td><button class="info-btn" data-idx="${i}">정보</button></td>`;
         tb.appendChild(tr);
@@ -552,7 +714,6 @@
     }
 
     const modal = document.getElementById('detailModal');
-    const inner = document.getElementById('modalInnerContent');
     document.getElementById('modalCloseBtn').onclick = () => modal.style.display = 'none';
     window.onclick = e => { if (e.target === modal) modal.style.display = 'none'; };
 
@@ -569,110 +730,45 @@
     function showInfo(idx) {
       const e = loadHistory()[idx];
       if (!e) return;
-      inner.innerHTML = `
+      document.getElementById('modalInnerContent').innerHTML = `
         <h2>과목명 수정</h2>
         <input type="text" id="editSubject" value="${e.subject || ''}" style="width:100%;font-size:18px;padding:8px;margin-bottom:16px;border:1px solid var(--inp-border);border-radius:8px;background:var(--inp-bg);color:var(--fg);">
         <h3>수행평가</h3>
-        <div class="table-group"><table>
-          <thead><tr><th>회차</th><th>점수</th><th>비중(%)</th></tr></thead>
-          <tbody>${e.performances.map((p, i) => `<tr><td>${i + 1}</td><td>${p.score}</td><td>${p.weight}</td></tr>`).join('')}</tbody>
-        </table></div>
+        <div class="table-group"><table><thead><tr><th>회차</th><th>점수</th><th>비중(%)</th></tr></thead>
+        <tbody>${e.performances.map((p, i) => `<tr><td>${i + 1}</td><td>${p.score}</td><td>${p.weight}</td></tr>`).join('')}</tbody></table></div>
         <h3>지필평가</h3>
-        <div class="table-group"><table>
-          <thead><tr><th>구분</th><th>점수</th><th>비중(%)</th></tr></thead>
-          <tbody>${e.exams.map(ex => `<tr><td>${ex.label}</td><td>${ex.score}</td><td>${ex.weight}</td></tr>`).join('')}</tbody>
-        </table></div>
+        <div class="table-group"><table><thead><tr><th>구분</th><th>점수</th><th>비중(%)</th></tr></thead>
+        <tbody>${e.exams.map(ex => `<tr><td>${ex.label}</td><td>${ex.score}</td><td>${ex.weight}</td></tr>`).join('')}</tbody></table></div>
         <button class="btn" onclick="updateSubjectName(${idx})">과목명 저장</button>`;
       modal.style.display = 'flex';
     }
 
-    function calculate() {
-      const subj = document.getElementById('subjectName').value.trim() || '-';
-      const sCnt = +document.getElementById('sCount').value;
-      const tCnt = +document.getElementById('tCount').value;
-      let sSum = 0, wSum = 0, mid = 0, finalW = 0, tSum = 0;
-      const perf = [], exms = [];
-
-      for (let i = 0; i < sCnt; i++) {
-        const sc = +document.getElementById(`s${i}`).value || 0;
-        const w = +document.getElementById(`sw${i}`).value || 0;
-        const lbl = selectedSubject && SUBJECT_PRESETS[selectedSubject]
-          ? SUBJECT_PRESETS[selectedSubject].performances[i].label
-          : `수행${i + 1}`;
-        perf.push({ label: lbl, score: sc, weight: w });
-        sSum += sc * (w / 100); wSum += w;
-      }
-      for (let i = 0; i < tCnt; i++) {
-        const sc = +document.getElementById(`t${i}`).value || 0;
-        const w = +document.getElementById(`tw${i}`).value || 0;
-        const lbl = selectedSubject && SUBJECT_PRESETS[selectedSubject]
-          ? SUBJECT_PRESETS[selectedSubject].exams[i].label
-          : (tCnt === 1 ? '기말고사' : (i === 0 ? '중간고사' : '기말고사'));
-        exms.push({ label: lbl, score: sc, weight: w });
-        if (tCnt === 1 || i === tCnt - 1) finalW = w / 100;
-        else mid += sc * (w / 100);
-        tSum += sc * (w / 100); wSum += w;
-      }
-
-      if (wSum !== 100) {
-        document.getElementById('result').textContent = `❗ 총 비중이 100%가 아닙니다 (현재 ${wSum}%).`;
-        return;
-      }
-
-      const final = +(sSum + tSum).toFixed(2);
-      const grade = final >= 90 ? 'A' : final >= 80 ? 'B' : final >= 70 ? 'C' : final >= 60 ? 'D' : 'E';
-      const nextTh = { A: null, B: 90, C: 80, D: 70, E: 60 }[grade];
-      const currTh = { A: 90, B: 80, C: 70, D: 60, E: 0 }[grade];
-
-      let nextMsg, dropMsg;
-      if (nextTh) {
-        const need = (nextTh - sSum - mid) / finalW;
-        const nG = { 90: 'A', 80: 'B', 70: 'C', 60: 'D' }[nextTh];
-        nextMsg = need > 100 ? `${nG} 등급 불가` : `${nG} 위해 ${need.toFixed(2)}점↑`;
-      } else nextMsg = '최고 등급!';
-
-      const drop = (currTh - 0.01 - sSum - mid) / finalW;
-      dropMsg = drop < 0 ? '떨어질 등급 없음' : `${drop.toFixed(2)}점↓ (이하 ${{ 90: 'B', 80: 'C', 70: 'D', 60: 'E' }[currTh]})`;
-
-      document.getElementById('result').innerHTML =
-        `최종: <strong>${final}점</strong><br>${grade} 등급<br>${nextMsg}<br>${dropMsg}`;
-
-      const now = new Date();
-      const formattedTime =
-        `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')} ` +
-        `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-      saveHistory({ time: formattedTime, subject: subj, final, grade, nextMsg, dropMsg, performances: perf, exams: exms });
-
-      if (SUBJECT_ORDER.includes(subj)) {
-        saveSubjectScore(subj, { final, grade, time: formattedTime });
-      }
-
-      renderHistory();
-    }
-
-    // Graph
     function renderGraph() {
       const data = getLatestScoresForGraph();
-      const summary = document.getElementById('graphSummary');
-      summary.innerHTML = data.map(d => {
-        if (d.final == null) {
-          return `<div class="summary-card empty"><div class="subj">${d.name}</div><div class="score">미입력</div></div>`;
-        }
-        return `<div class="summary-card">
-          <div class="subj">${d.name}</div>
-          <div class="score">${d.final}점</div>
-          <div class="grade" style="color:${GRADE_COLORS[d.grade]}">${d.grade} 등급</div>
-        </div>`;
+      const filled = data.filter(d => d.final != null);
+
+      const gradeCount = { A: 0, B: 0, C: 0, D: 0, E: 0 };
+      filled.forEach(d => { if (gradeCount[d.grade] !== undefined) gradeCount[d.grade]++; });
+      document.getElementById('gradeStats').innerHTML = Object.entries(gradeCount)
+        .filter(([, c]) => c > 0)
+        .map(([g, c]) => `<span class="grade-stat" style="color:${GRADE_COLORS[g]}">${g} ${c}과목</span>`)
+        .join('') || '<span class="grade-stat">아직 등급 데이터 없음</span>';
+
+      document.getElementById('graphSummary').innerHTML = data.map(d => {
+        if (d.final == null) return `<div class="summary-card empty"><div class="subj">${d.name}</div><div class="score">미입력</div></div>`;
+        return `<div class="summary-card"><div class="subj">${d.name}</div><div class="score">${d.final}점</div><div style="color:${GRADE_COLORS[d.grade]};font-weight:600;margin-top:4px">${d.grade}</div></div>`;
       }).join('');
 
-      const filled = data.filter(d => d.final != null);
-      const avg = filled.length
-        ? (filled.reduce((s, d) => s + d.final, 0) / filled.length).toFixed(2)
-        : null;
+      const avg = filled.length ? (filled.reduce((s, d) => s + d.final, 0) / filled.length).toFixed(2) : null;
       document.getElementById('avgBox').innerHTML = avg
-        ? `입력된 과목 평균: <strong>${avg}점</strong> (${filled.length}/${SUBJECT_ORDER.length}과목)`
-        : '아직 계산된 과목이 없습니다. 계산기에서 각 과목 점수를 입력해 주세요.';
+        ? `6과목 평균: <strong>${avg}점</strong> (${filled.length}/${SUBJECT_ORDER.length}과목 입력)`
+        : '계산기에서 각 과목 점수를 계산해 주세요.';
+
+      const ranked = [...filled].sort((a, b) => b.final - a.final);
+      document.getElementById('rankBox').innerHTML = ranked.length ? `
+        <h4>🏆 과목 순위</h4>
+        ${ranked.map((d, i) => `<div class="rank-item"><span>${i + 1}. ${d.name}</span><span style="color:${GRADE_COLORS[d.grade]};font-weight:600">${d.final}점 (${d.grade})</span></div>`).join('')}
+      ` : '';
 
       drawChart(data);
     }
@@ -686,28 +782,29 @@
       const ctx = canvas.getContext('2d');
       ctx.scale(dpr, dpr);
       const W = rect.width, H = rect.height;
-
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const fg = isDark ? '#f2f2f7' : '#1c1c1e';
       const grid = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)';
       const barColors = ['#007aff', '#5856d6', '#34c759', '#ff9500', '#ff2d55', '#af52de'];
 
       ctx.clearRect(0, 0, W, H);
       const padL = 44, padR = 16, padT = 20, padB = 72;
-      const chartW = W - padL - padR;
-      const chartH = H - padT - padB;
+      const chartW = W - padL - padR, chartH = H - padT - padB;
 
-      // Grid lines
-      ctx.strokeStyle = grid;
-      ctx.lineWidth = 1;
-      ctx.font = '12px -apple-system, sans-serif';
-      ctx.fillStyle = isDark ? '#98989d' : '#8e8e93';
-      ctx.textAlign = 'right';
+      ctx.strokeStyle = grid; ctx.lineWidth = 1;
+      ctx.font = '12px sans-serif'; ctx.fillStyle = isDark ? '#98989d' : '#8e8e93'; ctx.textAlign = 'right';
       for (let v = 0; v <= 100; v += 20) {
         const y = padT + chartH - (v / 100) * chartH;
         ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
         ctx.fillText(v, padL - 8, y + 4);
       }
+
+      // Grade cut lines
+      [{ v: 90, c: '#2ecc7180' }, { v: 80, c: '#007aff60' }, { v: 70, c: '#ffcc0060' }, { v: 60, c: '#ff950060' }].forEach(({ v, c }) => {
+        const y = padT + chartH - (v / 100) * chartH;
+        ctx.strokeStyle = c; ctx.setLineDash([4, 4]);
+        ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+        ctx.setLineDash([]);
+      });
 
       const barGap = 12;
       const barW = (chartW - barGap * (data.length + 1)) / data.length;
@@ -717,99 +814,33 @@
         const score = d.final != null ? d.final : 0;
         const barH = (score / 100) * chartH;
         const y = padT + chartH - barH;
-
         ctx.fillStyle = d.final != null ? barColors[i % barColors.length] : (isDark ? '#3a3a3c' : '#d1d1d6');
         ctx.beginPath();
         const r = 6;
-        ctx.moveTo(x + r, y);
-        ctx.lineTo(x + barW - r, y);
+        ctx.moveTo(x + r, y); ctx.lineTo(x + barW - r, y);
         ctx.quadraticCurveTo(x + barW, y, x + barW, y + r);
-        ctx.lineTo(x + barW, padT + chartH);
-        ctx.lineTo(x, padT + chartH);
-        ctx.lineTo(x, y + r);
-        ctx.quadraticCurveTo(x, y, x + r, y);
-        ctx.fill();
-
+        ctx.lineTo(x + barW, padT + chartH); ctx.lineTo(x, padT + chartH);
+        ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.fill();
         if (d.final != null) {
-          ctx.fillStyle = fg;
-          ctx.font = 'bold 13px -apple-system, sans-serif';
-          ctx.textAlign = 'center';
+          ctx.fillStyle = isDark ? '#f2f2f7' : '#1c1c1e';
+          ctx.font = 'bold 13px sans-serif'; ctx.textAlign = 'center';
           ctx.fillText(d.final.toFixed(1), x + barW / 2, y - 8);
         }
-
         ctx.fillStyle = isDark ? '#98989d' : '#8e8e93';
-        ctx.font = '10px -apple-system, sans-serif';
-        ctx.textAlign = 'center';
+        ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
         wrapLabel(ctx, d.name, x + barW / 2, padT + chartH + 16, barW + 4, 12);
       });
     }
 
     function wrapLabel(ctx, text, cx, startY, maxW, lineH) {
-      if (ctx.measureText(text).width <= maxW) {
-        ctx.fillText(text, cx, startY);
-        return;
-      }
-      let line = '';
-      let y = startY;
+      if (ctx.measureText(text).width <= maxW) { ctx.fillText(text, cx, startY); return; }
+      let line = '', y = startY;
       for (const ch of text) {
         const test = line + ch;
-        if (ctx.measureText(test).width > maxW && line) {
-          ctx.fillText(line, cx, y);
-          line = ch;
-          y += lineH;
-        } else line = test;
+        if (ctx.measureText(test).width > maxW && line) { ctx.fillText(line, cx, y); line = ch; y += lineH; }
+        else line = test;
       }
       if (line) ctx.fillText(line, cx, y);
-    }
-
-    // D-Day
-    const DEFAULT_DDAYS = [{ name: '방학식', date: '2025-07-18' }];
-    function loadDdays() {
-      const stored = localStorage.getItem('ddayList');
-      return stored ? JSON.parse(stored) : DEFAULT_DDAYS.slice();
-    }
-    function saveDdayEntry(list) { localStorage.setItem('ddayList', JSON.stringify(list)); }
-    function toggleDdayForm() {
-      const f = document.getElementById('ddayForm');
-      f.style.display = f.style.display === 'none' ? 'block' : 'none';
-    }
-    function saveDday() {
-      const name = document.getElementById('ddayName').value.trim();
-      const date = document.getElementById('ddayDate').value;
-      if (!name || !date) return alert('시험명과 날짜 모두 입력하세요.');
-      const list = loadDdays();
-      list.push({ name, date });
-      saveDdayEntry(list);
-      document.getElementById('ddayName').value = '';
-      document.getElementById('ddayDate').value = '';
-      toggleDdayForm();
-      renderDdays();
-    }
-    function calcDday(target) {
-      const today = new Date();
-      const t = new Date(target + 'T00:00');
-      const diff = Math.ceil((t - today) / (1000 * 60 * 60 * 24));
-      if (diff > 0) return `D-${diff}`;
-      if (diff === 0) return 'D-Day';
-      return `D+${Math.abs(diff)}`;
-    }
-    function renderDdays() {
-      const ul = document.getElementById('ddayList');
-      ul.innerHTML = '';
-      loadDdays().forEach((e, i) => {
-        const li = document.createElement('li');
-        li.style.cssText = 'display:flex;justify-content:space-between;align-items:center;';
-        li.innerHTML = `
-          <span><strong>${e.name}</strong> (${e.date}) → ${calcDday(e.date)}</span>
-          <button class="delete-btn" data-i="${i}">삭제</button>`;
-        ul.appendChild(li);
-      });
-      ul.querySelectorAll('.delete-btn').forEach(btn => btn.onclick = () => {
-        const list = loadDdays();
-        list.splice(+btn.dataset.i, 1);
-        saveDdayEntry(list);
-        renderDdays();
-      });
     }
 
     window.addEventListener('resize', () => {
@@ -820,7 +851,6 @@
       renderSubjectChips();
       selectSubject('수학');
       renderHistory();
-      renderDdays();
       document.getElementById('calcBtn').onclick = calculate;
       document.getElementById('resetBtn').onclick = () => {
         if (confirm('계산 기록을 모두 삭제하시겠습니까?')) {
@@ -828,8 +858,6 @@
           renderHistory();
         }
       };
-      document.getElementById('addDdayBtn').onclick = toggleDdayForm;
-      document.getElementById('saveDdayBtn').onclick = saveDday;
       document.getElementById('refreshGraphBtn').onclick = renderGraph;
     };
   </script>
