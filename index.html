@@ -8,6 +8,10 @@
   <script>(function(s){s.dataset.zone='11353931',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
   <script src="https://5gvci.com/act/files/tag.min.js?z=11353939" data-cfasync="false" async></script>
   <title>1학기 성적 계산기</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#007aff">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1101,6 +1105,10 @@
       document.getElementById('downloadChartBtn').onclick = exportChartImage;
       document.getElementById('downloadSummaryBtn').onclick = exportSummaryImage;
     };
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('app-sw.js').catch(() => {});
+    }
   </script>
 
   <div class="ad-side left">
