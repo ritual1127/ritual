@@ -255,9 +255,36 @@
       .entry { grid-template-columns: 100% !important; }
       .graph-summary { grid-template-columns: 1fr; }
     }
+
+    .ad-desktop, .ad-mobile { text-align: center; margin-top: 20px; }
+    .ad-mobile { display: block; }
+    .ad-desktop { display: none; }
+    @media (min-width: 768px) {
+      .ad-mobile { display: none; }
+      .ad-desktop { display: block; }
+    }
+
+    .ad-side { display: none; position: fixed; top: 50%; transform: translateY(-50%); }
+    .ad-side.left { left: 20px; }
+    .ad-side.right { right: 20px; }
+    @media (min-width: 1440px) {
+      .ad-side { display: block; }
+    }
+
+    .ad-mobile-top { display: block; text-align: center; margin-bottom: 8px; }
+    @media (min-width: 768px) {
+      .ad-mobile-top { display: none; }
+    }
   </style>
 </head>
 <body>
+
+  <div class="ad-mobile-top">
+    <ins class="kakao_ad_area" style="display:none;"
+    data-ad-unit = "DAN-i1g4HxCv6ixUUKmt"
+    data-ad-width = "320"
+    data-ad-height = "50"></ins>
+  </div>
 
   <div class="top-bar">
     <h1 onclick="location.reload()">성적계산기</h1>
@@ -861,5 +888,31 @@
       document.getElementById('refreshGraphBtn').onclick = renderGraph;
     };
   </script>
+
+  <div class="ad-side left">
+    <ins class="kakao_ad_area" style="display:none;"
+    data-ad-unit = "DAN-NyPjhDjI6qHZmN77"
+    data-ad-width = "160"
+    data-ad-height = "600"></ins>
+  </div>
+  <div class="ad-side right">
+    <ins class="kakao_ad_area" style="display:none;"
+    data-ad-unit = "DAN-NyPjhDjI6qHZmN77"
+    data-ad-width = "160"
+    data-ad-height = "600"></ins>
+  </div>
+  <div class="ad-desktop">
+    <ins class="kakao_ad_area" style="display:none;"
+    data-ad-unit = "DAN-oqN17frbNmwpoy66"
+    data-ad-width = "320"
+    data-ad-height = "100"></ins>
+  </div>
+  <div class="ad-mobile">
+    <ins class="kakao_ad_area" style="display:none;"
+    data-ad-unit = "DAN-sIzkCYhmk6DnCJ3Z"
+    data-ad-width = "320"
+    data-ad-height = "480"></ins>
+  </div>
+  <script type="text/javascript" src="//t1.kakaocdn.net/kas/static/ba.min.js" async></script>
 </body>
 </html>
