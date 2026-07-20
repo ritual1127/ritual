@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="monetag" content="227f43732a0774585a3703f0e52afd9a">
   <title>1학기 성적 계산기</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -271,9 +272,9 @@
       .ad-side { display: block; }
     }
 
-    .ad-mobile-top { display: block; text-align: center; margin-bottom: 8px; }
+    .ad-mobile-top, .ad-mobile-strip { display: block; text-align: center; margin: 16px 0; }
     @media (min-width: 768px) {
-      .ad-mobile-top { display: none; }
+      .ad-mobile-top, .ad-mobile-strip { display: none; }
     }
   </style>
 </head>
@@ -329,6 +330,13 @@
         <div id="inputs" class="box"></div>
         <button id="calcBtn" class="btn">계산하기</button>
         <div id="result" class="span-full"></div>
+
+        <div class="ad-mobile-strip">
+          <ins class="kakao_ad_area" style="display:none;"
+          data-ad-unit = "DAN-i1g4HxCv6ixUUKmt"
+          data-ad-width = "320"
+          data-ad-height = "50"></ins>
+        </div>
       </div>
 
       <div class="right-col">
@@ -368,6 +376,13 @@
       <canvas id="scoreChart"></canvas>
       <div class="avg-box" id="avgBox"></div>
       <div class="rank-box" id="rankBox"></div>
+    </div>
+
+    <div class="ad-mobile-strip">
+      <ins class="kakao_ad_area" style="display:none;"
+      data-ad-unit = "DAN-i1g4HxCv6ixUUKmt"
+      data-ad-width = "320"
+      data-ad-height = "50"></ins>
     </div>
   </div>
 
