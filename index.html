@@ -93,6 +93,24 @@
     }
     .count-container .half input:disabled { opacity: 0.6; }
 
+    .weight-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .weight-row label { flex-shrink: 0; width: 48px; font-size: 14px; color: var(--fg); }
+    .weight-row .weight-memo, .weight-row .weight-spacer, .weight-row .weight-pct {
+      flex: 1; min-width: 0;
+    }
+    .weight-row input[type="text"] {
+      width: 100%; height: 38px; padding: 0 10px; font-size: 14px;
+      background: var(--inp-bg); border: 1px solid var(--inp-border);
+      border-radius: 8px; color: var(--fg);
+    }
+    .weight-row .weight-pct { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+    .weight-row input[type="number"] {
+      flex-shrink: 0; width: 60px; height: 38px; padding: 0; text-align: center;
+      font-size: 15px; background: var(--inp-bg); border: 1px solid var(--inp-border);
+      border-radius: 8px; color: var(--fg);
+    }
+    .weight-row .pct-sign { flex-shrink: 0; font-size: 13px; color: var(--muted); }
+
     .weight-bar {
       display: flex; align-items: center; justify-content: space-between;
       padding: 10px 14px; border-radius: 10px; margin-bottom: 14px;
@@ -214,12 +232,15 @@
       align-items: center; justify-content: center; padding: 20px; z-index: 1000;
     }
     .modal-content {
-      background: var(--box-bg); border-radius: 16px; width: 100%; max-width: 500px;
+      background: var(--inp-bg); border-radius: 16px; width: 100%; max-width: 500px;
       max-height: 90%; overflow-y: auto; padding: 20px; position: relative;
     }
-    #modalCloseBtn {
-      position: absolute; top: 12px; right: 12px;
-      background: transparent; border: none; font-size: 16px; color: var(--primary); cursor: pointer;
+    .modal-close-btn {
+      position: absolute; top: 12px; right: 12px; z-index: 1;
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg); border: 1px solid var(--inp-border);
+      font-size: 16px; line-height: 1; color: var(--fg); cursor: pointer;
     }
     .table-group { border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
     .table-group table { width: 100%; border-collapse: collapse; background: var(--inp-bg); }
@@ -361,7 +382,10 @@
     <div class="box">
       <div class="history-header">
         <span>과목별 원점수 현황</span>
-        <button id="refreshGraphBtn" class="btn-outline">새로고침</button>
+        <div style="display:flex;gap:8px;">
+          <button id="downloadSummaryBtn" class="btn-outline">이미지 저장</button>
+          <button id="refreshGraphBtn" class="btn-outline">새로고침</button>
+        </div>
       </div>
       <div class="grade-stats" id="gradeStats"></div>
       <div class="graph-summary" id="graphSummary"></div>
@@ -371,6 +395,7 @@
       <canvas id="scoreChart"></canvas>
       <div class="avg-box" id="avgBox"></div>
       <div class="rank-box" id="rankBox"></div>
+      <button id="downloadChartBtn" class="btn" style="margin-top:16px;">그래프 이미지 저장</button>
     </div>
 
     <div class="ad-mobile-strip">
@@ -383,14 +408,14 @@
 
   <div id="detailModal" class="modal">
     <div class="modal-content">
-      <button id="modalCloseBtn">닫기</button>
+      <button id="modalCloseBtn" class="modal-close-btn">✕</button>
       <div id="modalInnerContent"></div>
     </div>
   </div>
 
   <div id="subjectModal" class="modal">
     <div class="modal-content">
-      <button id="subjectModalCloseBtn">닫기</button>
+      <button id="subjectModalCloseBtn" class="modal-close-btn">✕</button>
       <h2 style="margin-bottom:16px;">과목 등록/관리</h2>
 
       <div class="entry">
@@ -514,7 +539,7 @@
       currentCfg.performances.forEach((p, i) => {
         html += `
           <div class="entry">
-            <label>${p.label} (${p.weight}%)</label>
+            <label>${p.label} (${p.weight}%)${p.memo ? `<br><span style="font-size:12px;color:var(--muted);">${p.memo}</span>` : ''}</label>
             <input type="number" id="s${i}" placeholder="점수" min="0" max="100">
           </div>`;
       });
@@ -586,7 +611,7 @@
       const sCnt = +document.getElementById('modalSCount').value || 1;
       const tCnt = +document.getElementById('modalTCount').value || 1;
       return {
-        performances: Array.from({ length: sCnt }, (_, i) => ({ label: `수행${i + 1}`, weight: 0 })),
+        performances: Array.from({ length: sCnt }, (_, i) => ({ label: `수행${i + 1}`, weight: 0, memo: '' })),
         exams: Array.from({ length: tCnt }, (_, i) => ({ label: `지필${i + 1}`, weight: 0 }))
       };
     }
@@ -595,11 +620,25 @@
       let html = `<div id="modalWeightBar" class="weight-bar bad">비중 합계: <strong>0</strong>% / 100%</div>`;
       html += '<div class="section-head"><h2 style="font-size:16px;">수행평가 비중</h2><button type="button" class="mini-btn" id="modalResetWeightsBtn">0으로 초기화</button></div>';
       cfg.performances.forEach((p, i) => {
-        html += `<div class="entry"><label>${p.label}</label><input type="number" id="msw${i}" value="${p.weight}" min="0" max="100" class="modal-weight-inp" placeholder="%"></div>`;
+        html += `<div class="weight-row">
+          <label>${p.label}</label>
+          <input type="text" class="weight-memo" id="mmemo${i}" value="${p.memo || ''}" placeholder="메모 (선택)">
+          <div class="weight-pct">
+            <input type="number" id="msw${i}" value="${p.weight}" min="0" max="100" step="5" class="modal-weight-inp">
+            <span class="pct-sign">%</span>
+          </div>
+        </div>`;
       });
       html += '<h2 style="font-size:16px;margin:16px 0 12px;">지필평가 비중</h2>';
       cfg.exams.forEach((ex, i) => {
-        html += `<div class="entry"><label>${ex.label}</label><input type="number" id="mtw${i}" value="${ex.weight}" min="0" max="100" class="modal-weight-inp" placeholder="%"></div>`;
+        html += `<div class="weight-row">
+          <label>${ex.label}</label>
+          <span class="weight-spacer"></span>
+          <div class="weight-pct">
+            <input type="number" id="mtw${i}" value="${ex.weight}" min="0" max="100" step="5" class="modal-weight-inp">
+            <span class="pct-sign">%</span>
+          </div>
+        </div>`;
       });
       document.getElementById('modalWeightInputs').innerHTML = html;
       document.querySelectorAll('.modal-weight-inp').forEach(inp => inp.addEventListener('input', updateModalWeightBar));
@@ -621,11 +660,12 @@
     }
 
     function snapshotModalWeights() {
-      const snap = { sw: [], tw: [] };
+      const snap = { sw: [], tw: [], memo: [] };
       for (let i = 0; i < 20; i++) {
-        const sw = document.getElementById(`msw${i}`), tw = document.getElementById(`mtw${i}`);
+        const sw = document.getElementById(`msw${i}`), tw = document.getElementById(`mtw${i}`), memo = document.getElementById(`mmemo${i}`);
         if (sw) snap.sw[i] = sw.value;
         if (tw) snap.tw[i] = tw.value;
+        if (memo) snap.memo[i] = memo.value;
       }
       return snap;
     }
@@ -633,6 +673,7 @@
     function restoreModalWeights(snap) {
       snap.sw.forEach((v, i) => { const el = document.getElementById(`msw${i}`); if (el && v != null) el.value = v; });
       snap.tw.forEach((v, i) => { const el = document.getElementById(`mtw${i}`); if (el && v != null) el.value = v; });
+      snap.memo.forEach((v, i) => { const el = document.getElementById(`mmemo${i}`); if (el && v != null) el.value = v; });
       updateModalWeightBar();
     }
 
@@ -664,7 +705,7 @@
       if (!name) { alert('과목명을 입력하세요.'); return; }
       const sCnt = +document.getElementById('modalSCount').value;
       const tCnt = +document.getElementById('modalTCount').value;
-      const performances = Array.from({ length: sCnt }, (_, i) => ({ label: `수행${i + 1}`, weight: +document.getElementById(`msw${i}`)?.value || 0 }));
+      const performances = Array.from({ length: sCnt }, (_, i) => ({ label: `수행${i + 1}`, weight: +document.getElementById(`msw${i}`)?.value || 0, memo: document.getElementById(`mmemo${i}`)?.value.trim() || '' }));
       const exams = Array.from({ length: tCnt }, (_, i) => ({ label: `지필${i + 1}`, weight: +document.getElementById(`mtw${i}`)?.value || 0 }));
       const sum = performances.reduce((s, p) => s + p.weight, 0) + exams.reduce((s, e) => s + e.weight, 0);
       if (sum !== 100) { alert(`비중 합계가 100%가 아닙니다 (현재 ${sum}%).`); return; }
@@ -975,6 +1016,69 @@
       if (document.getElementById('graphView').style.display !== 'none') drawChart(getLatestScoresForGraph());
     });
 
+    function downloadCanvasAsImage(canvas, filename) {
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    function exportChartImage() {
+      downloadCanvasAsImage(document.getElementById('scoreChart'), `원점수그래프_${Date.now()}.png`);
+    }
+
+    function buildSummaryCanvas(data) {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const cardBg = isDark ? '#1c1c1e' : '#ffffff';
+      const pageBg = isDark ? '#000000' : '#f2f2f7';
+      const borderColor = isDark ? '#3a3a3c' : '#c6c6c8';
+      const mutedColor = isDark ? '#98989d' : '#8e8e93';
+      const fgColor = isDark ? '#f2f2f7' : '#1c1c1e';
+
+      const cols = 3;
+      const cardW = 220, cardH = 100, gap = 12, pad = 20, headerH = 44;
+      const rows = Math.max(1, Math.ceil(data.length / cols));
+      const W = pad * 2 + cols * cardW + (cols - 1) * gap;
+      const H = pad * 2 + headerH + rows * cardH + (rows - 1) * gap;
+
+      const canvas = document.createElement('canvas');
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+
+      ctx.fillStyle = pageBg; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = fgColor; ctx.font = 'bold 18px sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText('과목별 원점수 현황', pad, pad + 20);
+
+      data.forEach((d, i) => {
+        const col = i % cols, row = Math.floor(i / cols);
+        const x = pad + col * (cardW + gap);
+        const y = pad + headerH + row * (cardH + gap);
+
+        ctx.fillStyle = cardBg; ctx.strokeStyle = borderColor; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.roundRect(x, y, cardW, cardH, 12); ctx.fill(); ctx.stroke();
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = mutedColor; ctx.font = '13px sans-serif';
+        ctx.fillText(d.name, x + cardW / 2, y + 26);
+
+        ctx.fillStyle = fgColor; ctx.font = 'bold 24px sans-serif';
+        ctx.fillText(`${d.final}점`, x + cardW / 2, y + 56);
+
+        ctx.fillStyle = GRADE_COLORS[d.grade] || fgColor; ctx.font = 'bold 14px sans-serif';
+        ctx.fillText(`${d.grade}${d.periods ? ` · ${d.periods}차시` : ''}`, x + cardW / 2, y + 78);
+      });
+
+      return canvas;
+    }
+
+    function exportSummaryImage() {
+      const data = getLatestScoresForGraph();
+      if (!data.length) { alert('저장할 데이터가 없습니다.'); return; }
+      downloadCanvasAsImage(buildSummaryCanvas(data), `과목별원점수현황_${Date.now()}.png`);
+    }
+
     window.onload = () => {
       renderSubjectChips();
       renderScoreInputs();
@@ -994,6 +1098,8 @@
         }
       };
       document.getElementById('refreshGraphBtn').onclick = renderGraph;
+      document.getElementById('downloadChartBtn').onclick = exportChartImage;
+      document.getElementById('downloadSummaryBtn').onclick = exportSummaryImage;
     };
   </script>
 
