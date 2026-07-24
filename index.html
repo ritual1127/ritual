@@ -3,319 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <meta name="monetag" content="a8b627401f6a8a799eb6443b72dcc1b4">
-  <script src="https://quge5.com/88/tag.min.js" data-zone="261780" async data-cfasync="false"></script>
-  <script>(function(s){s.dataset.zone='11353931',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-  <script src="https://5gvci.com/act/files/tag.min.js?z=11353939" data-cfasync="false" async></script>
-  <title>1학기 성적 계산기</title>
+  <title>성적 계산기 - 수행평가·지필고사 등급 자동 계산 | 무료 온라인 도구</title>
+  <meta name="description" content="수행평가와 지필고사 점수를 입력하면 반영 비율에 따라 최종 원점수와 등급(A~E)을 즉시 계산해주는 무료 성적 계산기입니다. 등급별 목표 점수와 원점수 그래프까지 한번에 확인하세요.">
+  <meta name="keywords" content="성적계산기, 수행평가 계산기, 지필고사 계산기, 내신 등급 계산, 원점수 계산기, 등급컷 계산">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="성적 계산기">
+  <link rel="canonical" href="https://naver1.cloud/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="성적 계산기 - 수행평가·지필고사 등급 자동 계산">
+  <meta property="og:description" content="수행평가·지필고사 비율만 입력하면 최종 원점수와 등급을 바로 계산. 목표 등급별 필요 점수와 과목별 그래프까지 무료로 제공합니다.">
+  <meta property="og:url" content="https://naver1.cloud/">
+  <meta property="og:image" content="https://naver1.cloud/icon-512.png">
+  <meta property="og:locale" content="ko_KR">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="성적 계산기 - 수행평가·지필고사 등급 자동 계산">
+  <meta name="twitter:description" content="수행평가·지필고사 비율만 입력하면 최종 원점수와 등급을 바로 계산해주는 무료 성적 계산기.">
+  <meta name="twitter:image" content="https://naver1.cloud/icon-512.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "성적 계산기",
+    "url": "https://naver1.cloud/",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "KRW" },
+    "description": "수행평가와 지필고사 반영 비율을 입력하면 최종 원점수와 등급을 자동으로 계산해주는 무료 웹 도구."
+  }
+  </script>
+
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#007aff">
+  <meta name="theme-color" content="#4f46e5">
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #f2f2f7; --fg: #1c1c1e;
-      --box-bg: rgba(255,255,255,0.8);
-      --inp-bg: #fff; --inp-border: #c6c6c8;
-      --primary: #007aff; --success: #34c759; --danger: #ff3b30;
-      --muted: #8e8e93; --max-w: 500px;
-    }
-    [data-theme="dark"] {
-      --bg: #000; --fg: #f2f2f7;
-      --box-bg: rgba(28,28,30,0.8);
-      --inp-bg: #1c1c1e; --inp-border: #3a3a3c;
-      --primary: #0a84ff; --muted: #98989d;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg); color: var(--fg);
-      max-width: var(--max-w); margin: 0 auto;
-      padding: env(safe-area-inset-top) 15px 30px;
-      min-height: 100vh;
-    }
-    @media (min-width: 768px) {
-      :root { --max-w: 1100px; }
-      body { padding: 32px 40px 48px; }
-      .desktop-grid {
-        display: grid; grid-template-columns: 1fr 1fr;
-        gap: 20px; align-items: start;
-      }
-      .desktop-grid .span-full { grid-column: 1 / -1; }
-      .desktop-grid .left-col, .desktop-grid .right-col {
-        display: flex; flex-direction: column;
-      }
-    }
-
-    .top-bar {
-      display: flex; align-items: center; justify-content: space-between;
-      margin: 20px 0 12px; flex-wrap: wrap; gap: 10px;
-    }
-    .top-bar h1 { font-size: 28px; font-weight: 600; cursor: pointer; margin-left: 10px; }
-    .top-controls { display: flex; gap: 8px; }
-
-    .nav-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-    .nav-tab {
-      flex: 1; min-width: 120px; height: 40px;
-      font-size: 15px; font-weight: 600; border-radius: 10px; cursor: pointer;
-      border: 1px solid var(--inp-border); background: var(--inp-bg); color: var(--fg);
-    }
-    .nav-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-
-    .top-controls button, .btn-outline {
-      background: transparent; color: var(--primary);
-      border: 1px solid var(--primary); border-radius: 8px;
-      font-size: 14px; height: 30px; line-height: 28px;
-      padding: 0 10px; cursor: pointer;
-    }
-
-    .box {
-      background: var(--box-bg); backdrop-filter: blur(20px);
-      border-radius: 16px; padding: 20px; margin-bottom: 20px;
-      border: 1px solid rgba(255,255,255,0.6);
-    }
-    [data-theme="dark"] .box { border-color: rgba(255,255,255,0.1); }
-
-    .subject-picker > label { display: block; font-size: 15px; color: var(--muted); margin-bottom: 10px; }
-    .subject-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    .subject-chip {
-      padding: 8px 14px; border-radius: 20px; font-size: 14px; font-weight: 500;
-      cursor: pointer; border: 1px solid var(--inp-border);
-      background: var(--inp-bg); color: var(--fg);
-    }
-    .subject-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-
-    .count-container { display: flex; gap: 12px; }
-    .count-container .half { flex: 1; }
-    .count-container .half label { display: block; font-size: 15px; color: var(--muted); margin-bottom: 6px; }
-    .count-container .half input {
-      width: 100%; height: 44px; padding: 0 12px; font-size: 16px;
-      background: var(--inp-bg); border: 1px solid var(--inp-border);
-      border-radius: 10px; color: var(--fg);
-    }
-    .count-container .half input:disabled { opacity: 0.6; }
-
-    .weight-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-    .weight-row label { flex-shrink: 0; width: 48px; font-size: 14px; color: var(--fg); }
-    .weight-row .weight-memo, .weight-row .weight-spacer, .weight-row .weight-pct {
-      flex: 1; min-width: 0;
-    }
-    .weight-row input[type="text"] {
-      width: 100%; height: 38px; padding: 0 10px; font-size: 14px;
-      background: var(--inp-bg); border: 1px solid var(--inp-border);
-      border-radius: 8px; color: var(--fg);
-    }
-    .weight-row .weight-pct { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
-    .weight-row input[type="number"] {
-      flex-shrink: 0; width: 60px; height: 38px; padding: 0; text-align: center;
-      font-size: 15px; background: var(--inp-bg); border: 1px solid var(--inp-border);
-      border-radius: 8px; color: var(--fg);
-    }
-    .weight-row .pct-sign { flex-shrink: 0; font-size: 13px; color: var(--muted); }
-
-    .weight-bar {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 14px; border-radius: 10px; margin-bottom: 14px;
-      background: var(--inp-bg); border: 1px solid var(--inp-border);
-      font-size: 14px;
-    }
-    .weight-bar.ok { border-color: var(--success); color: var(--success); }
-    .weight-bar.bad { border-color: var(--danger); color: var(--danger); }
-
-    .entry {
-      display: grid; grid-template-columns: 100px 1fr;
-      grid-template-rows: auto auto; column-gap: 8px;
-      row-gap: 8px; align-items: center; margin-bottom: 16px;
-    }
-    .entry label { font-size: 15px; color: var(--muted); }
-    .entry input[type="number"], .entry input[type="text"] {
-      width: 100%; height: 44px; padding: 0 12px; font-size: 16px;
-      background: var(--inp-bg); border: 1px solid var(--inp-border);
-      border-radius: 10px; color: var(--fg);
-    }
-    .entry input::placeholder { color: rgba(142,142,147,0.45); }
-    [data-theme="dark"] .entry input::placeholder { color: rgba(152,152,157,0.4); }
-
-    .score-row { display: flex; gap: 8px; align-items: center; }
-    .score-row input { flex: 1; }
-    .if-btn {
-      flex-shrink: 0; width: 44px; height: 44px;
-      border-radius: 10px; border: 1px solid var(--inp-border);
-      background: var(--inp-bg); color: var(--muted);
-      font-size: 13px; font-weight: 700; cursor: pointer;
-    }
-    .if-btn.active {
-      background: var(--primary); color: #fff; border-color: var(--primary);
-    }
-    .if-btn.active + .if-hint { display: block; }
-    .entry.if-mode input.exam-score { opacity: 0.5; }
-
-    .section-head {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 12px;
-    }
-    .section-head h2 { font-size: 18px; }
-    .mini-btn {
-      font-size: 12px; padding: 4px 10px; border-radius: 6px;
-      border: 1px solid var(--inp-border); background: var(--inp-bg);
-      color: var(--primary); cursor: pointer;
-    }
-
-    .btn {
-      display: block; width: 100%; height: 44px;
-      font-size: 17px; font-weight: 600; text-align: center;
-      border-radius: 12px; margin: 12px 0; line-height: 44px;
-      background: var(--primary); color: #fff; border: none; cursor: pointer;
-    }
-
-    #result {
-      font-size: 16px; line-height: 1.6; margin-bottom: 20px; word-break: keep-all;
-    }
-    .result-main { text-align: center; margin-bottom: 16px; font-size: 17px; }
-    .sim-box {
-      background: var(--inp-bg); border-radius: 12px;
-      border: 1px solid var(--inp-border); padding: 14px; margin-top: 12px;
-    }
-    .sim-box h4 { font-size: 15px; margin-bottom: 10px; color: var(--primary); }
-    .sim-grid {
-      display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;
-    }
-    @media (max-width: 400px) { .sim-grid { grid-template-columns: repeat(3, 1fr); } }
-    .sim-cell {
-      text-align: center; padding: 8px 4px; border-radius: 8px;
-      background: var(--bg); font-size: 13px;
-    }
-    .sim-cell .sc { font-weight: 700; font-size: 15px; }
-    .sim-cell .gr { font-size: 12px; margin-top: 2px; }
-
-    .target-box {
-      margin-top: 14px; padding: 14px; border-radius: 12px;
-      background: var(--inp-bg); border: 1px solid var(--inp-border);
-    }
-    .target-box h4 { font-size: 15px; margin-bottom: 10px; }
-    .target-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    .target-chip {
-      padding: 8px 12px; border-radius: 8px; font-size: 13px;
-      background: var(--bg); border: 1px solid var(--inp-border);
-    }
-
-    .history-header {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
-    }
-    .history-header span { font-size: 17px; font-weight: 600; }
-
-    .empty-hint { text-align: center; color: var(--muted); font-size: 14px; padding: 16px 0; width: 100%; }
-    .subj-list-item {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 14px; border-radius: 10px; margin-bottom: 8px;
-      background: var(--inp-bg); border: 1px solid var(--inp-border);
-    }
-    .subj-list-item .meta { font-size: 13px; color: var(--muted); margin-top: 2px; }
-    .subj-list-actions button { margin-left: 6px; }
-
-    .table-container {
-      background: var(--inp-bg); border-radius: 12px;
-      overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .record-table { width: 100%; border-collapse: collapse; min-width: 520px; }
-    .record-table th, .record-table td { padding: 12px 8px; text-align: center; font-size: 14px; }
-    .record-table tbody tr:nth-child(even) td { background: #f2f2f7; }
-    .record-table td.subject { text-align: left; padding-left: 16px; }
-    [data-theme="dark"] .record-table tbody tr:nth-child(even) td { background: var(--inp-bg); }
-
-    .delete-btn { color: #ff3b30; cursor: pointer; font-size: 14px; background: none; border: none; }
-    .info-btn {
-      background: var(--primary); color: #fff; border: none;
-      border-radius: 6px; padding: 4px 8px; font-size: 13px; cursor: pointer;
-    }
-
-    .modal {
-      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-      align-items: center; justify-content: center; padding: 20px; z-index: 1000;
-    }
-    .modal-content {
-      background: var(--inp-bg); border-radius: 16px; width: 100%; max-width: 500px;
-      max-height: 90%; overflow-y: auto; padding: 20px; position: relative;
-    }
-    .modal-close-btn {
-      position: absolute; top: 12px; right: 12px; z-index: 1;
-      width: 32px; height: 32px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      background: var(--bg); border: 1px solid var(--inp-border);
-      font-size: 16px; line-height: 1; color: var(--fg); cursor: pointer;
-    }
-    .table-group { border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
-    .table-group table { width: 100%; border-collapse: collapse; background: var(--inp-bg); }
-    .table-group th, .table-group td { padding: 16px; font-size: 16px; text-align: left; }
-    .table-group tr:not(:last-child) td { border-bottom: 1px solid rgba(0,0,0,0.1); }
-
-    #graphView { display: none; }
-    .graph-summary { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
-    @media (min-width: 768px) { .graph-summary { grid-template-columns: repeat(3, 1fr); } }
-    .summary-card {
-      background: var(--inp-bg); border-radius: 12px; padding: 16px;
-      border: 1px solid var(--inp-border); text-align: center;
-    }
-    .summary-card .subj { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
-    .summary-card .score { font-size: 28px; font-weight: 700; }
-    .summary-card.empty .score { font-size: 18px; color: var(--muted); font-weight: 500; }
-
-    .grade-stats {
-      display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;
-      margin-bottom: 16px; font-size: 14px;
-    }
-    .grade-stat { padding: 6px 12px; border-radius: 8px; background: var(--inp-bg); border: 1px solid var(--inp-border); }
-
-    .chart-wrap {
-      background: var(--inp-bg); border-radius: 12px;
-      padding: 20px 16px; border: 1px solid var(--inp-border);
-    }
-    .chart-wrap h3 { font-size: 17px; margin-bottom: 16px; text-align: center; }
-    #scoreChart { width: 100%; height: 320px; display: block; }
-    @media (min-width: 768px) { #scoreChart { height: 400px; } }
-    .avg-box { margin-top: 16px; text-align: center; font-size: 17px; line-height: 1.6; }
-
-    .rank-box {
-      margin-top: 16px; padding: 14px; border-radius: 12px;
-      background: var(--box-bg); border: 1px solid var(--inp-border);
-    }
-    .rank-box h4 { font-size: 15px; margin-bottom: 10px; }
-    .rank-item {
-      display: flex; justify-content: space-between; padding: 8px 0;
-      border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 14px;
-    }
-    .rank-item:last-child { border-bottom: none; }
-
-    @media (max-width: 400px) {
-      .count-container { flex-direction: column; }
-      .entry { grid-template-columns: 100% !important; }
-      .graph-summary { grid-template-columns: 1fr; }
-    }
-
-    .ad-desktop, .ad-mobile { text-align: center; margin-top: 20px; }
-    .ad-mobile { display: block; }
-    .ad-desktop { display: none; }
-    @media (min-width: 768px) {
-      .ad-mobile { display: none; }
-      .ad-desktop { display: block; }
-    }
-
-    .ad-side { display: none; position: fixed; top: 50%; transform: translateY(-50%); }
-    .ad-side.left { left: 20px; }
-    .ad-side.right { right: 20px; }
-    @media (min-width: 1440px) {
-      .ad-side { display: block; }
-    }
-
-    .ad-mobile-top, .ad-mobile-strip { display: block; text-align: center; margin: 16px 0; }
-    @media (min-width: 768px) {
-      .ad-mobile-top, .ad-mobile-strip { display: none; }
-    }
-  </style>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5406880952420160"
-     crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -327,11 +51,12 @@
   </div>
 
   <div class="top-bar">
-    <h1 onclick="location.reload()">성적계산기</h1>
+    <h1 onclick="location.reload()"><span>성적</span>계산기</h1>
     <div class="top-controls">
       <button id="themeToggle">다크 모드</button>
     </div>
   </div>
+  <p class="tagline">수행평가·지필고사 비율만 입력하면 최종 원점수와 등급을 바로 계산해드려요</p>
 
   <div class="nav-tabs">
     <button class="nav-tab active" data-view="calc">계산기</button>
@@ -371,8 +96,7 @@
             <table class="record-table">
               <thead>
                 <tr>
-                  <th>일시</th><th>과목명</th><th>최종점수</th><th>등급</th>
-                  <th>올라갈<br>기준</th><th>떨어질<br>기준</th>
+                  <th>일시</th><th>과목</th><th>원점수</th><th>등급</th>
                   <th>삭<br>제</th><th>정<br>보</th>
                 </tr>
               </thead>
@@ -388,20 +112,26 @@
     <div class="box">
       <div class="history-header">
         <span>과목별 원점수 현황</span>
-        <div style="display:flex;gap:8px;">
-          <button id="downloadSummaryBtn" class="btn-outline">이미지 저장</button>
-          <button id="refreshGraphBtn" class="btn-outline">새로고침</button>
-        </div>
+        <button id="refreshGraphBtn" class="btn-outline">새로고침</button>
       </div>
       <div class="grade-stats" id="gradeStats"></div>
       <div class="graph-summary" id="graphSummary"></div>
     </div>
+
+    <div class="box">
+      <div class="section-head">
+        <h2 style="font-size:16px;">AI 성적분석<span class="beta-badge">베타</span></h2>
+        <button type="button" class="mini-btn" id="aiAnalyzeBtn">분석하기</button>
+      </div>
+      <div id="aiAnalysisResult" class="empty-hint">버튼을 눌러 내 성적을 분석해보세요.</div>
+    </div>
+
     <div class="box chart-wrap">
       <h3>과목별 원점수 비교</h3>
       <canvas id="scoreChart"></canvas>
       <div class="avg-box" id="avgBox"></div>
       <div class="rank-box" id="rankBox"></div>
-      <button id="downloadChartBtn" class="btn" style="margin-top:16px;">그래프 이미지 저장</button>
+      <button id="downloadReportBtn" class="btn" style="margin-top:16px;">전체 결과 저장</button>
     </div>
 
     <div class="ad-mobile-strip">
@@ -424,37 +154,51 @@
       <button id="subjectModalCloseBtn" class="modal-close-btn">✕</button>
       <h2 style="margin-bottom:16px;">과목 등록/관리</h2>
 
-      <div class="entry">
-        <label for="modalSubjectName">과목명</label>
-        <input type="text" id="modalSubjectName" placeholder="예: 수학">
+      <div class="section-head">
+        <h3 style="font-size:16px;">등록된 과목</h3>
+        <button type="button" class="mini-btn" id="addNewSubjectBtn">+ 새 과목</button>
+      </div>
+      <div id="modalSubjectList" style="margin-bottom:20px;"></div>
+
+      <div class="section-head" id="subjectFormHead">
+        <h3 id="subjectFormTitle" style="font-size:16px;">새 과목 추가</h3>
+        <button type="button" class="mini-btn" id="cancelEditBtn" style="display:none;">취소</button>
       </div>
 
-      <div class="count-container" style="margin-bottom:16px;">
-        <div class="half">
-          <label for="modalSCount">수행 개수</label>
-          <input type="number" id="modalSCount" value="2" min="1">
+      <div class="modal-section">
+        <div class="entry">
+          <label for="modalSubjectName">과목명</label>
+          <input type="text" id="modalSubjectName" placeholder="예: 수학">
         </div>
-        <div class="half">
-          <label for="modalTCount">지필 개수</label>
-          <input type="number" id="modalTCount" value="2" min="1">
-        </div>
-        <div class="half">
-          <label for="modalPeriods">차시(주당)</label>
-          <input type="number" id="modalPeriods" min="0" placeholder="예: 4">
+
+        <div class="count-container">
+          <div class="half">
+            <label for="modalSCount">수행 개수</label>
+            <div class="stepper">
+              <button type="button" class="stepper-btn" data-target="modalSCount" data-delta="-1">−</button>
+              <input type="number" id="modalSCount" value="2" min="1">
+              <button type="button" class="stepper-btn" data-target="modalSCount" data-delta="1">+</button>
+            </div>
+          </div>
+          <div class="half">
+            <label for="modalTCount">지필 개수</label>
+            <div class="stepper">
+              <button type="button" class="stepper-btn" data-target="modalTCount" data-delta="-1">−</button>
+              <input type="number" id="modalTCount" value="2" min="1">
+              <button type="button" class="stepper-btn" data-target="modalTCount" data-delta="1">+</button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div id="modalWeightInputs"></div>
+      <div id="modalWeightInputs" class="modal-section"></div>
       <button type="button" class="btn" id="modalSaveBtn">과목 저장</button>
-
-      <h3 style="margin:20px 0 12px;font-size:16px;">등록된 과목</h3>
-      <div id="modalSubjectList"></div>
     </div>
   </div>
 
   <script>
     const IF_SCENARIOS = [60, 70, 80, 90, 100];
-    const GRADE_COLORS = { A: '#2ecc71', B: '#007aff', C: '#ffcc00', D: '#ff9500', E: '#ff3b30' };
+    const GRADE_COLORS = { A: '#10b981', B: '#4f46e5', C: '#f59e0b', D: '#f97316', E: '#ef4444' };
 
     let selectedSubject = null;
     let currentCfg = null;
@@ -537,6 +281,16 @@
       if (draft) applyDraft(draft);
     }
 
+    function sanitizeScoreInput(el) {
+      let v = el.value.replace(/[^0-9.]/g, '');
+      const firstDot = v.indexOf('.');
+      if (firstDot !== -1) v = v.slice(0, firstDot + 1) + v.slice(firstDot + 1).replace(/\./g, '');
+      let [intPart, decPart] = v.split('.');
+      if (intPart && intPart !== '100') intPart = intPart.slice(0, 2);
+      if (intPart && +intPart > 100) intPart = '100';
+      el.value = decPart !== undefined ? `${intPart}.${decPart}` : (intPart || '');
+    }
+
     function renderScoreInputs() {
       const box = document.getElementById('inputs');
       if (!currentCfg) { box.innerHTML = '<div class="empty-hint">과목을 선택하거나 새로 등록하세요.</div>'; return; }
@@ -546,7 +300,7 @@
         html += `
           <div class="entry">
             <label>${p.label} (${p.weight}%)${p.memo ? `<br><span style="font-size:12px;color:var(--muted);">${p.memo}</span>` : ''}</label>
-            <input type="number" id="s${i}" placeholder="점수" min="0" max="100">
+            <input type="text" inputmode="decimal" class="score-input" id="s${i}" placeholder="점수">
           </div>`;
       });
 
@@ -556,13 +310,14 @@
           <div class="entry" id="examEntry${i}">
             <label>${ex.label} (${ex.weight}%)</label>
             <div class="score-row">
-              <input type="number" id="t${i}" class="exam-score" placeholder="점수" min="0" max="100">
+              <input type="text" inputmode="decimal" id="t${i}" class="score-input exam-score" placeholder="점수">
               <button type="button" class="if-btn" id="if${i}" title="IF 모드: 시험 점수별 예상 원점수">IF</button>
             </div>
           </div>`;
       });
 
       box.innerHTML = html;
+      box.querySelectorAll('.score-input').forEach(inp => inp.addEventListener('input', () => sanitizeScoreInput(inp)));
       currentCfg.exams.forEach((_, i) => {
         document.getElementById(`if${i}`).onclick = function() {
           const on = !this.classList.contains('active');
@@ -613,25 +368,36 @@
     }
 
     // --- Subject registration popup ---
+    function examLabel(i, tCnt) {
+      if (tCnt === 1) return '지필고사';
+      if (i === tCnt - 1) return '기말고사';
+      return tCnt === 2 ? '중간고사' : `중간${i + 1}고사`;
+    }
+
     function modalConfigFromCounts() {
       const sCnt = +document.getElementById('modalSCount').value || 1;
       const tCnt = +document.getElementById('modalTCount').value || 1;
       return {
         performances: Array.from({ length: sCnt }, (_, i) => ({ label: `수행${i + 1}`, weight: 0, memo: '' })),
-        exams: Array.from({ length: tCnt }, (_, i) => ({ label: `지필${i + 1}`, weight: 0 }))
+        exams: Array.from({ length: tCnt }, (_, i) => ({ label: examLabel(i, tCnt), weight: 0 }))
       };
     }
 
     function renderWeightInputs(cfg) {
-      let html = `<div id="modalWeightBar" class="weight-bar bad">비중 합계: <strong>0</strong>% / 100%</div>`;
+      let html = `<div id="modalWeightBar" class="weight-bar">
+        <div class="weight-bar-top"><span>비중 합계</span><strong>0%</strong></div>
+        <div class="weight-track"><div class="weight-fill" style="width:0%"></div></div>
+      </div>`;
+      html += `<a href="https://www.schoolinfo.go.kr" target="_blank" rel="noopener" class="schoolinfo-link">우리 학교 반영 비율, 학교알리미에서 확인하기 →</a>`;
       html += '<div class="section-head"><h2 style="font-size:16px;">수행평가 비중</h2><button type="button" class="mini-btn" id="modalResetWeightsBtn">0으로 초기화</button></div>';
       cfg.performances.forEach((p, i) => {
         html += `<div class="weight-row">
           <label>${p.label}</label>
           <input type="text" class="weight-memo" id="mmemo${i}" value="${p.memo || ''}" placeholder="메모 (선택)">
           <div class="weight-pct">
+            <button type="button" class="pct-step" data-target="msw${i}" data-delta="-5">−</button>
             <input type="number" id="msw${i}" value="${p.weight}" min="0" max="100" step="5" class="modal-weight-inp">
-            <span class="pct-sign">%</span>
+            <button type="button" class="pct-step" data-target="msw${i}" data-delta="5">+</button>
           </div>
         </div>`;
       });
@@ -641,13 +407,22 @@
           <label>${ex.label}</label>
           <span class="weight-spacer"></span>
           <div class="weight-pct">
+            <button type="button" class="pct-step" data-target="mtw${i}" data-delta="-5">−</button>
             <input type="number" id="mtw${i}" value="${ex.weight}" min="0" max="100" step="5" class="modal-weight-inp">
-            <span class="pct-sign">%</span>
+            <button type="button" class="pct-step" data-target="mtw${i}" data-delta="5">+</button>
           </div>
         </div>`;
       });
       document.getElementById('modalWeightInputs').innerHTML = html;
       document.querySelectorAll('.modal-weight-inp').forEach(inp => inp.addEventListener('input', updateModalWeightBar));
+      document.querySelectorAll('.pct-step').forEach(btn => {
+        btn.onclick = () => {
+          const inp = document.getElementById(btn.dataset.target);
+          const min = +inp.min || 0, max = +inp.max || 100;
+          inp.value = Math.max(min, Math.min(max, (+inp.value || 0) + (+btn.dataset.delta)));
+          updateModalWeightBar();
+        };
+      });
       document.getElementById('modalResetWeightsBtn').onclick = () => {
         document.querySelectorAll('.modal-weight-inp').forEach(inp => { inp.value = 0; });
         updateModalWeightBar();
@@ -660,9 +435,9 @@
       if (!bar) return;
       let sum = 0;
       document.querySelectorAll('.modal-weight-inp').forEach(inp => { sum += +inp.value || 0; });
-      bar.innerHTML = `비중 합계: <strong>${sum}</strong>% / 100%`;
+      bar.querySelector('.weight-bar-top strong').textContent = `${sum}%`;
+      bar.querySelector('.weight-fill').style.width = `${Math.min(100, sum)}%`;
       bar.classList.toggle('ok', sum === 100);
-      bar.classList.toggle('bad', sum !== 100);
     }
 
     function snapshotModalWeights() {
@@ -683,14 +458,19 @@
       updateModalWeightBar();
     }
 
-    function openSubjectModal() {
+    function resetSubjectForm() {
       editingSubject = null;
       document.getElementById('modalSubjectName').value = '';
       document.getElementById('modalSCount').value = 2;
       document.getElementById('modalTCount').value = 2;
-      document.getElementById('modalPeriods').value = '';
       renderWeightInputs(modalConfigFromCounts());
+      document.getElementById('subjectFormTitle').textContent = '새 과목 추가';
+      document.getElementById('cancelEditBtn').style.display = 'none';
       renderModalSubjectList();
+    }
+
+    function openSubjectModal() {
+      resetSubjectForm();
       document.getElementById('subjectModal').style.display = 'flex';
     }
 
@@ -700,10 +480,12 @@
       document.getElementById('modalSubjectName').value = name;
       document.getElementById('modalSCount').value = cfg.performances.length;
       document.getElementById('modalTCount').value = cfg.exams.length;
-      document.getElementById('modalPeriods').value = cfg.periods || '';
       renderWeightInputs(cfg);
+      document.getElementById('subjectFormTitle').textContent = `"${name}" 수정 중`;
+      document.getElementById('cancelEditBtn').style.display = 'inline-block';
       renderModalSubjectList();
       document.getElementById('subjectModal').style.display = 'flex';
+      document.getElementById('subjectFormHead').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function saveSubjectFromModal() {
@@ -712,21 +494,19 @@
       const sCnt = +document.getElementById('modalSCount').value;
       const tCnt = +document.getElementById('modalTCount').value;
       const performances = Array.from({ length: sCnt }, (_, i) => ({ label: `수행${i + 1}`, weight: +document.getElementById(`msw${i}`)?.value || 0, memo: document.getElementById(`mmemo${i}`)?.value.trim() || '' }));
-      const exams = Array.from({ length: tCnt }, (_, i) => ({ label: `지필${i + 1}`, weight: +document.getElementById(`mtw${i}`)?.value || 0 }));
+      const exams = Array.from({ length: tCnt }, (_, i) => ({ label: examLabel(i, tCnt), weight: +document.getElementById(`mtw${i}`)?.value || 0 }));
       const sum = performances.reduce((s, p) => s + p.weight, 0) + exams.reduce((s, e) => s + e.weight, 0);
       if (sum !== 100) { alert(`비중 합계가 100%가 아닙니다 (현재 ${sum}%).`); return; }
-      const periods = +document.getElementById('modalPeriods').value || 0;
 
       const all = loadCustomSubjects();
       if (editingSubject && editingSubject !== name) delete all[editingSubject];
-      all[name] = { performances, exams, periods };
+      all[name] = { performances, exams };
       saveCustomSubjectsMap(all);
 
       if (selectedSubject === editingSubject) { selectedSubject = name; currentCfg = all[name]; renderScoreInputs(); }
-      editingSubject = name;
       renderSubjectChips();
-      renderModalSubjectList();
       alert(`"${name}" 과목이 저장되었습니다.`);
+      resetSubjectForm();
     }
 
     function renderModalSubjectList() {
@@ -735,24 +515,29 @@
       const box = document.getElementById('modalSubjectList');
       box.innerHTML = names.length ? names.map(name => {
         const c = all[name];
-        return `<div class="subj-list-item">
-          <div><strong>${name}</strong><div class="meta">수행 ${c.performances.length}개 · 지필 ${c.exams.length}개${c.periods ? ` · ${c.periods}차시` : ''}</div></div>
+        return `<div class="subj-list-item${name === editingSubject ? ' active' : ''}" data-open="${name}">
+          <div><strong>${name}</strong><div class="meta">수행 ${c.performances.length}개 · 지필 ${c.exams.length}개</div></div>
           <div class="subj-list-actions">
             <button type="button" class="mini-btn" data-edit="${name}">수정</button>
             <button type="button" class="mini-btn" data-del="${name}" style="color:var(--danger);">삭제</button>
           </div>
         </div>`;
-      }).join('') : '<div class="empty-hint">등록된 과목이 없습니다.</div>';
-      box.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => editSubjectInModal(b.dataset.edit));
-      box.querySelectorAll('[data-del]').forEach(b => b.onclick = () => {
+      }).join('') : '<div class="empty-hint">등록된 과목이 없습니다. 아래에서 새로 등록해보세요.</div>';
+      box.querySelectorAll('[data-open]').forEach(el => el.onclick = () => {
+        const name = el.dataset.open;
+        if (editingSubject === name) resetSubjectForm(); else editSubjectInModal(name);
+      });
+      box.querySelectorAll('[data-edit]').forEach(b => b.onclick = (e) => { e.stopPropagation(); editSubjectInModal(b.dataset.edit); });
+      box.querySelectorAll('[data-del]').forEach(b => b.onclick = (e) => {
+        e.stopPropagation();
         const name = b.dataset.del;
         if (!confirm(`"${name}" 과목을 삭제할까요?`)) return;
         const all = loadCustomSubjects();
         delete all[name];
         saveCustomSubjectsMap(all);
         if (selectedSubject === name) { selectedSubject = null; currentCfg = null; renderScoreInputs(); }
+        if (editingSubject === name) resetSubjectForm(); else renderModalSubjectList();
         renderSubjectChips();
-        renderModalSubjectList();
       });
     }
 
@@ -852,8 +637,7 @@
     }
     function getLatestScoresForGraph() {
       const stored = loadSubjectScores();
-      const custom = loadCustomSubjects();
-      return Object.keys(stored).map(name => ({ name, periods: custom[name]?.periods || 0, ...stored[name] }));
+      return Object.keys(stored).map(name => ({ name, ...stored[name] }));
     }
 
     function loadHistory() { return JSON.parse(localStorage.getItem('gradeHistory') || '[]'); }
@@ -872,10 +656,10 @@
       tb.innerHTML = '';
       loadHistory().forEach((it, i) => {
         const tr = document.createElement('tr');
+        const [, m, d] = it.time.split(' ')[0].split('.');
         tr.innerHTML = `
-          <td>${it.time}</td><td class="subject">${it.subject || '-'}</td><td>${it.final}</td>
+          <td>${+m}월 ${+d}일</td><td class="subject">${it.subject || '-'}</td><td>${it.final}</td>
           <td><strong style="color:${GRADE_COLORS[it.grade]}">${it.grade}</strong></td>
-          <td>${it.nextMsg}</td><td>${it.dropMsg}</td>
           <td><button class="delete-btn" data-i="${i}">삭제</button></td>
           <td><button class="info-btn" data-idx="${i}">정보</button></td>`;
         tb.appendChild(tr);
@@ -919,6 +703,51 @@
       modal.style.display = 'flex';
     }
 
+    function analyzeGrades() {
+      const data = getLatestScoresForGraph();
+      if (!data.length) return '<p>분석할 데이터가 없어요. 계산기에서 과목 점수를 먼저 계산해보세요.</p>';
+
+      const avg = data.reduce((s, d) => s + d.final, 0) / data.length;
+      const sorted = [...data].sort((a, b) => b.final - a.final);
+      const best = sorted[0], worst = sorted[sorted.length - 1];
+      const lines = [`전체 ${data.length}과목 평균은 <strong>${avg.toFixed(1)}점</strong>이에요.`];
+
+      if (worst.name !== best.name && worst.final < avg - 5) {
+        lines.push(`<strong>${worst.name}</strong>이(가) 평균보다 ${(avg - worst.final).toFixed(1)}점 낮아 가장 신경써야 할 과목이에요.`);
+      }
+      if (best.final > avg + 5) {
+        lines.push(`<strong>${best.name}</strong>이(가) ${best.final}점으로 가장 좋은 성적을 유지하고 있어요.`);
+      }
+
+      const bySubject = {};
+      loadHistory().forEach(h => { if (h.subject) (bySubject[h.subject] = bySubject[h.subject] || []).push(h); });
+      let bestDelta = null;
+      Object.entries(bySubject).forEach(([name, list]) => {
+        if (list.length < 2) return;
+        const delta = list[0].final - list[list.length - 1].final;
+        if (!bestDelta || Math.abs(delta) > Math.abs(bestDelta.delta)) bestDelta = { name, delta };
+      });
+      if (bestDelta && Math.abs(bestDelta.delta) >= 3) {
+        const dir = bestDelta.delta > 0 ? '오른' : '떨어진';
+        lines.push(`<strong>${bestDelta.name}</strong>이(가) 이번 학기 가장 크게 ${dir} 과목이에요 (${bestDelta.delta > 0 ? '+' : ''}${bestDelta.delta.toFixed(1)}점).`);
+      }
+
+      const custom = loadCustomSubjects();
+      const examWeights = data.map(d => custom[d.name]?.exams.reduce((s, e) => s + e.weight, 0)).filter(w => w != null);
+      if (examWeights.length) {
+        const avgExamW = examWeights.reduce((a, b) => a + b, 0) / examWeights.length;
+        if (avgExamW >= 60) lines.push(`지필고사 비중이 평균 ${avgExamW.toFixed(0)}%로 높은 편이에요. 다가오는 시험 대비에 집중해보세요.`);
+        else if (avgExamW <= 40) lines.push(`수행평가 비중이 높은 편이에요. 평소 과제·수행 관리가 성적을 좌우해요.`);
+      }
+
+      const gradeCount = {};
+      data.forEach(d => gradeCount[d.grade] = (gradeCount[d.grade] || 0) + 1);
+      const topGrade = Object.entries(gradeCount).sort((a, b) => b[1] - a[1])[0];
+      if (topGrade) lines.push(`${topGrade[0]} 등급 과목이 ${topGrade[1]}개로 가장 많아요.`);
+
+      return lines.map(l => `<p>${l}</p>`).join('');
+    }
+
     function renderGraph() {
       const data = getLatestScoresForGraph();
 
@@ -930,13 +759,12 @@
         .join('') || '<span class="grade-stat">아직 등급 데이터 없음</span>';
 
       document.getElementById('graphSummary').innerHTML = data.length ? data.map(d =>
-        `<div class="summary-card"><div class="subj">${d.name}</div><div class="score">${d.final}점</div><div style="color:${GRADE_COLORS[d.grade]};font-weight:600;margin-top:4px">${d.grade}${d.periods ? ` · ${d.periods}차시` : ''}</div></div>`
+        `<div class="summary-card"><div class="subj">${d.name}</div><div class="score">${d.final}점</div><div style="color:${GRADE_COLORS[d.grade]};font-weight:600;margin-top:4px">${d.grade}</div></div>`
       ).join('') : '<div class="summary-card empty"><div class="score">계산 결과가 없습니다</div></div>';
 
-      const totalPeriods = data.reduce((s, d) => s + (d.periods || 1), 0);
-      const avg = data.length ? (data.reduce((s, d) => s + d.final * (d.periods || 1), 0) / totalPeriods).toFixed(2) : null;
+      const avg = data.length ? (data.reduce((s, d) => s + d.final, 0) / data.length).toFixed(2) : null;
       document.getElementById('avgBox').innerHTML = avg
-        ? `차시 반영 평균: <strong>${avg}점</strong> (${data.length}과목)`
+        ? `전체 평균: <strong>${avg}점</strong> (${data.length}과목)`
         : '계산기에서 각 과목 점수를 계산해 주세요.';
 
       const ranked = [...data].sort((a, b) => b.final - a.final);
@@ -959,7 +787,7 @@
       const W = rect.width, H = rect.height;
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       const grid = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)';
-      const barColors = ['#007aff', '#5856d6', '#34c759', '#ff9500', '#ff2d55', '#af52de'];
+      const barColors = ['#4f46e5', '#7c3aed', '#10b981', '#f59e0b', '#ef4444', '#0ea5e9'];
 
       ctx.clearRect(0, 0, W, H);
       const padL = 44, padR = 16, padT = 20, padB = 72;
@@ -974,7 +802,7 @@
       }
 
       // Grade cut lines
-      [{ v: 90, c: '#2ecc7180' }, { v: 80, c: '#007aff60' }, { v: 70, c: '#ffcc0060' }, { v: 60, c: '#ff950060' }].forEach(({ v, c }) => {
+      [{ v: 90, c: '#10b98180' }, { v: 80, c: '#4f46e560' }, { v: 70, c: '#f59e0b60' }, { v: 60, c: '#f9731660' }].forEach(({ v, c }) => {
         const y = padT + chartH - (v / 100) * chartH;
         ctx.strokeStyle = c; ctx.setLineDash([4, 4]);
         ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
@@ -1029,23 +857,28 @@
       link.click();
     }
 
-    function exportChartImage() {
-      downloadCanvasAsImage(document.getElementById('scoreChart'), `원점수그래프_${Date.now()}.png`);
-    }
-
-    function buildSummaryCanvas(data) {
+    function buildFullReportCanvas(data) {
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const cardBg = isDark ? '#1c1c1e' : '#ffffff';
-      const pageBg = isDark ? '#000000' : '#f2f2f7';
-      const borderColor = isDark ? '#3a3a3c' : '#c6c6c8';
-      const mutedColor = isDark ? '#98989d' : '#8e8e93';
-      const fgColor = isDark ? '#f2f2f7' : '#1c1c1e';
+      const cardBg = isDark ? '#1c1c26' : '#ffffff';
+      const pageBg = isDark ? '#0c0c14' : '#f4f5fb';
+      const borderColor = isDark ? '#34344a' : '#d8dae8';
+      const mutedColor = isDark ? '#9a9ab0' : '#6b7280';
+      const fgColor = isDark ? '#f2f2f7' : '#1c1c2e';
 
       const cols = 3;
-      const cardW = 220, cardH = 100, gap = 12, pad = 20, headerH = 44;
+      const cardW = 220, cardH = 100, gap = 12, pad = 20, headerH = 44, lineH = 26;
       const rows = Math.max(1, Math.ceil(data.length / cols));
       const W = pad * 2 + cols * cardW + (cols - 1) * gap;
-      const H = pad * 2 + headerH + rows * cardH + (rows - 1) * gap;
+      const summaryH = headerH + rows * cardH + (rows - 1) * gap;
+
+      const chartCanvas = document.getElementById('scoreChart');
+      const chartW = W - pad * 2;
+      const chartH = chartCanvas.width ? chartW * (chartCanvas.height / chartCanvas.width) : 0;
+
+      const avg = data.length ? (data.reduce((s, d) => s + d.final, 0) / data.length).toFixed(2) : null;
+      const ranked = [...data].sort((a, b) => b.final - a.final);
+
+      const H = pad + summaryH + 24 + (chartH ? 28 + chartH + 20 : 0) + 34 + (ranked.length ? 24 + ranked.length * lineH : 0) + pad;
 
       const canvas = document.createElement('canvas');
       const dpr = window.devicePixelRatio || 1;
@@ -1054,35 +887,65 @@
       ctx.scale(dpr, dpr);
 
       ctx.fillStyle = pageBg; ctx.fillRect(0, 0, W, H);
+
+      let y = pad;
       ctx.fillStyle = fgColor; ctx.font = 'bold 18px sans-serif'; ctx.textAlign = 'left';
-      ctx.fillText('과목별 원점수 현황', pad, pad + 20);
+      ctx.fillText('과목별 원점수 현황', pad, y + 20);
+      y += headerH;
 
       data.forEach((d, i) => {
         const col = i % cols, row = Math.floor(i / cols);
         const x = pad + col * (cardW + gap);
-        const y = pad + headerH + row * (cardH + gap);
+        const cy = y + row * (cardH + gap);
 
         ctx.fillStyle = cardBg; ctx.strokeStyle = borderColor; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.roundRect(x, y, cardW, cardH, 12); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.roundRect(x, cy, cardW, cardH, 12); ctx.fill(); ctx.stroke();
 
         ctx.textAlign = 'center';
         ctx.fillStyle = mutedColor; ctx.font = '13px sans-serif';
-        ctx.fillText(d.name, x + cardW / 2, y + 26);
+        ctx.fillText(d.name, x + cardW / 2, cy + 26);
 
         ctx.fillStyle = fgColor; ctx.font = 'bold 24px sans-serif';
-        ctx.fillText(`${d.final}점`, x + cardW / 2, y + 56);
+        ctx.fillText(`${d.final}점`, x + cardW / 2, cy + 56);
 
         ctx.fillStyle = GRADE_COLORS[d.grade] || fgColor; ctx.font = 'bold 14px sans-serif';
-        ctx.fillText(`${d.grade}${d.periods ? ` · ${d.periods}차시` : ''}`, x + cardW / 2, y + 78);
+        ctx.fillText(d.grade, x + cardW / 2, cy + 78);
       });
+      y += rows * cardH + (rows - 1) * gap + 24;
+
+      if (chartH) {
+        ctx.textAlign = 'left'; ctx.fillStyle = fgColor; ctx.font = 'bold 16px sans-serif';
+        ctx.fillText('과목별 원점수 비교', pad, y);
+        y += 12;
+        ctx.drawImage(chartCanvas, pad, y, chartW, chartH);
+        y += chartH + 20;
+      }
+
+      ctx.textAlign = 'left'; ctx.font = 'bold 15px sans-serif'; ctx.fillStyle = fgColor;
+      ctx.fillText(avg ? `전체 평균: ${avg}점 (${data.length}과목)` : '데이터 없음', pad, y + 16);
+      y += 34;
+
+      if (ranked.length) {
+        ctx.font = 'bold 14px sans-serif'; ctx.fillStyle = fgColor;
+        ctx.fillText('🏆 과목 순위', pad, y);
+        y += 24;
+        ctx.font = '13px sans-serif';
+        ranked.forEach((d, i) => {
+          ctx.textAlign = 'left'; ctx.fillStyle = mutedColor;
+          ctx.fillText(`${i + 1}. ${d.name}`, pad, y);
+          ctx.textAlign = 'right'; ctx.fillStyle = GRADE_COLORS[d.grade] || fgColor;
+          ctx.fillText(`${d.final}점 (${d.grade})`, W - pad, y);
+          y += lineH;
+        });
+      }
 
       return canvas;
     }
 
-    function exportSummaryImage() {
+    function exportFullReport() {
       const data = getLatestScoresForGraph();
       if (!data.length) { alert('저장할 데이터가 없습니다.'); return; }
-      downloadCanvasAsImage(buildSummaryCanvas(data), `과목별원점수현황_${Date.now()}.png`);
+      downloadCanvasAsImage(buildFullReportCanvas(data), `성적리포트_${Date.now()}.png`);
     }
 
     window.onload = () => {
@@ -1092,6 +955,19 @@
       document.getElementById('calcBtn').onclick = calculate;
       document.getElementById('manageSubjectsBtn').onclick = openSubjectModal;
       document.getElementById('modalSaveBtn').onclick = saveSubjectFromModal;
+      document.getElementById('addNewSubjectBtn').onclick = () => {
+        resetSubjectForm();
+        document.getElementById('subjectFormHead').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+      document.getElementById('cancelEditBtn').onclick = resetSubjectForm;
+      document.querySelectorAll('.stepper-btn').forEach(btn => {
+        btn.onclick = () => {
+          const inp = document.getElementById(btn.dataset.target);
+          const min = +inp.min || 1;
+          inp.value = Math.max(min, (+inp.value || min) + (+btn.dataset.delta));
+          inp.dispatchEvent(new Event('change'));
+        };
+      });
       ['modalSCount', 'modalTCount'].forEach(id => document.getElementById(id).addEventListener('change', () => {
         const snap = snapshotModalWeights();
         renderWeightInputs(modalConfigFromCounts());
@@ -1104,14 +980,35 @@
         }
       };
       document.getElementById('refreshGraphBtn').onclick = renderGraph;
-      document.getElementById('downloadChartBtn').onclick = exportChartImage;
-      document.getElementById('downloadSummaryBtn').onclick = exportSummaryImage;
+      document.getElementById('aiAnalyzeBtn').onclick = () => {
+        const box = document.getElementById('aiAnalysisResult');
+        box.classList.remove('empty-hint');
+        box.classList.add('ai-result');
+        box.innerHTML = analyzeGrades();
+      };
+      document.getElementById('downloadReportBtn').onclick = exportFullReport;
     };
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('app-sw.js').catch(() => {});
     }
   </script>
+
+  <div class="box site-banner">
+    <a href="todayfood/">
+      <span class="emoji">🍱</span>
+      우리학교 급식 보러 가실래요?
+    </a>
+    <a href="todayclass/">
+      <span class="emoji">📅</span>
+      우리학교 시간표 보러가기
+    </a>
+  </div>
+
+  <footer class="site-footer">
+    성적 계산기 · 수행평가와 지필고사 반영 비율을 입력해 최종 원점수와 등급을 무료로 계산하는 온라인 도구입니다.<br>
+    © 2026 성적 계산기. All rights reserved.
+  </footer>
 
   <div class="ad-side left">
     <ins class="kakao_ad_area" style="display:none;"
