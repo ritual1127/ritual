@@ -83,6 +83,7 @@
     document.getElementById('nextDayBtn').onclick = () => { currentDate.setDate(currentDate.getDate() + 1); renderTimetable(); };
 
     renderSchoolPicker(document.getElementById('schoolPicker'), (school) => {
+      document.title = `오늘의 시간표 - ${school.schoolName} 시간표 | 성적 계산기`;
       currentSchool = school;
       document.getElementById('classBox').style.display = 'block';
       document.getElementById('deptField').style.display = school.kind === 'HIGH' ? 'block' : 'none';

@@ -94,6 +94,7 @@
     };
 
     renderSchoolPicker(document.getElementById('schoolPicker'), (school) => {
+      document.title = `오늘의 급식 - ${school.schoolName} 급식표 | 성적 계산기`;
       document.getElementById('mealBox').style.display = 'block';
       renderMeal(school);
     });

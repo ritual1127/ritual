@@ -395,6 +395,7 @@ body {
   background: var(--inp-bg); border: 1px solid var(--inp-border);
 }
 .school-current .meta { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.school-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
 .date-nav {
   display: flex; align-items: center; justify-content: space-between;

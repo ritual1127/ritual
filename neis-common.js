@@ -83,16 +83,48 @@ async function fetchNeisTimetable(school, dateYmd, grade, classNum, department) 
   return { periods };
 }
 
+// URL 쿼리(?o=&s=&n=&k=)로 전달된 학교 정보를 읽는다. 공유 링크로 바로 들어왔을 때 검색을 건너뛰기 위함.
+function schoolFromQuery() {
+  const p = new URLSearchParams(location.search);
+  if (!p.get('o') || !p.get('s') || !p.get('n')) return null;
+  return { officeCode: p.get('o'), schoolCode: p.get('s'), schoolName: p.get('n'), kind: p.get('k') || 'HIGH' };
+}
+
+// 현재 학교를 다른 사람에게 공유할 수 있는 링크로 만든다.
+function schoolShareUrl(school) {
+  const p = new URLSearchParams({ o: school.officeCode, s: school.schoolCode, n: school.schoolName, k: school.kind });
+  return `${location.origin}${location.pathname}?${p.toString()}`;
+}
+
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch { return false; }
+}
+
 // 학교 검색/선택 UI를 컨테이너에 렌더링. 선택된 학교가 있으면 onReady(school)를 호출.
 function renderSchoolPicker(container, onReady) {
-  const school = loadNeisSchool();
+  const fromQuery = schoolFromQuery();
+  if (fromQuery) saveNeisSchool(fromQuery);
+  const school = fromQuery || loadNeisSchool();
   if (school) {
     container.innerHTML = `
       <div class="school-current">
-        <div><strong>${school.schoolName}</strong><div class="meta">${school.officeName}</div></div>
-        <button type="button" class="mini-btn" id="changeSchoolBtn">학교 변경</button>
+        <div><strong>${school.schoolName}</strong><div class="meta">${school.officeName || ''}</div></div>
+        <div class="school-actions">
+          <button type="button" class="mini-btn" id="shareSchoolBtn">링크 공유</button>
+          <button type="button" class="mini-btn" id="changeSchoolBtn">학교 변경</button>
+        </div>
       </div>`;
-    document.getElementById('changeSchoolBtn').onclick = () => { clearNeisSchool(); renderSchoolPicker(container, onReady); };
+    document.getElementById('changeSchoolBtn').onclick = () => {
+      clearNeisSchool();
+      history.replaceState(null, '', location.pathname);
+      renderSchoolPicker(container, onReady);
+    };
+    document.getElementById('shareSchoolBtn').onclick = async (e) => {
+      const ok = await copyText(schoolShareUrl(school));
+      const btn = e.currentTarget;
+      btn.textContent = ok ? '복사됨!' : '복사 실패';
+      setTimeout(() => { btn.textContent = '링크 공유'; }, 1500);
+    };
     onReady(school);
     return;
   }
