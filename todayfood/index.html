@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>오늘의 급식 - 우리학교 급식표 조회 | 성적 계산기</title>
+  <meta name="description" content="학교 이름만 검색하면 오늘의 급식(조식·중식·석식) 메뉴를 바로 확인할 수 있는 무료 급식표 조회 서비스입니다.">
+  <meta name="keywords" content="오늘의 급식, 급식표, 학교 급식, 급식 메뉴 조회, 우리학교 급식">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://naver1.cloud/todayfood">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="오늘의 급식 - 우리학교 급식표 조회">
+  <meta property="og:description" content="학교 이름만 검색하면 오늘의 급식 메뉴를 바로 확인할 수 있어요.">
+  <meta property="og:url" content="https://naver1.cloud/todayfood">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="icon" href="../icon-192.png">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+  <div class="top-bar">
+    <h1><span>오늘의</span> 급식</h1>
+  </div>
+  <p class="tagline">우리 학교 급식 메뉴를 검색 한 번으로 확인하세요</p>
+
+  <div class="nav-tabs">
+    <a class="nav-tab" href="../index.html">계산기</a>
+    <a class="nav-tab active" href="./">급식</a>
+    <a class="nav-tab" href="../todayclass/">시간표</a>
+  </div>
+
+  <div class="box" id="schoolPicker"></div>
+
+  <div class="box" id="mealBox" style="display:none;">
+    <div class="date-nav">
+      <button type="button" class="btn-outline" id="prevDayBtn">◀</button>
+      <span class="date-label" id="dateLabel"></span>
+      <button type="button" class="btn-outline" id="nextDayBtn">▶</button>
+    </div>
+    <div class="meal-tabs" id="mealTabs"></div>
+    <div id="dishList"><div class="empty-hint">학교를 선택하면 급식이 표시돼요.</div></div>
+  </div>
+
+  <div style="text-align:center; margin:16px 0;">
+    <ins class="kakao_ad_area" style="display:none;"
+    data-ad-unit = "DAN-qFgxh1fm4CIwM4Ry"
+    data-ad-width = "320"
+    data-ad-height = "50"></ins>
+  </div>
+
+  <footer class="site-footer">
+    오늘의 급식 · NEIS 교육정보 개방포털 데이터를 기반으로 제공됩니다.<br>
+    © 2026 성적 계산기. All rights reserved.
+  </footer>
+
+  <script src="../neis-common.js"></script>
+  <script>
+    let currentDate = new Date();
+    let currentMealCode = defaultMealCode();
+    let currentSlots = [];
+
+    function renderTabsActive() {
+      document.querySelectorAll('#mealTabs button').forEach(b => b.classList.toggle('active', b.dataset.code === currentMealCode));
+    }
+
+    function renderMealSlot() {
+      const listEl = document.getElementById('dishList');
+      const slot = currentSlots.find(s => s.code === currentMealCode);
+      listEl.innerHTML = slot && slot.items.length
+        ? `<ul class="dish-list">${slot.items.map(i => `<li>${i}</li>`).join('')}</ul>`
+        : '<div class="empty-hint">급식 정보가 없습니다.</div>';
+    }
+
+    async function renderMeal(school) {
+      document.getElementById('dateLabel').textContent = neisDateLabel(currentDate);
+      const listEl = document.getElementById('dishList');
+      const tabsEl = document.getElementById('mealTabs');
+      listEl.innerHTML = '<div class="empty-hint">불러오는 중...</div>';
+      tabsEl.innerHTML = '';
+
+      const result = await fetchNeisMeal(school, neisYmd(currentDate)).catch(() => ({ slots: [] }));
+      currentSlots = result.slots;
+      if (!currentSlots.length) {
+        listEl.innerHTML = '<div class="empty-hint">이 날짜엔 급식 정보가 없어요. (주말·방학 등)</div>';
+        return;
+      }
+      if (!currentSlots.some(s => s.code === currentMealCode)) currentMealCode = currentSlots[0].code;
+      tabsEl.innerHTML = currentSlots.map(s => `<button type="button" data-code="${s.code}">${s.label}</button>`).join('');
+      tabsEl.querySelectorAll('button').forEach(b => b.onclick = () => { currentMealCode = b.dataset.code; renderTabsActive(); renderMealSlot(); });
+      renderTabsActive();
+      renderMealSlot();
+    }
+
+    document.getElementById('prevDayBtn').onclick = () => {
+      currentDate.setDate(currentDate.getDate() - 1);
+      renderMeal(loadNeisSchool());
+    };
+    document.getElementById('nextDayBtn').onclick = () => {
+      currentDate.setDate(currentDate.getDate() + 1);
+      renderMeal(loadNeisSchool());
+    };
+
+    renderSchoolPicker(document.getElementById('schoolPicker'), (school) => {
+      document.title = `오늘의 급식 - ${school.schoolName} 급식표 | 성적 계산기`;
+      document.getElementById('mealBox').style.display = 'block';
+      renderMeal(school);
+    });
+  </script>
+  <script type="text/javascript" src="//t1.kakaocdn.net/kas/static/ba.min.js" async></script>
+</body>
+</html>

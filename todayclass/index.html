@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>오늘의 시간표 - 우리학교 시간표 조회 | 성적 계산기</title>
+  <meta name="description" content="학교, 학년, 반만 입력하면 오늘의 시간표를 바로 확인할 수 있는 무료 시간표 조회 서비스입니다.">
+  <meta name="keywords" content="오늘의 시간표, 학교 시간표, 시간표 조회, 우리학교 시간표">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://naver1.cloud/todayclass">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="오늘의 시간표 - 우리학교 시간표 조회">
+  <meta property="og:description" content="학교·학년·반만 입력하면 오늘의 시간표를 바로 확인할 수 있어요.">
+  <meta property="og:url" content="https://naver1.cloud/todayclass">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="icon" href="../icon-192.png">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+  <div class="top-bar">
+    <h1><span>오늘의</span> 시간표</h1>
+  </div>
+  <p class="tagline">학교·학년·반만 입력하면 오늘 시간표를 바로 볼 수 있어요</p>
+
+  <div class="nav-tabs">
+    <a class="nav-tab" href="../index.html">계산기</a>
+    <a class="nav-tab" href="../todayfood/">급식</a>
+    <a class="nav-tab active" href="./">시간표</a>
+  </div>
+
+  <div class="box" id="schoolPicker"></div>
+
+  <div class="box" id="classBox" style="display:none;">
+    <div class="class-inputs" id="classInputs">
+      <div class="half"><label>학년</label><input type="number" id="gradeInput" min="1" max="6" value="1"></div>
+      <div class="half"><label>반</label><input type="number" id="classInput" min="1" max="30" value="1"></div>
+      <div class="half" id="deptField" style="display:none;"><label>학과(선택)</label><input type="text" id="deptInput" placeholder="예: 전자과"></div>
+    </div>
+    <button type="button" class="btn" id="applyClassBtn">시간표 조회</button>
+
+    <div class="date-nav">
+      <button type="button" class="btn-outline" id="prevDayBtn">◀</button>
+      <span class="date-label" id="dateLabel"></span>
+      <button type="button" class="btn-outline" id="nextDayBtn">▶</button>
+    </div>
+    <div id="periodList"><div class="empty-hint">학교와 학년·반을 입력하면 시간표가 표시돼요.</div></div>
+  </div>
+
+  <div style="text-align:center; margin:16px 0;">
+    <ins class="kakao_ad_area" style="display:none;"
+    data-ad-unit = "DAN-qFgxh1fm4CIwM4Ry"
+    data-ad-width = "320"
+    data-ad-height = "50"></ins>
+  </div>
+
+  <footer class="site-footer">
+    오늘의 시간표 · NEIS 교육정보 개방포털 데이터를 기반으로 제공됩니다.<br>
+    © 2026 성적 계산기. All rights reserved.
+  </footer>
+
+  <script src="../neis-common.js"></script>
+  <script>
+    let currentDate = new Date();
+    let currentSchool = null;
+
+    function renderPeriodList(periods) {
+      const el = document.getElementById('periodList');
+      el.innerHTML = periods.length
+        ? `<ul class="period-list">${periods.map(p => `<li><span class="period-no">${p.period}</span>${p.subject}</li>`).join('')}</ul>`
+        : '<div class="empty-hint">이 날짜엔 시간표 정보가 없어요. (주말·방학 등)</div>';
+    }
+
+    async function renderTimetable() {
+      if (!currentSchool) return;
+      document.getElementById('dateLabel').textContent = neisDateLabel(currentDate);
+      document.getElementById('periodList').innerHTML = '<div class="empty-hint">불러오는 중...</div>';
+
+      const grade = +document.getElementById('gradeInput').value || 1;
+      const classNum = +document.getElementById('classInput').value || 1;
+      const department = document.getElementById('deptInput').value.trim();
+      saveNeisClass({ grade, classNum, department });
+
+      const { periods } = await fetchNeisTimetable(currentSchool, neisYmd(currentDate), grade, classNum, department).catch(() => ({ periods: [] }));
+      renderPeriodList(periods);
+    }
+
+    document.getElementById('applyClassBtn').onclick = renderTimetable;
+    document.getElementById('prevDayBtn').onclick = () => { currentDate.setDate(currentDate.getDate() - 1); renderTimetable(); };
+    document.getElementById('nextDayBtn').onclick = () => { currentDate.setDate(currentDate.getDate() + 1); renderTimetable(); };
+
+    renderSchoolPicker(document.getElementById('schoolPicker'), (school) => {
+      document.title = `오늘의 시간표 - ${school.schoolName} 시간표 | 성적 계산기`;
+      currentSchool = school;
+      document.getElementById('classBox').style.display = 'block';
+      document.getElementById('deptField').style.display = school.kind === 'HIGH' ? 'block' : 'none';
+      const saved = loadNeisClass();
+      document.getElementById('gradeInput').value = saved.grade || 1;
+      document.getElementById('classInput').value = saved.classNum || 1;
+      document.getElementById('deptInput').value = saved.department || '';
+      renderTimetable();
+    });
+  </script>
+  <script type="text/javascript" src="//t1.kakaocdn.net/kas/static/ba.min.js" async></script>
+</body>
+</html>

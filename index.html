@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>성적 계산기 - 수행평가·지필고사 등급 자동 계산 | 무료 온라인 도구</title>
+  <meta name="description" content="수행평가와 지필고사 점수를 입력하면 반영 비율에 따라 최종 원점수와 등급(A~E)을 즉시 계산해주는 무료 성적 계산기입니다. 등급별 목표 점수와 원점수 그래프까지 한번에 확인하세요.">
+  <meta name="keywords" content="성적계산기, 수행평가 계산기, 지필고사 계산기, 내신 등급 계산, 원점수 계산기, 등급컷 계산">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="성적 계산기">
+  <link rel="canonical" href="https://naver1.cloud/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="성적 계산기 - 수행평가·지필고사 등급 자동 계산">
+  <meta property="og:description" content="수행평가·지필고사 비율만 입력하면 최종 원점수와 등급을 바로 계산. 목표 등급별 필요 점수와 과목별 그래프까지 무료로 제공합니다.">
+  <meta property="og:url" content="https://naver1.cloud/">
+  <meta property="og:image" content="https://naver1.cloud/icon-512.png">
+  <meta property="og:locale" content="ko_KR">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="성적 계산기 - 수행평가·지필고사 등급 자동 계산">
+  <meta name="twitter:description" content="수행평가·지필고사 비율만 입력하면 최종 원점수와 등급을 바로 계산해주는 무료 성적 계산기.">
+  <meta name="twitter:image" content="https://naver1.cloud/icon-512.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "성적 계산기",
+    "url": "https://naver1.cloud/",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "KRW" },
+    "description": "수행평가와 지필고사 반영 비율을 입력하면 최종 원점수와 등급을 자동으로 계산해주는 무료 웹 도구."
+  }
+  </script>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="ad-mobile-top">
+    <ins class="kakao_ad_area" style="display:none;"
+    data-ad-unit = "DAN-i1g4HxCv6ixUUKmt"
+    data-ad-width = "320"
+    data-ad-height = "50"></ins>
+  </div>
+
+  <div class="top-bar">
+    <h1 onclick="location.reload()"><span>성적</span>계산기</h1>
+    <div class="top-controls">
+      <button id="themeToggle">다크 모드</button>
+    </div>
+  </div>
+  <p class="tagline">수행평가·지필고사 비율만 입력하면 최종 원점수와 등급을 바로 계산해드려요</p>
+
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-view="calc">계산기</button>
+    <button class="nav-tab" data-view="graph">원점수 그래프</button>
+  </div>
+
+  <div id="calcView">
+    <div class="desktop-grid">
+      <div class="left-col">
+        <div class="box subject-picker">
+          <div class="section-head">
+            <label style="font-size:15px;color:var(--muted);">과목 선택</label>
+            <button type="button" class="mini-btn" id="manageSubjectsBtn">+ 과목 등록/관리</button>
+          </div>
+          <div class="subject-chips" id="subjectChips"></div>
+        </div>
+
+        <div id="inputs" class="box"></div>
+        <button id="calcBtn" class="btn">계산하기</button>
+        <div id="result" class="span-full"></div>
+
+        <div class="ad-mobile-strip">
+          <ins class="kakao_ad_area" style="display:none;"
+          data-ad-unit = "DAN-i1g4HxCv6ixUUKmt"
+          data-ad-width = "320"
+          data-ad-height = "50"></ins>
+        </div>
+      </div>
+
+      <div class="right-col">
+        <div id="history" class="box">
+          <div class="history-header">
+            <span>계산 기록</span>
+            <button id="resetBtn" class="btn-outline">전체 리셋</button>
+          </div>
+          <div class="table-container">
+            <table class="record-table">
+              <thead>
+                <tr>
+                  <th>일시</th><th>과목</th><th>원점수</th><th>등급</th>
+                  <th>삭<br>제</th><th>정<br>보</th>
+                </tr>
+              </thead>
+              <tbody id="historyBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="graphView">
+    <div class="box">
+      <div class="history-header">
+        <span>과목별 원점수 현황</span>
+        <button id="refreshGraphBtn" class="btn-outline">새로고침</button>
+      </div>
+      <div class="grade-stats" id="gradeStats"></div>
+      <div class="graph-summary" id="graphSummary"></div>
+    </div>
+
+    <div class="box">
+      <div class="section-head">
+        <h2 style="font-size:16px;">AI 성적분석<span class="beta-badge">베타</span></h2>
+        <button type="button" class="mini-btn" id="aiAnalyzeBtn">분석하기</button>
+      </div>
+      <div id="aiAnalysisResult" class="empty-hint">버튼을 눌러 내 성적을 분석해보세요.</div>
+    </div>
+
+    <div class="box chart-wrap">
+      <h3>과목별 원점수 비교</h3>
+      <canvas id="scoreChart"></canvas>
+      <div class="avg-box" id="avgBox"></div>
+      <div class="rank-box" id="rankBox"></div>
+      <button id="downloadReportBtn" class="btn" style="margin-top:16px;">전체 결과 저장</button>
+    </div>
+
+    <div class="ad-mobile-strip">
+      <ins class="kakao_ad_area" style="display:none;"
+      data-ad-unit = "DAN-i1g4HxCv6ixUUKmt"
+      data-ad-width = "320"
+      data-ad-height = "50"></ins>
+    </div>
+  </div>
+
+  <div id="detailModal" class="modal">
+    <div class="modal-content">
+      <button id="modalCloseBtn" class="modal-close-btn">✕</button>
+      <div id="modalInnerContent"></div>
+    </div>
+  </div>
+
+  <div id="subjectModal" class="modal">
+    <div class="modal-content">
+      <button id="subjectModalCloseBtn" class="modal-close-btn">✕</button>
+      <h2 style="margin-bottom:16px;">과목 등록/관리</h2>
+
+      <div class="section-head">
+        <h3 style="font-size:16px;">등록된 과목</h3>
+        <button type="button" class="mini-btn" id="addNewSubjectBtn">+ 새 과목</button>
+      </div>
+      <div id="modalSubjectList" style="margin-bottom:20px;"></div>
+
+      <div class="section-head" id="subjectFormHead">
+        <h3 id="subjectFormTitle" style="font-size:16px;">새 과목 추가</h3>
+        <button type="button" class="mini-btn" id="cancelEditBtn" style="display:none;">취소</button>
+      </div>
+
+      <div class="modal-section">
+        <div class="entry">
+          <label for="modalSubjectName">과목명</label>
+          <input type="text" id="modalSubjectName" placeholder="예: 수학">
+        </div>
+
+        <div class="count-container">
+          <div class="half">
+            <label for="modalSCount">수행 개수</label>
+            <div class="stepper">
+              <button type="button" class="stepper-btn" data-target="modalSCount" data-delta="-1">−</button>
+              <input type="number" id="modalSCount" value="2" min="1">
+              <button type="button" class="stepper-btn" data-target="modalSCount" data-delta="1">+</button>
+            </div>
+          </div>
+          <div class="half">
+            <label for="modalTCount">지필 개수</label>
+            <div class="stepper">
+              <button type="button" class="stepper-btn" data-target="modalTCount" data-delta="-1">−</button>
+              <input type="number" id="modalTCount" value="2" min="1">
+              <button type="button" class="stepper-btn" data-target="modalTCount" data-delta="1">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="modalWeightInputs" class="modal-section"></div>
+      <button type="button" class="btn" id="modalSaveBtn">과목 저장</button>
+    </div>
+  </div>
+
+  <script>
+    const IF_SCENARIOS = [60, 70, 80, 90, 100];
+    const GRADE_COLORS = { A: '#10b981', B: '#4f46e5', C: '#f59e0b', D: '#f97316', E: '#ef4444' };
+
+    let selectedSubject = null;
+    let currentCfg = null;
+    let editingSubject = null;
+
+    function loadCustomSubjects() { return JSON.parse(localStorage.getItem('customSubjects') || '{}'); }
+    function saveCustomSubjectsMap(map) { localStorage.setItem('customSubjects', JSON.stringify(map)); }
+
+    function getGrade(score) {
+      return score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'E';
+    }
+
+    // Theme
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const themeToggle = document.getElementById('themeToggle');
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      themeToggle.textContent = theme === 'dark' ? '라이트 모드' : '다크 모드';
+      localStorage.setItem('theme', theme);
+      if (document.getElementById('graphView').style.display !== 'none') renderGraph();
+    }
+    applyTheme(localStorage.getItem('theme') || (mediaQuery.matches ? 'dark' : 'light'));
+    themeToggle.onclick = () => applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+      tab.onclick = () => {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const isGraph = tab.dataset.view === 'graph';
+        document.getElementById('calcView').style.display = isGraph ? 'none' : 'block';
+        document.getElementById('graphView').style.display = isGraph ? 'block' : 'none';
+        if (isGraph) renderGraph();
+      };
+    });
+
+    // Draft save per subject (scores + IF state only; ratios live in customSubjects)
+    function saveDraft() {
+      if (!selectedSubject || !currentCfg) return;
+      const draft = { scores: [], examScores: [], ifModes: [] };
+      currentCfg.performances.forEach((_, i) => draft.scores.push(document.getElementById(`s${i}`)?.value || ''));
+      currentCfg.exams.forEach((_, i) => {
+        draft.examScores.push(document.getElementById(`t${i}`)?.value || '');
+        draft.ifModes.push(document.getElementById(`if${i}`)?.classList.contains('active') || false);
+      });
+      const all = JSON.parse(localStorage.getItem('subjectDrafts') || '{}');
+      all[selectedSubject] = draft;
+      localStorage.setItem('subjectDrafts', JSON.stringify(all));
+    }
+
+    function loadDraft(name) {
+      return JSON.parse(localStorage.getItem('subjectDrafts') || '{}')[name] || null;
+    }
+
+    function applyDraft(draft) {
+      draft.scores.forEach((v, i) => { const el = document.getElementById(`s${i}`); if (el) el.value = v; });
+      draft.examScores.forEach((v, i) => { const el = document.getElementById(`t${i}`); if (el) el.value = v; });
+      draft.ifModes.forEach((on, i) => {
+        const btn = document.getElementById(`if${i}`);
+        if (btn) { btn.classList.toggle('active', on); toggleIfMode(i, on); }
+      });
+    }
+
+    function renderSubjectChips() {
+      const names = Object.keys(loadCustomSubjects());
+      const container = document.getElementById('subjectChips');
+      container.innerHTML = names.length
+        ? names.map(name => `<button type="button" class="subject-chip${selectedSubject === name ? ' active' : ''}" data-subject="${name}">${name}</button>`).join('')
+        : '<span class="empty-hint">등록된 과목이 없습니다. "+ 과목 등록/관리"로 추가하세요.</span>';
+      container.querySelectorAll('.subject-chip').forEach(chip => {
+        chip.onclick = () => { saveDraft(); loadSubject(chip.dataset.subject); };
+      });
+    }
+
+    function loadSubject(name) {
+      selectedSubject = name;
+      currentCfg = loadCustomSubjects()[name];
+      renderSubjectChips();
+      renderScoreInputs();
+      const draft = loadDraft(name);
+      if (draft) applyDraft(draft);
+    }
+
+    function sanitizeScoreInput(el) {
+      let v = el.value.replace(/[^0-9.]/g, '');
+      const firstDot = v.indexOf('.');
+      if (firstDot !== -1) v = v.slice(0, firstDot + 1) + v.slice(firstDot + 1).replace(/\./g, '');
+      let [intPart, decPart] = v.split('.');
+      if (intPart && intPart !== '100') intPart = intPart.slice(0, 2);
+      if (intPart && +intPart > 100) intPart = '100';
+      el.value = decPart !== undefined ? `${intPart}.${decPart}` : (intPart || '');
+    }
+
+    function renderScoreInputs() {
+      const box = document.getElementById('inputs');
+      if (!currentCfg) { box.innerHTML = '<div class="empty-hint">과목을 선택하거나 새로 등록하세요.</div>'; return; }
+
+      let html = `<h2 style="margin-bottom:12px;">${selectedSubject}</h2><h2 style="font-size:16px;margin-bottom:12px;">수행평가</h2>`;
+      currentCfg.performances.forEach((p, i) => {
+        html += `
+          <div class="entry">
+            <label>${p.label} (${p.weight}%)${p.memo ? `<br><span style="font-size:12px;color:var(--muted);">${p.memo}</span>` : ''}</label>
+            <input type="text" inputmode="decimal" class="score-input" id="s${i}" placeholder="점수">
+          </div>`;
+      });
+
+      html += '<h2 style="font-size:16px;margin:16px 0 12px;">지필평가</h2>';
+      currentCfg.exams.forEach((ex, i) => {
+        html += `
+          <div class="entry" id="examEntry${i}">
+            <label>${ex.label} (${ex.weight}%)</label>
+            <div class="score-row">
+              <input type="text" inputmode="decimal" id="t${i}" class="score-input exam-score" placeholder="점수">
+              <button type="button" class="if-btn" id="if${i}" title="IF 모드: 시험 점수별 예상 원점수">IF</button>
+            </div>
+          </div>`;
+      });
+
+      box.innerHTML = html;
+      box.querySelectorAll('.score-input').forEach(inp => inp.addEventListener('input', () => sanitizeScoreInput(inp)));
+      currentCfg.exams.forEach((_, i) => {
+        document.getElementById(`if${i}`).onclick = function() {
+          const on = !this.classList.contains('active');
+          this.classList.toggle('active', on);
+          toggleIfMode(i, on);
+        };
+      });
+    }
+
+    function toggleIfMode(i, on) {
+      const entry = document.getElementById(`examEntry${i}`);
+      const inp = document.getElementById(`t${i}`);
+      if (on) {
+        entry.classList.add('if-mode');
+        inp.placeholder = 'IF 시뮬레이션';
+        inp.value = '';
+      } else {
+        entry.classList.remove('if-mode');
+        inp.placeholder = '점수';
+      }
+    }
+
+    function collectData() {
+      const perf = [], exms = [];
+      let sSum = 0, wSum = 0, tSum = 0;
+
+      currentCfg.performances.forEach((p, i) => {
+        const sc = +document.getElementById(`s${i}`).value || 0;
+        perf.push({ label: p.label, score: sc, weight: p.weight });
+        sSum += sc * (p.weight / 100); wSum += p.weight;
+      });
+
+      const ifActive = [];
+      let mid = 0, finalW = 0;
+      const tCnt = currentCfg.exams.length;
+      currentCfg.exams.forEach((ex, i) => {
+        const ifOn = document.getElementById(`if${i}`).classList.contains('active');
+        ifActive.push(ifOn);
+        const sc = ifOn ? 0 : (+document.getElementById(`t${i}`).value || 0);
+        exms.push({ label: ex.label, score: sc, weight: ex.weight, ifMode: ifOn });
+        if (tCnt === 1 || i === tCnt - 1) finalW = ex.weight / 100;
+        else if (!ifOn) mid += sc * (ex.weight / 100);
+        if (!ifOn) tSum += sc * (ex.weight / 100);
+        wSum += ex.weight;
+      });
+
+      return { perf, exms, sSum, tSum, wSum, mid, finalW, ifActive, tCnt };
+    }
+
+    // --- Subject registration popup ---
+    function examLabel(i, tCnt) {
+      if (tCnt === 1) return '지필고사';
+      if (i === tCnt - 1) return '기말고사';
+      return tCnt === 2 ? '중간고사' : `중간${i + 1}고사`;
+    }
+
+    function modalConfigFromCounts() {
+      const sCnt = +document.getElementById('modalSCount').value || 1;
+      const tCnt = +document.getElementById('modalTCount').value || 1;
+      return {
+        performances: Array.from({ length: sCnt }, (_, i) => ({ label: `수행${i + 1}`, weight: 0, memo: '' })),
+        exams: Array.from({ length: tCnt }, (_, i) => ({ label: examLabel(i, tCnt), weight: 0 }))
+      };
+    }
+
+    function renderWeightInputs(cfg) {
+      let html = `<div id="modalWeightBar" class="weight-bar">
+        <div class="weight-bar-top"><span>비중 합계</span><strong>0%</strong></div>
+        <div class="weight-track"><div class="weight-fill" style="width:0%"></div></div>
+      </div>`;
+      html += `<a href="https://www.schoolinfo.go.kr" target="_blank" rel="noopener" class="schoolinfo-link">우리 학교 반영 비율, 학교알리미에서 확인하기 →</a>`;
+      html += '<div class="section-head"><h2 style="font-size:16px;">수행평가 비중</h2><button type="button" class="mini-btn" id="modalResetWeightsBtn">0으로 초기화</button></div>';
+      cfg.performances.forEach((p, i) => {
+        html += `<div class="weight-row">
+          <label>${p.label}</label>
+          <input type="text" class="weight-memo" id="mmemo${i}" value="${p.memo || ''}" placeholder="메모 (선택)">
+          <div class="weight-pct">
+            <button type="button" class="pct-step" data-target="msw${i}" data-delta="-5">−</button>
+            <input type="number" id="msw${i}" value="${p.weight}" min="0" max="100" step="5" class="modal-weight-inp">
+            <button type="button" class="pct-step" data-target="msw${i}" data-delta="5">+</button>
+          </div>
+        </div>`;
+      });
+      html += '<h2 style="font-size:16px;margin:16px 0 12px;">지필평가 비중</h2>';
+      cfg.exams.forEach((ex, i) => {
+        html += `<div class="weight-row">
+          <label>${ex.label}</label>
+          <span class="weight-spacer"></span>
+          <div class="weight-pct">
+            <button type="button" class="pct-step" data-target="mtw${i}" data-delta="-5">−</button>
+            <input type="number" id="mtw${i}" value="${ex.weight}" min="0" max="100" step="5" class="modal-weight-inp">
+            <button type="button" class="pct-step" data-target="mtw${i}" data-delta="5">+</button>
+          </div>
+        </div>`;
+      });
+      document.getElementById('modalWeightInputs').innerHTML = html;
+      document.querySelectorAll('.modal-weight-inp').forEach(inp => inp.addEventListener('input', updateModalWeightBar));
+      document.querySelectorAll('.pct-step').forEach(btn => {
+        btn.onclick = () => {
+          const inp = document.getElementById(btn.dataset.target);
+          const min = +inp.min || 0, max = +inp.max || 100;
+          inp.value = Math.max(min, Math.min(max, (+inp.value || 0) + (+btn.dataset.delta)));
+          updateModalWeightBar();
+        };
+      });
+      document.getElementById('modalResetWeightsBtn').onclick = () => {
+        document.querySelectorAll('.modal-weight-inp').forEach(inp => { inp.value = 0; });
+        updateModalWeightBar();
+      };
+      updateModalWeightBar();
+    }
+
+    function updateModalWeightBar() {
+      const bar = document.getElementById('modalWeightBar');
+      if (!bar) return;
+      let sum = 0;
+      document.querySelectorAll('.modal-weight-inp').forEach(inp => { sum += +inp.value || 0; });
+      bar.querySelector('.weight-bar-top strong').textContent = `${sum}%`;
+      bar.querySelector('.weight-fill').style.width = `${Math.min(100, sum)}%`;
+      bar.classList.toggle('ok', sum === 100);
+    }
+
+    function snapshotModalWeights() {
+      const snap = { sw: [], tw: [], memo: [] };
+      for (let i = 0; i < 20; i++) {
+        const sw = document.getElementById(`msw${i}`), tw = document.getElementById(`mtw${i}`), memo = document.getElementById(`mmemo${i}`);
+        if (sw) snap.sw[i] = sw.value;
+        if (tw) snap.tw[i] = tw.value;
+        if (memo) snap.memo[i] = memo.value;
+      }
+      return snap;
+    }
+
+    function restoreModalWeights(snap) {
+      snap.sw.forEach((v, i) => { const el = document.getElementById(`msw${i}`); if (el && v != null) el.value = v; });
+      snap.tw.forEach((v, i) => { const el = document.getElementById(`mtw${i}`); if (el && v != null) el.value = v; });
+      snap.memo.forEach((v, i) => { const el = document.getElementById(`mmemo${i}`); if (el && v != null) el.value = v; });
+      updateModalWeightBar();
+    }
+
+    function resetSubjectForm() {
+      editingSubject = null;
+      document.getElementById('modalSubjectName').value = '';
+      document.getElementById('modalSCount').value = 2;
+      document.getElementById('modalTCount').value = 2;
+      renderWeightInputs(modalConfigFromCounts());
+      document.getElementById('subjectFormTitle').textContent = '새 과목 추가';
+      document.getElementById('cancelEditBtn').style.display = 'none';
+      renderModalSubjectList();
+    }
+
+    function openSubjectModal() {
+      resetSubjectForm();
+      document.getElementById('subjectModal').style.display = 'flex';
+    }
+
+    function editSubjectInModal(name) {
+      editingSubject = name;
+      const cfg = loadCustomSubjects()[name];
+      document.getElementById('modalSubjectName').value = name;
+      document.getElementById('modalSCount').value = cfg.performances.length;
+      document.getElementById('modalTCount').value = cfg.exams.length;
+      renderWeightInputs(cfg);
+      document.getElementById('subjectFormTitle').textContent = `"${name}" 수정 중`;
+      document.getElementById('cancelEditBtn').style.display = 'inline-block';
+      renderModalSubjectList();
+      document.getElementById('subjectModal').style.display = 'flex';
+      document.getElementById('subjectFormHead').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function saveSubjectFromModal() {
+      const name = document.getElementById('modalSubjectName').value.trim();
+      if (!name) { alert('과목명을 입력하세요.'); return; }
+      const sCnt = +document.getElementById('modalSCount').value;
+      const tCnt = +document.getElementById('modalTCount').value;
+      const performances = Array.from({ length: sCnt }, (_, i) => ({ label: `수행${i + 1}`, weight: +document.getElementById(`msw${i}`)?.value || 0, memo: document.getElementById(`mmemo${i}`)?.value.trim() || '' }));
+      const exams = Array.from({ length: tCnt }, (_, i) => ({ label: examLabel(i, tCnt), weight: +document.getElementById(`mtw${i}`)?.value || 0 }));
+      const sum = performances.reduce((s, p) => s + p.weight, 0) + exams.reduce((s, e) => s + e.weight, 0);
+      if (sum !== 100) { alert(`비중 합계가 100%가 아닙니다 (현재 ${sum}%).`); return; }
+
+      const all = loadCustomSubjects();
+      if (editingSubject && editingSubject !== name) delete all[editingSubject];
+      all[name] = { performances, exams };
+      saveCustomSubjectsMap(all);
+
+      if (selectedSubject === editingSubject) { selectedSubject = name; currentCfg = all[name]; renderScoreInputs(); }
+      renderSubjectChips();
+      alert(`"${name}" 과목이 저장되었습니다.`);
+      resetSubjectForm();
+    }
+
+    function renderModalSubjectList() {
+      const all = loadCustomSubjects();
+      const names = Object.keys(all);
+      const box = document.getElementById('modalSubjectList');
+      box.innerHTML = names.length ? names.map(name => {
+        const c = all[name];
+        return `<div class="subj-list-item${name === editingSubject ? ' active' : ''}" data-open="${name}">
+          <div><strong>${name}</strong><div class="meta">수행 ${c.performances.length}개 · 지필 ${c.exams.length}개</div></div>
+          <div class="subj-list-actions">
+            <button type="button" class="mini-btn" data-edit="${name}">수정</button>
+            <button type="button" class="mini-btn" data-del="${name}" style="color:var(--danger);">삭제</button>
+          </div>
+        </div>`;
+      }).join('') : '<div class="empty-hint">등록된 과목이 없습니다. 아래에서 새로 등록해보세요.</div>';
+      box.querySelectorAll('[data-open]').forEach(el => el.onclick = () => {
+        const name = el.dataset.open;
+        if (editingSubject === name) resetSubjectForm(); else editSubjectInModal(name);
+      });
+      box.querySelectorAll('[data-edit]').forEach(b => b.onclick = (e) => { e.stopPropagation(); editSubjectInModal(b.dataset.edit); });
+      box.querySelectorAll('[data-del]').forEach(b => b.onclick = (e) => {
+        e.stopPropagation();
+        const name = b.dataset.del;
+        if (!confirm(`"${name}" 과목을 삭제할까요?`)) return;
+        const all = loadCustomSubjects();
+        delete all[name];
+        saveCustomSubjectsMap(all);
+        if (selectedSubject === name) { selectedSubject = null; currentCfg = null; renderScoreInputs(); }
+        if (editingSubject === name) resetSubjectForm(); else renderModalSubjectList();
+        renderSubjectChips();
+      });
+    }
+
+    function buildSimulations(data) {
+      const { exms, sSum, tSum, ifActive } = data;
+      const sims = [];
+      exms.forEach((ex, i) => {
+        if (!ifActive[i]) return;
+        const base = sSum + tSum; // tSum excludes IF exams (score=0)
+        const w = ex.weight / 100;
+        const rows = IF_SCENARIOS.map(sc => {
+          const final = +(base + sc * w).toFixed(2);
+          const grade = getGrade(final);
+          return { sc, final, grade };
+        });
+        sims.push({ label: ex.label, rows });
+      });
+      return sims;
+    }
+
+    function buildTargetHints(data, final, grade) {
+      const { sSum, mid, finalW, exms, ifActive, tCnt } = data;
+      if (finalW <= 0) return '';
+      const lastIdx = tCnt - 1;
+      const targets = [
+        { g: 'A', th: 90 }, { g: 'B', th: 80 }, { g: 'C', th: 70 }, { g: 'D', th: 60 }
+      ];
+      const chips = targets.map(({ g, th }) => {
+        const need = (th - sSum - mid) / finalW;
+        if (need > 100) return `<span class="target-chip">${g} 등급: 불가</span>`;
+        if (need <= 0) return `<span class="target-chip">${g} 등급: 이미 달성 ✓</span>`;
+        return `<span class="target-chip">${g} 등급: ${exms[lastIdx]?.label || '기말'} <strong>${need.toFixed(1)}점</strong> 필요</span>`;
+      }).join('');
+      return `<div class="target-box"><h4>🎯 목표 등급별 필요 점수 (마지막 시험 기준)</h4><div class="target-chips">${chips}</div></div>`;
+    }
+
+    function calculate() {
+      if (!currentCfg) { alert('먼저 과목을 선택하거나 등록하세요.'); return; }
+      saveDraft();
+      const subj = selectedSubject;
+      const data = collectData();
+      const { perf, exms, sSum, tSum, wSum, mid, finalW, ifActive } = data;
+      const anyIf = ifActive.some(Boolean);
+
+      if (wSum !== 100) {
+        document.getElementById('result').innerHTML = `<div class="result-main">❗ 총 비중이 100%가 아닙니다 (현재 <strong>${wSum}%</strong>)</div>`;
+        return;
+      }
+
+      if (anyIf) {
+        const sims = buildSimulations(data);
+        let html = '<div class="result-main"><strong>📊 IF 시뮬레이션 결과</strong><br><span style="font-size:14px;color:var(--muted)">현재 수행평가 + 입력된 시험 점수 기준</span></div>';
+        sims.forEach(sim => {
+          html += `<div class="sim-box"><h4>${sim.label} 점수별 예상 원점수</h4><div class="sim-grid">`;
+          sim.rows.forEach(r => {
+            html += `<div class="sim-cell"><div>${r.sc}점</div><div class="sc">${r.final}</div><div class="gr" style="color:${GRADE_COLORS[r.grade]}">${r.grade}</div></div>`;
+          });
+          html += '</div></div>';
+        });
+        html += buildTargetHints(data, 0, '');
+        document.getElementById('result').innerHTML = html;
+        return;
+      }
+
+      const final = +(sSum + tSum).toFixed(2);
+      const grade = getGrade(final);
+      const nextTh = { A: null, B: 90, C: 80, D: 70, E: 60 }[grade];
+      const currTh = { A: 90, B: 80, C: 70, D: 60, E: 0 }[grade];
+
+      let nextMsg, dropMsg;
+      if (nextTh) {
+        const need = (nextTh - sSum - mid) / finalW;
+        const nG = { 90: 'A', 80: 'B', 70: 'C', 60: 'D' }[nextTh];
+        nextMsg = need > 100 ? `${nG} 등급 불가` : `${nG} 위해 ${need.toFixed(2)}점↑`;
+      } else nextMsg = '최고 등급!';
+
+      const drop = (currTh - 0.01 - sSum - mid) / finalW;
+      dropMsg = drop < 0 ? '떨어질 등급 없음' : `${drop.toFixed(2)}점↓ (이하 ${{ 90: 'B', 80: 'C', 70: 'D', 60: 'E' }[currTh]})`;
+
+      let html = `<div class="result-main">최종: <strong>${final}점</strong><br><span style="color:${GRADE_COLORS[grade]};font-weight:700;font-size:20px">${grade} 등급</span><br>${nextMsg}<br>${dropMsg}</div>`;
+      html += buildTargetHints(data, final, grade);
+
+      document.getElementById('result').innerHTML = html;
+
+      const now = new Date();
+      const formattedTime = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      saveHistory({ time: formattedTime, subject: subj, final, grade, nextMsg, dropMsg, performances: perf, exams: exms });
+      saveSubjectScore(subj, { final, grade, time: formattedTime });
+      renderHistory();
+    }
+
+    function loadSubjectScores() { return JSON.parse(localStorage.getItem('subjectScores') || '{}'); }
+    function saveSubjectScore(name, data) {
+      const s = loadSubjectScores(); s[name] = data;
+      localStorage.setItem('subjectScores', JSON.stringify(s));
+    }
+    function getLatestScoresForGraph() {
+      const stored = loadSubjectScores();
+      return Object.keys(stored).map(name => ({ name, ...stored[name] }));
+    }
+
+    function loadHistory() { return JSON.parse(localStorage.getItem('gradeHistory') || '[]'); }
+    function saveHistory(entry) {
+      const h = loadHistory(); h.unshift(entry);
+      localStorage.setItem('gradeHistory', JSON.stringify(h.slice(0, 50)));
+    }
+    function deleteHistory(idx) {
+      const h = loadHistory(); h.splice(idx, 1);
+      localStorage.setItem('gradeHistory', JSON.stringify(h));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const tb = document.getElementById('historyBody');
+      tb.innerHTML = '';
+      loadHistory().forEach((it, i) => {
+        const tr = document.createElement('tr');
+        const [, m, d] = it.time.split(' ')[0].split('.');
+        tr.innerHTML = `
+          <td>${+m}월 ${+d}일</td><td class="subject">${it.subject || '-'}</td><td>${it.final}</td>
+          <td><strong style="color:${GRADE_COLORS[it.grade]}">${it.grade}</strong></td>
+          <td><button class="delete-btn" data-i="${i}">삭제</button></td>
+          <td><button class="info-btn" data-idx="${i}">정보</button></td>`;
+        tb.appendChild(tr);
+      });
+      tb.querySelectorAll('.delete-btn').forEach(b => b.onclick = () => deleteHistory(+b.dataset.i));
+      tb.querySelectorAll('.info-btn').forEach(b => b.onclick = () => showInfo(+b.dataset.idx));
+    }
+
+    const modal = document.getElementById('detailModal');
+    const subjectModal = document.getElementById('subjectModal');
+    document.getElementById('modalCloseBtn').onclick = () => modal.style.display = 'none';
+    document.getElementById('subjectModalCloseBtn').onclick = () => subjectModal.style.display = 'none';
+    window.onclick = e => {
+      if (e.target === modal) modal.style.display = 'none';
+      if (e.target === subjectModal) subjectModal.style.display = 'none';
+    };
+
+    function updateSubjectName(idx) {
+      const list = loadHistory();
+      const newName = document.getElementById('editSubject').value.trim();
+      if (!newName) { alert('과목명을 입력하세요.'); return; }
+      list[idx].subject = newName;
+      localStorage.setItem('gradeHistory', JSON.stringify(list));
+      modal.style.display = 'none';
+      renderHistory();
+    }
+
+    function showInfo(idx) {
+      const e = loadHistory()[idx];
+      if (!e) return;
+      document.getElementById('modalInnerContent').innerHTML = `
+        <h2>과목명 수정</h2>
+        <input type="text" id="editSubject" value="${e.subject || ''}" style="width:100%;font-size:18px;padding:8px;margin-bottom:16px;border:1px solid var(--inp-border);border-radius:8px;background:var(--inp-bg);color:var(--fg);">
+        <h3>수행평가</h3>
+        <div class="table-group"><table><thead><tr><th>회차</th><th>점수</th><th>비중(%)</th></tr></thead>
+        <tbody>${e.performances.map((p, i) => `<tr><td>${i + 1}</td><td>${p.score}</td><td>${p.weight}</td></tr>`).join('')}</tbody></table></div>
+        <h3>지필평가</h3>
+        <div class="table-group"><table><thead><tr><th>구분</th><th>점수</th><th>비중(%)</th></tr></thead>
+        <tbody>${e.exams.map(ex => `<tr><td>${ex.label}</td><td>${ex.score}</td><td>${ex.weight}</td></tr>`).join('')}</tbody></table></div>
+        <button class="btn" onclick="updateSubjectName(${idx})">과목명 저장</button>`;
+      modal.style.display = 'flex';
+    }
+
+    function analyzeGrades() {
+      const data = getLatestScoresForGraph();
+      if (!data.length) return '<p>분석할 데이터가 없어요. 계산기에서 과목 점수를 먼저 계산해보세요.</p>';
+
+      const avg = data.reduce((s, d) => s + d.final, 0) / data.length;
+      const sorted = [...data].sort((a, b) => b.final - a.final);
+      const best = sorted[0], worst = sorted[sorted.length - 1];
+      const lines = [`전체 ${data.length}과목 평균은 <strong>${avg.toFixed(1)}점</strong>이에요.`];
+
+      if (worst.name !== best.name && worst.final < avg - 5) {
+        lines.push(`<strong>${worst.name}</strong>이(가) 평균보다 ${(avg - worst.final).toFixed(1)}점 낮아 가장 신경써야 할 과목이에요.`);
+      }
+      if (best.final > avg + 5) {
+        lines.push(`<strong>${best.name}</strong>이(가) ${best.final}점으로 가장 좋은 성적을 유지하고 있어요.`);
+      }
+
+      const bySubject = {};
+      loadHistory().forEach(h => { if (h.subject) (bySubject[h.subject] = bySubject[h.subject] || []).push(h); });
+      let bestDelta = null;
+      Object.entries(bySubject).forEach(([name, list]) => {
+        if (list.length < 2) return;
+        const delta = list[0].final - list[list.length - 1].final;
+        if (!bestDelta || Math.abs(delta) > Math.abs(bestDelta.delta)) bestDelta = { name, delta };
+      });
+      if (bestDelta && Math.abs(bestDelta.delta) >= 3) {
+        const dir = bestDelta.delta > 0 ? '오른' : '떨어진';
+        lines.push(`<strong>${bestDelta.name}</strong>이(가) 이번 학기 가장 크게 ${dir} 과목이에요 (${bestDelta.delta > 0 ? '+' : ''}${bestDelta.delta.toFixed(1)}점).`);
+      }
+
+      const custom = loadCustomSubjects();
+      const examWeights = data.map(d => custom[d.name]?.exams.reduce((s, e) => s + e.weight, 0)).filter(w => w != null);
+      if (examWeights.length) {
+        const avgExamW = examWeights.reduce((a, b) => a + b, 0) / examWeights.length;
+        if (avgExamW >= 60) lines.push(`지필고사 비중이 평균 ${avgExamW.toFixed(0)}%로 높은 편이에요. 다가오는 시험 대비에 집중해보세요.`);
+        else if (avgExamW <= 40) lines.push(`수행평가 비중이 높은 편이에요. 평소 과제·수행 관리가 성적을 좌우해요.`);
+      }
+
+      const gradeCount = {};
+      data.forEach(d => gradeCount[d.grade] = (gradeCount[d.grade] || 0) + 1);
+      const topGrade = Object.entries(gradeCount).sort((a, b) => b[1] - a[1])[0];
+      if (topGrade) lines.push(`${topGrade[0]} 등급 과목이 ${topGrade[1]}개로 가장 많아요.`);
+
+      return lines.map(l => `<p>${l}</p>`).join('');
+    }
+
+    function renderGraph() {
+      const data = getLatestScoresForGraph();
+
+      const gradeCount = { A: 0, B: 0, C: 0, D: 0, E: 0 };
+      data.forEach(d => { if (gradeCount[d.grade] !== undefined) gradeCount[d.grade]++; });
+      document.getElementById('gradeStats').innerHTML = Object.entries(gradeCount)
+        .filter(([, c]) => c > 0)
+        .map(([g, c]) => `<span class="grade-stat" style="color:${GRADE_COLORS[g]}">${g} ${c}과목</span>`)
+        .join('') || '<span class="grade-stat">아직 등급 데이터 없음</span>';
+
+      document.getElementById('graphSummary').innerHTML = data.length ? data.map(d =>
+        `<div class="summary-card"><div class="subj">${d.name}</div><div class="score">${d.final}점</div><div style="color:${GRADE_COLORS[d.grade]};font-weight:600;margin-top:4px">${d.grade}</div></div>`
+      ).join('') : '<div class="summary-card empty"><div class="score">계산 결과가 없습니다</div></div>';
+
+      const avg = data.length ? (data.reduce((s, d) => s + d.final, 0) / data.length).toFixed(2) : null;
+      document.getElementById('avgBox').innerHTML = avg
+        ? `전체 평균: <strong>${avg}점</strong> (${data.length}과목)`
+        : '계산기에서 각 과목 점수를 계산해 주세요.';
+
+      const ranked = [...data].sort((a, b) => b.final - a.final);
+      document.getElementById('rankBox').innerHTML = ranked.length ? `
+        <h4>🏆 과목 순위</h4>
+        ${ranked.map((d, i) => `<div class="rank-item"><span>${i + 1}. ${d.name}</span><span style="color:${GRADE_COLORS[d.grade]};font-weight:600">${d.final}점 (${d.grade})</span></div>`).join('')}
+      ` : '';
+
+      drawChart(data);
+    }
+
+    function drawChart(data) {
+      const canvas = document.getElementById('scoreChart');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      const W = rect.width, H = rect.height;
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const grid = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)';
+      const barColors = ['#4f46e5', '#7c3aed', '#10b981', '#f59e0b', '#ef4444', '#0ea5e9'];
+
+      ctx.clearRect(0, 0, W, H);
+      const padL = 44, padR = 16, padT = 20, padB = 72;
+      const chartW = W - padL - padR, chartH = H - padT - padB;
+
+      ctx.strokeStyle = grid; ctx.lineWidth = 1;
+      ctx.font = '12px sans-serif'; ctx.fillStyle = isDark ? '#98989d' : '#8e8e93'; ctx.textAlign = 'right';
+      for (let v = 0; v <= 100; v += 20) {
+        const y = padT + chartH - (v / 100) * chartH;
+        ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+        ctx.fillText(v, padL - 8, y + 4);
+      }
+
+      // Grade cut lines
+      [{ v: 90, c: '#10b98180' }, { v: 80, c: '#4f46e560' }, { v: 70, c: '#f59e0b60' }, { v: 60, c: '#f9731660' }].forEach(({ v, c }) => {
+        const y = padT + chartH - (v / 100) * chartH;
+        ctx.strokeStyle = c; ctx.setLineDash([4, 4]);
+        ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+        ctx.setLineDash([]);
+      });
+
+      const barGap = 12;
+      const barW = (chartW - barGap * (data.length + 1)) / data.length;
+
+      data.forEach((d, i) => {
+        const x = padL + barGap + i * (barW + barGap);
+        const score = d.final != null ? d.final : 0;
+        const barH = (score / 100) * chartH;
+        const y = padT + chartH - barH;
+        ctx.fillStyle = d.final != null ? barColors[i % barColors.length] : (isDark ? '#3a3a3c' : '#d1d1d6');
+        ctx.beginPath();
+        const r = 6;
+        ctx.moveTo(x + r, y); ctx.lineTo(x + barW - r, y);
+        ctx.quadraticCurveTo(x + barW, y, x + barW, y + r);
+        ctx.lineTo(x + barW, padT + chartH); ctx.lineTo(x, padT + chartH);
+        ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.fill();
+        if (d.final != null) {
+          ctx.fillStyle = isDark ? '#f2f2f7' : '#1c1c1e';
+          ctx.font = 'bold 13px sans-serif'; ctx.textAlign = 'center';
+          ctx.fillText(d.final.toFixed(1), x + barW / 2, y - 8);
+        }
+        ctx.fillStyle = isDark ? '#98989d' : '#8e8e93';
+        ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+        wrapLabel(ctx, d.name, x + barW / 2, padT + chartH + 16, barW + 4, 12);
+      });
+    }
+
+    function wrapLabel(ctx, text, cx, startY, maxW, lineH) {
+      if (ctx.measureText(text).width <= maxW) { ctx.fillText(text, cx, startY); return; }
+      let line = '', y = startY;
+      for (const ch of text) {
+        const test = line + ch;
+        if (ctx.measureText(test).width > maxW && line) { ctx.fillText(line, cx, y); line = ch; y += lineH; }
+        else line = test;
+      }
+      if (line) ctx.fillText(line, cx, y);
+    }
+
+    window.addEventListener('resize', () => {
+      if (document.getElementById('graphView').style.display !== 'none') drawChart(getLatestScoresForGraph());
+    });
+
+    function downloadCanvasAsImage(canvas, filename) {
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    function buildFullReportCanvas(data) {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const cardBg = isDark ? '#1c1c26' : '#ffffff';
+      const pageBg = isDark ? '#0c0c14' : '#f4f5fb';
+      const borderColor = isDark ? '#34344a' : '#d8dae8';
+      const mutedColor = isDark ? '#9a9ab0' : '#6b7280';
+      const fgColor = isDark ? '#f2f2f7' : '#1c1c2e';
+
+      const cols = 3;
+      const cardW = 220, cardH = 100, gap = 12, pad = 20, headerH = 44, lineH = 26;
+      const rows = Math.max(1, Math.ceil(data.length / cols));
+      const W = pad * 2 + cols * cardW + (cols - 1) * gap;
+      const summaryH = headerH + rows * cardH + (rows - 1) * gap;
+
+      const chartCanvas = document.getElementById('scoreChart');
+      const chartW = W - pad * 2;
+      const chartH = chartCanvas.width ? chartW * (chartCanvas.height / chartCanvas.width) : 0;
+
+      const avg = data.length ? (data.reduce((s, d) => s + d.final, 0) / data.length).toFixed(2) : null;
+      const ranked = [...data].sort((a, b) => b.final - a.final);
+
+      const H = pad + summaryH + 24 + (chartH ? 28 + chartH + 20 : 0) + 34 + (ranked.length ? 24 + ranked.length * lineH : 0) + pad;
+
+      const canvas = document.createElement('canvas');
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+
+      ctx.fillStyle = pageBg; ctx.fillRect(0, 0, W, H);
+
+      let y = pad;
+      ctx.fillStyle = fgColor; ctx.font = 'bold 18px sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText('과목별 원점수 현황', pad, y + 20);
+      y += headerH;
+
+      data.forEach((d, i) => {
+        const col = i % cols, row = Math.floor(i / cols);
+        const x = pad + col * (cardW + gap);
+        const cy = y + row * (cardH + gap);
+
+        ctx.fillStyle = cardBg; ctx.strokeStyle = borderColor; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.roundRect(x, cy, cardW, cardH, 12); ctx.fill(); ctx.stroke();
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = mutedColor; ctx.font = '13px sans-serif';
+        ctx.fillText(d.name, x + cardW / 2, cy + 26);
+
+        ctx.fillStyle = fgColor; ctx.font = 'bold 24px sans-serif';
+        ctx.fillText(`${d.final}점`, x + cardW / 2, cy + 56);
+
+        ctx.fillStyle = GRADE_COLORS[d.grade] || fgColor; ctx.font = 'bold 14px sans-serif';
+        ctx.fillText(d.grade, x + cardW / 2, cy + 78);
+      });
+      y += rows * cardH + (rows - 1) * gap + 24;
+
+      if (chartH) {
+        ctx.textAlign = 'left'; ctx.fillStyle = fgColor; ctx.font = 'bold 16px sans-serif';
+        ctx.fillText('과목별 원점수 비교', pad, y);
+        y += 12;
+        ctx.drawImage(chartCanvas, pad, y, chartW, chartH);
+        y += chartH + 20;
+      }
+
+      ctx.textAlign = 'left'; ctx.font = 'bold 15px sans-serif'; ctx.fillStyle = fgColor;
+      ctx.fillText(avg ? `전체 평균: ${avg}점 (${data.length}과목)` : '데이터 없음', pad, y + 16);
+      y += 34;
+
+      if (ranked.length) {
+        ctx.font = 'bold 14px sans-serif'; ctx.fillStyle = fgColor;
+        ctx.fillText('🏆 과목 순위', pad, y);
+        y += 24;
+        ctx.font = '13px sans-serif';
+        ranked.forEach((d, i) => {
+          ctx.textAlign = 'left'; ctx.fillStyle = mutedColor;
+          ctx.fillText(`${i + 1}. ${d.name}`, pad, y);
+          ctx.textAlign = 'right'; ctx.fillStyle = GRADE_COLORS[d.grade] || fgColor;
+          ctx.fillText(`${d.final}점 (${d.grade})`, W - pad, y);
+          y += lineH;
+        });
+      }
+
+      return canvas;
+    }
+
+    function exportFullReport() {
+      const data = getLatestScoresForGraph();
+      if (!data.length) { alert('저장할 데이터가 없습니다.'); return; }
+      downloadCanvasAsImage(buildFullReportCanvas(data), `성적리포트_${Date.now()}.png`);
+    }
+
+    window.onload = () => {
+      renderSubjectChips();
+      renderScoreInputs();
+      renderHistory();
+      document.getElementById('calcBtn').onclick = calculate;
+      document.getElementById('manageSubjectsBtn').onclick = openSubjectModal;
+      document.getElementById('modalSaveBtn').onclick = saveSubjectFromModal;
+      document.getElementById('addNewSubjectBtn').onclick = () => {
+        resetSubjectForm();
+        document.getElementById('subjectFormHead').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+      document.getElementById('cancelEditBtn').onclick = resetSubjectForm;
+      document.querySelectorAll('.stepper-btn').forEach(btn => {
+        btn.onclick = () => {
+          const inp = document.getElementById(btn.dataset.target);
+          const min = +inp.min || 1;
+          inp.value = Math.max(min, (+inp.value || min) + (+btn.dataset.delta));
+          inp.dispatchEvent(new Event('change'));
+        };
+      });
+      ['modalSCount', 'modalTCount'].forEach(id => document.getElementById(id).addEventListener('change', () => {
+        const snap = snapshotModalWeights();
+        renderWeightInputs(modalConfigFromCounts());
+        restoreModalWeights(snap);
+      }));
+      document.getElementById('resetBtn').onclick = () => {
+        if (confirm('계산 기록을 모두 삭제하시겠습니까?')) {
+          localStorage.removeItem('gradeHistory');
+          renderHistory();
+        }
+      };
+      document.getElementById('refreshGraphBtn').onclick = renderGraph;
+      document.getElementById('aiAnalyzeBtn').onclick = () => {
+        const box = document.getElementById('aiAnalysisResult');
+        box.classList.remove('empty-hint');
+        box.classList.add('ai-result');
+        box.innerHTML = analyzeGrades();
+      };
+      document.getElementById('downloadReportBtn').onclick = exportFullReport;
+    };
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('app-sw.js').catch(() => {});
+    }
+  </script>
+
+  <div class="box site-banner">
+    <a href="todayfood/">
+      <span class="emoji">🍱</span>
+      우리학교 급식 보러 가실래요?
+    </a>
+    <a href="todayclass/">
+      <span class="emoji">📅</span>
+      우리학교 시간표 보러가기
+    </a>
+  </div>
+
+  <div class="ad-mobile-strip">
+    <ins class="kakao_ad_area" style="display:none;"
+    data-ad-unit = "DAN-xpJCBNiBNcfQzcza"
+    data-ad-width = "320"
+    data-ad-height = "100"></ins>
+  </div>
+
+  <div style="text-align:center; margin:16px 0;">
+    <ins class="kakao_ad_area" style="display:none;"
+    data-ad-unit = "DAN-qFgxh1fm4CIwM4Ry"
+    data-ad-width = "320"
+    data-ad-height = "50"></ins>
+  </div>
+
+  <footer class="site-footer">
+    성적 계산기 · 수행평가와 지필고사 반영 비율을 입력해 최종 원점수와 등급을 무료로 계산하는 온라인 도구입니다.<br>
+    © 2026 성적 계산기. All rights reserved.
+  </footer>
+
+  <div class="ad-side left">
+    <ins class="kakao_ad_area" style="display:none;"
+    data-ad-unit = "DAN-NyPjhDjI6qHZmN77"
+    data-ad-width = "160"
+    data-ad-height = "600"></ins>
+  </div>
+  <div class="ad-side right">
+    <ins class="kakao_ad_area" style="display:none;"
+    data-ad-unit = "DAN-ntifMGtHYiKZsqsD"
+    data-ad-width = "160"
+    data-ad-height = "600"></ins>
+  </div>
+  <div class="ad-desktop">
+    <ins class="kakao_ad_area" style="display:none;"
+    data-ad-unit = "DAN-vj4k33PpGiLAQM41"
+    data-ad-width = "728"
+    data-ad-height = "90"></ins>
+  </div>
+  <div class="ad-mobile">
+    <ins class="kakao_ad_area" style="display:none;"
+    data-ad-unit = "DAN-sIzkCYhmk6DnCJ3Z"
+    data-ad-width = "320"
+    data-ad-height = "480"></ins>
+  </div>
+  <script type="text/javascript" src="//t1.kakaocdn.net/kas/static/ba.min.js" async></script>
+</body>
+</html>
