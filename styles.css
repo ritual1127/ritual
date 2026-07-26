@@ -55,11 +55,11 @@ body {
 }
 
 .feedback-widget {
-  text-align: center; font-size: 12px; color: var(--muted);
-  padding: 4px 0 16px; display: flex; align-items: center; justify-content: center; gap: 8px;
+  text-align: center; font-size: 18px; color: var(--muted);
+  padding: 6px 0 20px; display: flex; align-items: center; justify-content: center; gap: 12px;
 }
 .feedback-widget button {
-  font-size: 12px; padding: 3px 8px; border-radius: 8px;
+  font-size: 18px; padding: 5px 12px; border-radius: 10px;
   border: 1px solid var(--inp-border); background: var(--inp-bg); color: var(--fg); cursor: pointer;
 }
 .feedback-widget button.active { border-color: var(--primary); color: var(--primary); }
