@@ -60,3 +60,23 @@ function matchOcrBlockToSubject(blocks, subjectName, cfg) {
     }
   };
 }
+
+let tesseractLoadPromise = null;
+function loadTesseractScript() {
+  if (window.Tesseract) return Promise.resolve();
+  if (tesseractLoadPromise) return tesseractLoadPromise;
+  tesseractLoadPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+    script.onload = resolve;
+    script.onerror = () => { tesseractLoadPromise = null; reject(new Error('tesseract-load-failed')); };
+    document.head.appendChild(script);
+  });
+  return tesseractLoadPromise;
+}
+
+async function recognizeReportCard(file) {
+  await loadTesseractScript();
+  const result = await Tesseract.recognize(file, 'kor+eng');
+  return result.data.text;
+}
