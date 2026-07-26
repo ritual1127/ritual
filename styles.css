@@ -486,3 +486,9 @@ body {
   background: var(--primary); color: #fff; font-size: 13px; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
 }
+
+.ocr-warn-banner {
+  background: rgba(245,158,11,0.12); border: 1px solid #f59e0b; color: #f59e0b;
+  border-radius: 10px; padding: 10px 14px; font-size: 13px; margin-bottom: 14px;
+}
+.ocr-review-section h3 { font-size: 15px; margin: 14px 0 8px; color: var(--fg); }
