@@ -702,6 +702,14 @@
 
     function calculate() {
       if (!currentCfg) { alert('먼저 과목을 선택하거나 등록하세요.'); return; }
+
+      const emptyScore = currentCfg.performances.some((_, i) => !document.getElementById(`s${i}`).value.trim())
+        || currentCfg.exams.some((_, i) => !document.getElementById(`if${i}`).classList.contains('active') && !document.getElementById(`t${i}`).value.trim());
+      if (emptyScore) {
+        document.getElementById('result').innerHTML = '<div class="result-main">❗ 모든 점수를 입력해야 계산할 수 있어요.</div>';
+        return;
+      }
+
       saveDraft();
       const subj = selectedSubject;
       const data = collectData();
