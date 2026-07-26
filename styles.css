@@ -432,6 +432,36 @@ body {
 }
 .meal-tabs button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
+.mode-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.mode-tabs button {
+  flex: 1; height: 38px; border-radius: 10px; cursor: pointer;
+  border: 1px solid var(--inp-border); background: var(--inp-bg); color: var(--fg);
+  font-size: 14px; font-weight: 600;
+}
+.mode-tabs button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+.week-grid {
+  display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px;
+}
+.week-day { flex: 0 0 130px; }
+.week-day-head {
+  font-size: 13px; font-weight: 700; text-align: center;
+  padding: 6px 0; margin-bottom: 8px; border-radius: 8px;
+  background: var(--inp-bg); color: var(--fg);
+}
+.week-day-head.today { background: var(--primary); color: #fff; }
+.week-period-list { list-style: none; }
+.week-period-list li {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 4px; font-size: 13px; border-bottom: 1px solid var(--inp-border);
+}
+.week-period-list li:last-child { border-bottom: none; }
+.week-period-list .period-no {
+  flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--primary); color: #fff; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+
 .dish-list { list-style: none; }
 .dish-list li {
   padding: 10px 0; font-size: 15px; border-bottom: 1px solid var(--inp-border);
