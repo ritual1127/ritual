@@ -311,7 +311,6 @@
       if (!currentCfg) { box.innerHTML = '<div class="empty-hint">과목을 선택하거나 새로 등록하세요.</div>'; return; }
 
       let html = `<h2 style="margin-bottom:12px;">${selectedSubject}</h2>`;
-      html += `<button type="button" class="mini-btn" id="photoToPdfBtn" style="margin-bottom:12px;">📄 성적표 사진을 PDF로 저장</button>`;
       html += '<h2 style="font-size:16px;margin-bottom:12px;">수행평가</h2>';
       currentCfg.performances.forEach((p, i) => {
         html += `
@@ -334,7 +333,6 @@
       });
 
       box.innerHTML = html;
-      document.getElementById('photoToPdfBtn').onclick = () => document.getElementById('photoPdfInput').click();
       box.querySelectorAll('.score-input').forEach(inp => inp.addEventListener('input', () => sanitizeScoreInput(inp)));
       currentCfg.exams.forEach((_, i) => {
         document.getElementById(`if${i}`).onclick = function() {
@@ -357,18 +355,6 @@
         inp.placeholder = '점수';
       }
     }
-
-    document.getElementById('photoPdfInput').onchange = (e) => {
-      const file = e.target.files[0];
-      e.target.value = '';
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        document.getElementById('pdfPrintArea').innerHTML = `<img src="${reader.result}">`;
-        window.print();
-      };
-      reader.readAsDataURL(file);
-    };
 
     function collectData() {
       const perf = [], exms = [];
@@ -1056,7 +1042,26 @@
       <span class="emoji">📅</span>
       우리학교 시간표 보러가기
     </a>
+    <button type="button" id="photoToPdfBtn">
+      <span class="emoji">📄</span>
+      성적표 사진을 PDF로 저장
+    </button>
   </div>
+
+  <script>
+    document.getElementById('photoToPdfBtn').onclick = () => document.getElementById('photoPdfInput').click();
+    document.getElementById('photoPdfInput').onchange = (e) => {
+      const file = e.target.files[0];
+      e.target.value = '';
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById('pdfPrintArea').innerHTML = `<img src="${reader.result}">`;
+        window.print();
+      };
+      reader.readAsDataURL(file);
+    };
+  </script>
 
   <div class="ad-mobile-strip">
     <ins class="kakao_ad_area" style="display:none;"

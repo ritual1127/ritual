@@ -411,14 +411,14 @@ body {
 .site-banner {
   display: flex; gap: 12px; flex-wrap: wrap;
 }
-.site-banner a {
+.site-banner a, .site-banner button {
   flex: 1; min-width: 200px; display: block; text-decoration: none;
   padding: 16px; border-radius: 12px; text-align: center;
   background: var(--inp-bg); border: 1px solid var(--inp-border); color: var(--fg);
-  font-weight: 600; font-size: 15px;
+  font-weight: 600; font-size: 15px; cursor: pointer;
 }
-.site-banner a:hover { border-color: var(--primary); }
-.site-banner a .emoji { font-size: 20px; display: block; margin-bottom: 6px; }
+.site-banner a:hover, .site-banner button:hover { border-color: var(--primary); }
+.site-banner a .emoji, .site-banner button .emoji { font-size: 20px; display: block; margin-bottom: 6px; }
 
 .school-current {
   display: flex; align-items: center; justify-content: space-between;
