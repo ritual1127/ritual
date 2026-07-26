@@ -1040,26 +1040,99 @@
   <input type="file" id="photoPdfInput" accept="image/*" style="display:none;">
 
   <script>
+    // 성적표 사진 → OCR로 표 내용을 읽어 새 표로 재구성 → PDF로 저장
+    let tesseractLoadPromise = null;
+    function loadTesseractScript() {
+      if (window.Tesseract) return Promise.resolve();
+      if (tesseractLoadPromise) return tesseractLoadPromise;
+      tesseractLoadPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+        script.onload = resolve;
+        script.onerror = () => { tesseractLoadPromise = null; reject(new Error('tesseract-load-failed')); };
+        document.head.appendChild(script);
+      });
+      return tesseractLoadPromise;
+    }
+
+    async function recognizeReportCard(file, onProgress) {
+      await loadTesseractScript();
+      const result = await Tesseract.recognize(file, 'kor+eng', {
+        logger: onProgress ? (m) => onProgress(m) : undefined
+      });
+      return result.data.text;
+    }
+
+    // 성적표 표의 한 행 패턴: [과목(선택)] 지필|수행 항목명(비율%) 만점 점수
+    function parseReportCardText(text) {
+      const rowPattern = /(지필|수행)\s*([^()]*)\(([\d.]+)\s*%?\)\s*([\d.]+)\s+([\d.]+)/;
+      const subjectOnlyPattern = /^[^\d%()]{1,12}$/;
+      const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+      const rows = [];
+      let currentSubject = '';
+      lines.forEach(line => {
+        const m = line.match(rowPattern);
+        if (m) {
+          const [, kind, label, weight, , score] = m;
+          const prefix = line.slice(0, m.index).trim();
+          if (prefix && !/[\d%()]/.test(prefix)) currentSubject = prefix;
+          rows.push({ subject: currentSubject, kind, label: label.trim(), weight: +weight, score: +score });
+          return;
+        }
+        if (!/\d/.test(line) && subjectOnlyPattern.test(line)) currentSubject = line;
+      });
+      return rows;
+    }
+
+    function renderReportCardTable(rows) {
+      if (!rows.length) return '<p>표를 인식하지 못했어요. 더 밝은 곳에서 정면으로 다시 찍어보세요.</p>';
+      let html = '<table class="pdf-table"><thead><tr><th>과목</th><th>구분</th><th>항목</th><th>점수</th></tr></thead><tbody>';
+      let lastSubject = null;
+      rows.forEach(r => {
+        const showSubject = r.subject !== lastSubject;
+        lastSubject = r.subject;
+        html += `<tr><td>${showSubject ? r.subject : ''}</td><td>${r.kind}</td><td>${r.label} (${r.weight}%)</td><td>${r.score}</td></tr>`;
+      });
+      html += '</tbody></table>';
+      return html;
+    }
+
+    function pdfShell(dateLabel, bodyHtml) {
+      return `
+        <div class="pdf-page">
+          <div class="pdf-header">
+            <strong>성적표</strong>
+            <span>${dateLabel}</span>
+          </div>
+          ${bodyHtml}
+          <div class="pdf-footer">성적 계산기 · naver1.cloud</div>
+        </div>`;
+    }
+
     document.getElementById('photoToPdfBtn').onclick = () => document.getElementById('photoPdfInput').click();
-    document.getElementById('photoPdfInput').onchange = (e) => {
+    document.getElementById('photoPdfInput').onchange = async (e) => {
       const file = e.target.files[0];
       e.target.value = '';
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const dateLabel = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
-        document.getElementById('pdfPrintArea').innerHTML = `
-          <div class="pdf-page">
-            <div class="pdf-header">
-              <strong>성적표</strong>
-              <span>${dateLabel}</span>
-            </div>
-            <div class="pdf-photo-frame"><img src="${reader.result}"></div>
-            <div class="pdf-footer">성적 계산기 · naver1.cloud</div>
-          </div>`;
+      const area = document.getElementById('pdfPrintArea');
+      const dateLabel = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+      area.innerHTML = pdfShell(dateLabel, '<p>분석 중...</p>');
+      try {
+        const text = await recognizeReportCard(file, (m) => {
+          if (m.status === 'recognizing text' && typeof m.progress === 'number') {
+            const p = area.querySelector('p');
+            if (p) p.textContent = `분석 중... ${Math.round(m.progress * 100)}%`;
+          }
+        });
+        const rows = parseReportCardText(text);
+        area.innerHTML = pdfShell(dateLabel, renderReportCardTable(rows));
         window.print();
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        const msg = err.message === 'tesseract-load-failed'
+          ? 'OCR 엔진을 불러오지 못했어요. 인터넷 연결을 확인해주세요.'
+          : '분석 중 오류가 났어요. 다시 시도해주세요.';
+        area.innerHTML = pdfShell(dateLabel, `<p>${msg}</p>`);
+      }
     };
   </script>
 
