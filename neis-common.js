@@ -83,6 +83,46 @@ async function fetchNeisTimetable(school, dateYmd, grade, classNum, department) 
   return { periods };
 }
 
+// date가 속한 주의 월요일을 반환
+function mondayOf(date) {
+  const d = new Date(date);
+  const day = d.getDay(); // 0=일 ... 6=토
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+
+// 월요일부터 5일(월~금) 시간표를 한 번의 API 호출로 가져와 날짜별로 그룹핑
+async function fetchNeisWeekTimetable(school, mondayDate, grade, classNum, department) {
+  const fridayDate = new Date(mondayDate);
+  fridayDate.setDate(mondayDate.getDate() + 4);
+  const path = NEIS_TIMETABLE_PATH[school.kind] || 'hisTimetable';
+  let url = `${NEIS_BASE}/${path}?Type=json&pIndex=1&pSize=200` +
+    `&ATPT_OFCDC_SC_CODE=${school.officeCode}&SD_SCHUL_CODE=${school.schoolCode}` +
+    `&TI_FROM_YMD=${neisYmd(mondayDate)}&TI_TO_YMD=${neisYmd(fridayDate)}` +
+    `&GRADE=${grade}&CLASS_NM=${classNum}`;
+  if (school.kind === 'HIGH' && department) url += `&DDDEP_NM=${encodeURIComponent(department)}`;
+  const res = await fetch(url);
+  const json = await res.json();
+  if (!json[path]) return {};
+  const rows = json[path][1].row;
+  const byDate = {};
+  rows.forEach(row => {
+    if (school.kind === 'HIGH' && department && (row.DDDEP_NM || '').trim() !== department) return;
+    if (!row.ITRT_CNTNT) return;
+    const ymd = row.ALL_TI_YMD;
+    if (!byDate[ymd]) byDate[ymd] = {};
+    const p = +row.PERIO;
+    if (!byDate[ymd][p]) byDate[ymd][p] = row.ITRT_CNTNT.trim();
+  });
+  const result = {};
+  Object.keys(byDate).forEach(ymd => {
+    result[ymd] = Object.keys(byDate[ymd]).map(Number).sort((a, b) => a - b)
+      .map(p => ({ period: p, subject: byDate[ymd][p] }));
+  });
+  return result;
+}
+
 // URL 쿼리(?o=&s=&n=&k=)로 전달된 학교 정보를 읽는다. 공유 링크로 바로 들어왔을 때 검색을 건너뛰기 위함.
 function schoolFromQuery() {
   const p = new URLSearchParams(location.search);
