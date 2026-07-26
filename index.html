@@ -1058,15 +1058,14 @@
   <script type="text/javascript" src="//t1.kakaocdn.net/kas/static/ba.min.js" async></script>
   <script>
   (function () {
+    var API = 'https://seongjeok-feedback-api.smilepea.workers.dev/vote';
     var likeBtn = document.getElementById('feedbackLike');
     var dislikeBtn = document.getElementById('feedbackDislike');
     var likeCountEl = document.getElementById('feedbackLikeCount');
     var dislikeCountEl = document.getElementById('feedbackDislikeCount');
-    var likes = parseInt(localStorage.getItem('fb_likes') || '0', 10);
-    var dislikes = parseInt(localStorage.getItem('fb_dislikes') || '0', 10);
     var voted = localStorage.getItem('fb_voted');
 
-    function render() {
+    function render(likes, dislikes) {
       likeCountEl.textContent = likes;
       dislikeCountEl.textContent = dislikes;
       likeBtn.classList.toggle('active', voted === 'like');
@@ -1075,19 +1074,29 @@
 
     function vote(type) {
       if (voted === type) return;
-      if (voted === 'like') likes--;
-      if (voted === 'dislike') dislikes--;
-      if (type === 'like') likes++; else dislikes++;
+      var previous = voted;
       voted = type;
-      localStorage.setItem('fb_likes', likes);
-      localStorage.setItem('fb_dislikes', dislikes);
-      localStorage.setItem('fb_voted', voted);
-      render();
+      render(likeCountEl.textContent, dislikeCountEl.textContent);
+      fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: type, previous: previous }),
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          localStorage.setItem('fb_voted', voted);
+          render(data.likes, data.dislikes);
+        })
+        .catch(function () { voted = previous; render(likeCountEl.textContent, dislikeCountEl.textContent); });
     }
 
     likeBtn.addEventListener('click', function () { vote('like'); });
     dislikeBtn.addEventListener('click', function () { vote('dislike'); });
-    render();
+
+    fetch(API)
+      .then(function (res) { return res.json(); })
+      .then(function (data) { render(data.likes, data.dislikes); })
+      .catch(function () {});
   })();
   </script>
 </body>

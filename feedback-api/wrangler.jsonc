@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "seongjeok-feedback-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-07-01",
+  "kv_namespaces": [
+    { "binding": "FEEDBACK_KV", "id": "44077a39497246a992d8389fa97f3d42" }
+  ]
+}
