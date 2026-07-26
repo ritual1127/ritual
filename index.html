@@ -152,6 +152,7 @@
 
   <div id="subjectModal" class="modal">
     <div class="modal-content">
+      <button id="subjectModalCloseBtn" class="modal-close-btn">✕</button>
       <h2 style="margin-bottom:16px;">과목 추가/관리</h2>
 
       <div class="section-head">
@@ -612,7 +613,11 @@
         const warnHtml = warnings.length
           ? `<div style="color:var(--danger);margin-top:6px;">⚠️ 비중 합계가 100%가 아닌 과목: ${warnings.join(', ')} — 수정에서 확인해주세요.</div>`
           : '';
-        msgBox.innerHTML = `<div class="modal-section" style="margin-bottom:16px;">${names.length}개 과목을 추가했어요: ${names.join(', ')}${warnHtml}</div>`;
+        msgBox.innerHTML = `<div class="modal-section" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+          <div>${names.length}개 과목을 추가했어요: ${names.join(', ')}${warnHtml}</div>
+          <button type="button" id="excelImportMsgClose" class="mini-btn" style="flex-shrink:0;">✕</button>
+        </div>`;
+        document.getElementById('excelImportMsgClose').onclick = () => { msgBox.innerHTML = ''; };
       } catch (err) {
         msgBox.innerHTML = '<div class="empty-hint">엑셀 파일을 읽지 못했어요. 양식에 맞게 저장했는지 확인해주세요.</div>';
       }
@@ -783,6 +788,7 @@
     const modal = document.getElementById('detailModal');
     const subjectModal = document.getElementById('subjectModal');
     document.getElementById('modalCloseBtn').onclick = () => modal.style.display = 'none';
+    document.getElementById('subjectModalCloseBtn').onclick = () => subjectModal.style.display = 'none';
     [modal, subjectModal].forEach(m => {
       m.addEventListener('click', e => { if (e.target === m) m.style.display = 'none'; });
     });
