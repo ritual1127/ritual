@@ -39,12 +39,22 @@
     </div>
     <button type="button" class="btn" id="applyClassBtn">시간표 조회</button>
 
-    <div class="date-nav">
+    <div class="mode-tabs">
+      <button type="button" id="dayModeBtn" class="active">일간</button>
+      <button type="button" id="weekModeBtn">주간</button>
+    </div>
+    <div class="date-nav" id="dayNav">
       <button type="button" class="btn-outline" id="prevDayBtn">◀</button>
       <span class="date-label" id="dateLabel"></span>
       <button type="button" class="btn-outline" id="nextDayBtn">▶</button>
     </div>
+    <div class="date-nav" id="weekNav" style="display:none;">
+      <button type="button" class="btn-outline" id="prevWeekBtn">◀</button>
+      <span class="date-label" id="weekLabel"></span>
+      <button type="button" class="btn-outline" id="nextWeekBtn">▶</button>
+    </div>
     <div id="periodList"><div class="empty-hint">학교와 학년·반을 입력하면 시간표가 표시돼요.</div></div>
+    <div id="weekGrid" class="week-grid" style="display:none;"></div>
   </div>
 
   <div style="text-align:center; margin:16px 0;">
@@ -68,6 +78,21 @@
   <script>
     let currentDate = new Date();
     let currentSchool = null;
+    let viewMode = localStorage.getItem('neisTimetableMode') || 'day';
+
+    const WEEKDAY_LABELS = ['월', '화', '수', '목', '금'];
+
+    function setViewMode(mode) {
+      viewMode = mode;
+      localStorage.setItem('neisTimetableMode', mode);
+      document.getElementById('dayModeBtn').classList.toggle('active', mode === 'day');
+      document.getElementById('weekModeBtn').classList.toggle('active', mode === 'week');
+      document.getElementById('dayNav').style.display = mode === 'day' ? 'flex' : 'none';
+      document.getElementById('weekNav').style.display = mode === 'week' ? 'flex' : 'none';
+      document.getElementById('periodList').style.display = mode === 'day' ? 'block' : 'none';
+      document.getElementById('weekGrid').style.display = mode === 'week' ? 'flex' : 'none';
+      if (currentSchool) renderTimetable();
+    }
 
     function renderPeriodList(periods) {
       const el = document.getElementById('periodList');
@@ -76,16 +101,45 @@
         : '<div class="empty-hint">이 날짜엔 시간표 정보가 없어요. (주말·방학 등)</div>';
     }
 
+    function renderWeekGrid(byDate, mondayDate) {
+      const el = document.getElementById('weekGrid');
+      const todayYmd = neisYmd(new Date());
+      el.innerHTML = WEEKDAY_LABELS.map((label, i) => {
+        const d = new Date(mondayDate);
+        d.setDate(mondayDate.getDate() + i);
+        const ymd = neisYmd(d);
+        const periods = byDate[ymd] || [];
+        const isToday = ymd === todayYmd;
+        const body = periods.length
+          ? `<ul class="week-period-list">${periods.map(p => `<li><span class="period-no">${p.period}</span>${p.subject}</li>`).join('')}</ul>`
+          : '<div class="empty-hint">정보 없음</div>';
+        return `<div class="week-day">
+          <div class="week-day-head${isToday ? ' today' : ''}">${label} ${d.getMonth() + 1}/${d.getDate()}</div>
+          ${body}
+        </div>`;
+      }).join('');
+    }
+
     async function renderTimetable() {
       if (!currentSchool) return;
-      document.getElementById('dateLabel').textContent = neisDateLabel(currentDate);
-      document.getElementById('periodList').innerHTML = '<div class="empty-hint">불러오는 중...</div>';
-
       const grade = +document.getElementById('gradeInput').value || 1;
       const classNum = +document.getElementById('classInput').value || 1;
       const department = document.getElementById('deptInput').value.trim();
       saveNeisClass({ grade, classNum, department });
 
+      if (viewMode === 'week') {
+        const monday = mondayOf(currentDate);
+        const friday = new Date(monday); friday.setDate(monday.getDate() + 4);
+        document.getElementById('weekLabel').textContent =
+          `${monday.getMonth() + 1}/${monday.getDate()} ~ ${friday.getMonth() + 1}/${friday.getDate()}`;
+        document.getElementById('weekGrid').innerHTML = '<div class="empty-hint">불러오는 중...</div>';
+        const byDate = await fetchNeisWeekTimetable(currentSchool, monday, grade, classNum, department).catch(() => ({}));
+        renderWeekGrid(byDate, monday);
+        return;
+      }
+
+      document.getElementById('dateLabel').textContent = neisDateLabel(currentDate);
+      document.getElementById('periodList').innerHTML = '<div class="empty-hint">불러오는 중...</div>';
       const { periods } = await fetchNeisTimetable(currentSchool, neisYmd(currentDate), grade, classNum, department).catch(() => ({ periods: [] }));
       renderPeriodList(periods);
     }
@@ -93,6 +147,10 @@
     document.getElementById('applyClassBtn').onclick = renderTimetable;
     document.getElementById('prevDayBtn').onclick = () => { currentDate.setDate(currentDate.getDate() - 1); renderTimetable(); };
     document.getElementById('nextDayBtn').onclick = () => { currentDate.setDate(currentDate.getDate() + 1); renderTimetable(); };
+    document.getElementById('prevWeekBtn').onclick = () => { currentDate.setDate(currentDate.getDate() - 7); renderTimetable(); };
+    document.getElementById('nextWeekBtn').onclick = () => { currentDate.setDate(currentDate.getDate() + 7); renderTimetable(); };
+    document.getElementById('dayModeBtn').onclick = () => setViewMode('day');
+    document.getElementById('weekModeBtn').onclick = () => setViewMode('week');
 
     renderSchoolPicker(document.getElementById('schoolPicker'), (school) => {
       document.title = `오늘의 시간표 - ${school.schoolName} 시간표 | 성적 계산기`;
@@ -103,7 +161,7 @@
       document.getElementById('gradeInput').value = saved.grade || 1;
       document.getElementById('classInput').value = saved.classNum || 1;
       document.getElementById('deptInput').value = saved.department || '';
-      renderTimetable();
+      setViewMode(viewMode);
     });
   </script>
   <script type="text/javascript" src="//t1.kakaocdn.net/kas/static/ba.min.js" async></script>
