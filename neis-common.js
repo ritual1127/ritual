@@ -132,7 +132,7 @@ function renderSchoolPicker(container, onReady) {
   container.innerHTML = `
     <div class="entry" style="grid-template-columns:1fr;">
       <div class="score-row">
-        <input type="text" id="schoolSearchInput" placeholder="학교 이름 검색 (예: 구미고등학교)">
+        <input type="text" id="schoolSearchInput" placeholder="학교 이름 검색 (예: OO고등학교)">
         <button type="button" class="btn-outline" id="schoolSearchBtn">검색</button>
       </div>
     </div>

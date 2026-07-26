@@ -64,6 +64,17 @@ body {
 }
 .feedback-widget button.active { border-color: var(--primary); color: var(--primary); }
 
+.article h2 { font-size: 19px; margin: 24px 0 8px; color: var(--fg); }
+.article h2:first-child { margin-top: 0; }
+.article p { font-size: 15px; line-height: 1.8; color: var(--fg); margin-bottom: 12px; }
+.article ul { margin: 0 0 12px 20px; font-size: 15px; line-height: 1.8; color: var(--fg); }
+.article .updated { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+.legal h2 { font-size: 16px; margin: 20px 0 6px; color: var(--fg); }
+.legal p, .legal li { font-size: 14px; line-height: 1.8; color: var(--muted); }
+.legal ul { margin: 0 0 10px 20px; }
+.footer-links { text-align: center; font-size: 12px; margin-top: 8px; }
+.footer-links a { color: var(--muted); text-decoration: underline; margin: 0 6px; }
+
 .nav-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
 .nav-tab {
   flex: 1; min-width: 120px; height: 40px;
