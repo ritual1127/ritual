@@ -280,8 +280,19 @@
         ? names.map(name => `<button type="button" class="subject-chip${selectedSubject === name ? ' active' : ''}" data-subject="${name}">${name}</button>`).join('')
         : '<span class="empty-hint">등록된 과목이 없습니다. "+ 과목 추가/관리"로 추가하세요.</span>';
       container.querySelectorAll('.subject-chip').forEach(chip => {
-        chip.onclick = () => { saveDraft(); loadSubject(chip.dataset.subject); };
+        chip.onclick = () => {
+          saveDraft();
+          if (selectedSubject === chip.dataset.subject) deselectSubject();
+          else loadSubject(chip.dataset.subject);
+        };
       });
+    }
+
+    function deselectSubject() {
+      selectedSubject = null;
+      currentCfg = null;
+      renderSubjectChips();
+      renderScoreInputs();
     }
 
     function loadSubject(name) {
@@ -629,10 +640,9 @@
       all[name] = { performances, exams };
       saveCustomSubjectsMap(all);
 
-      if (selectedSubject === editingSubject) { selectedSubject = name; currentCfg = all[name]; renderScoreInputs(); }
-      renderSubjectChips();
-      alert(`"${name}" 과목이 저장되었습니다.`);
       resetSubjectForm();
+      document.getElementById('subjectModal').style.display = 'none';
+      loadSubject(name);
     }
 
     function renderModalSubjectList() {
@@ -787,7 +797,7 @@
         const tr = document.createElement('tr');
         const [, m, d] = it.time.split(' ')[0].split('.');
         tr.innerHTML = `
-          <td>${+m}월 ${+d}일</td><td class="subject">${it.subject || '-'}</td><td>${it.final}</td>
+          <td>${+m}/${+d}</td><td class="subject">${it.subject || '-'}</td><td>${it.final}</td>
           <td><strong style="color:${GRADE_COLORS[it.grade]}">${it.grade}</strong></td>
           <td><button class="delete-btn" data-i="${i}">삭제</button></td>
           <td><button class="info-btn" data-idx="${i}">정보</button></td>`;

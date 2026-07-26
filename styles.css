@@ -297,8 +297,8 @@ body {
   background: var(--inp-bg); border-radius: 12px;
   overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
-.record-table { width: 100%; border-collapse: collapse; min-width: 460px; table-layout: fixed; }
-.record-table th, .record-table td { padding: 12px 8px; text-align: center; font-size: 14px; }
+.record-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.record-table th, .record-table td { padding: 10px 3px; text-align: center; font-size: 13px; }
 .record-table th:nth-child(1), .record-table td:nth-child(1) { width: 18%; }
 .record-table th:nth-child(2), .record-table td:nth-child(2) { width: 26%; }
 .record-table th:nth-child(3), .record-table td:nth-child(3) { width: 14%; }
@@ -308,6 +308,12 @@ body {
 .record-table tbody tr:nth-child(even) td { background: var(--bg); }
 .record-table td.subject { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 [data-theme="dark"] .record-table tbody tr:nth-child(even) td { background: var(--inp-bg); }
+.record-table .delete-btn, .record-table .info-btn { padding: 3px 5px; font-size: 12px; }
+@media (min-width: 768px) {
+  .record-table { min-width: 460px; }
+  .record-table th, .record-table td { padding: 12px 8px; font-size: 14px; }
+  .record-table .delete-btn, .record-table .info-btn { padding: 4px 8px; font-size: 13px; }
+}
 
 .delete-btn {
   background: var(--danger); color: #fff; border: none;
