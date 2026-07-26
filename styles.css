@@ -60,9 +60,9 @@ body {
 }
 .feedback-widget button {
   font-size: 18px; padding: 5px 12px; border-radius: 10px;
-  border: 1px solid var(--inp-border); background: var(--inp-bg); color: var(--fg); cursor: pointer;
+  border: none; background: transparent; color: var(--fg); cursor: pointer;
 }
-.feedback-widget button.active { border-color: var(--primary); color: var(--primary); }
+.feedback-widget button.active { color: var(--primary); }
 
 .article h2 { font-size: 19px; margin: 24px 0 8px; color: var(--fg); }
 .article h2:first-child { margin-top: 0; }
