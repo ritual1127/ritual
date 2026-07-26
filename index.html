@@ -627,18 +627,13 @@
       const formattedTime = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
       saveHistory({ time: formattedTime, subject: subj, final, grade, nextMsg, dropMsg, performances: perf, exams: exms });
-      saveSubjectScore(subj, { final, grade, time: formattedTime });
       renderHistory();
     }
 
-    function loadSubjectScores() { return JSON.parse(localStorage.getItem('subjectScores') || '{}'); }
-    function saveSubjectScore(name, data) {
-      const s = loadSubjectScores(); s[name] = data;
-      localStorage.setItem('subjectScores', JSON.stringify(s));
-    }
     function getLatestScoresForGraph() {
-      const stored = loadSubjectScores();
-      return Object.keys(stored).map(name => ({ name, ...stored[name] }));
+      const latest = {};
+      loadHistory().forEach(it => { if (!(it.subject in latest)) latest[it.subject] = it; });
+      return Object.keys(latest).map(name => ({ name, final: latest[name].final, grade: latest[name].grade }));
     }
 
     function loadHistory() { return JSON.parse(localStorage.getItem('gradeHistory') || '[]'); }
@@ -673,10 +668,9 @@
     const subjectModal = document.getElementById('subjectModal');
     document.getElementById('modalCloseBtn').onclick = () => modal.style.display = 'none';
     document.getElementById('subjectModalCloseBtn').onclick = () => subjectModal.style.display = 'none';
-    window.onclick = e => {
-      if (e.target === modal) modal.style.display = 'none';
-      if (e.target === subjectModal) subjectModal.style.display = 'none';
-    };
+    [modal, subjectModal].forEach(m => {
+      m.addEventListener('click', e => { if (e.target === m) m.style.display = 'none'; });
+    });
 
     function updateSubjectName(idx) {
       const list = loadHistory();
