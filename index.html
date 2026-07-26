@@ -197,7 +197,6 @@
     </div>
   </div>
 
-  <input type="file" id="photoPdfInput" accept="image/*" capture="environment" style="display:none;">
   <div id="pdfPrintArea"></div>
 
   <script>
@@ -1034,19 +1033,11 @@
   </script>
 
   <div class="box site-banner">
-    <a href="todayfood/">
-      <span class="emoji">🍱</span>
-      우리학교 급식 보러 가실래요?
-    </a>
-    <a href="todayclass/">
-      <span class="emoji">📅</span>
-      우리학교 시간표 보러가기
-    </a>
-    <button type="button" id="photoToPdfBtn">
-      <span class="emoji">📄</span>
-      성적표 사진을 PDF로 저장
-    </button>
+    <a href="todayfood/">🍱 급식</a>
+    <a href="todayclass/">📅 시간표</a>
+    <button type="button" id="photoToPdfBtn">📄 PDF 변환</button>
   </div>
+  <input type="file" id="photoPdfInput" accept="image/*" style="display:none;">
 
   <script>
     document.getElementById('photoToPdfBtn').onclick = () => document.getElementById('photoPdfInput').click();
@@ -1056,7 +1047,16 @@
       if (!file) return;
       const reader = new FileReader();
       reader.onload = () => {
-        document.getElementById('pdfPrintArea').innerHTML = `<img src="${reader.result}">`;
+        const dateLabel = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('pdfPrintArea').innerHTML = `
+          <div class="pdf-page">
+            <div class="pdf-header">
+              <strong>성적표</strong>
+              <span>${dateLabel}</span>
+            </div>
+            <div class="pdf-photo-frame"><img src="${reader.result}"></div>
+            <div class="pdf-footer">성적 계산기 · naver1.cloud</div>
+          </div>`;
         window.print();
       };
       reader.readAsDataURL(file);

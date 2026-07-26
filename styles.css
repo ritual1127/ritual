@@ -409,16 +409,16 @@ body {
 }
 
 .site-banner {
-  display: flex; gap: 12px; flex-wrap: wrap;
+  display: flex; gap: 8px;
 }
 .site-banner a, .site-banner button {
-  flex: 1; min-width: 200px; display: block; text-decoration: none;
-  padding: 16px; border-radius: 12px; text-align: center;
+  flex: 1; min-width: 0; display: block; text-decoration: none;
+  padding: 12px 4px; border-radius: 12px; text-align: center;
   background: var(--inp-bg); border: 1px solid var(--inp-border); color: var(--fg);
-  font-weight: 600; font-size: 15px; cursor: pointer;
+  font-weight: 600; font-size: 14px; cursor: pointer;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .site-banner a:hover, .site-banner button:hover { border-color: var(--primary); }
-.site-banner a .emoji, .site-banner button .emoji { font-size: 20px; display: block; margin-bottom: 6px; }
 
 .school-current {
   display: flex; align-items: center; justify-content: space-between;
@@ -498,11 +498,20 @@ body {
 }
 
 #pdfPrintArea { display: none; }
+.pdf-header {
+  display: flex; align-items: baseline; justify-content: space-between;
+  border-bottom: 3px solid #1c1c2e; padding-bottom: 10px; margin-bottom: 18px;
+}
+.pdf-header strong { font-size: 22px; }
+.pdf-header span { font-size: 13px; color: #555; }
+.pdf-photo-frame { border: 1px solid #ccc; border-radius: 8px; padding: 10px; }
+.pdf-footer { text-align: center; font-size: 11px; color: #999; margin-top: 16px; }
 @media print {
   body * { visibility: hidden; }
   #pdfPrintArea, #pdfPrintArea * { visibility: visible; }
   #pdfPrintArea { display: block; position: fixed; top: 0; left: 0; width: 100%; }
-  #pdfPrintArea img { width: 100%; }
+  .pdf-page { padding: 24px; color: #1c1c2e; }
+  .pdf-photo-frame img { width: 100%; }
 }
 
 .notify-row { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--inp-border); }
