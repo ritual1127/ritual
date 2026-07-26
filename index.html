@@ -544,7 +544,16 @@
       if (sum > 100) {
         const min = +changed.min || 0;
         changed.value = Math.max(min, (+changed.value || 0) - (sum - 100));
+        flashWeightOverLimit();
       }
+    }
+
+    function flashWeightOverLimit() {
+      const bar = document.getElementById('modalWeightBar');
+      if (!bar) return;
+      bar.classList.add('over-limit');
+      clearTimeout(bar._overTimer);
+      bar._overTimer = setTimeout(() => bar.classList.remove('over-limit'), 500);
     }
 
     function updateModalWeightBar() {
