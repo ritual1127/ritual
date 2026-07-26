@@ -54,6 +54,16 @@ body {
   margin-top: 32px; padding: 16px 0; line-height: 1.8;
 }
 
+.feedback-widget {
+  text-align: center; font-size: 12px; color: var(--muted);
+  padding: 4px 0 16px; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.feedback-widget button {
+  font-size: 12px; padding: 3px 8px; border-radius: 8px;
+  border: 1px solid var(--inp-border); background: var(--inp-bg); color: var(--fg); cursor: pointer;
+}
+.feedback-widget button.active { border-color: var(--primary); color: var(--primary); }
+
 .nav-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
 .nav-tab {
   flex: 1; min-width: 120px; height: 40px;

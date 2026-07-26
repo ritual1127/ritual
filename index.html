@@ -1025,6 +1025,12 @@
     © 2026 성적 계산기. All rights reserved.
   </footer>
 
+  <div class="feedback-widget">
+    이 계산기 어떠셨나요?
+    <button type="button" id="feedbackLike">👍 <span id="feedbackLikeCount">0</span></button>
+    <button type="button" id="feedbackDislike">👎 <span id="feedbackDislikeCount">0</span></button>
+  </div>
+
   <div class="ad-side left">
     <ins class="kakao_ad_area" style="display:none;"
     data-ad-unit = "DAN-NyPjhDjI6qHZmN77"
@@ -1050,5 +1056,39 @@
     data-ad-height = "480"></ins>
   </div>
   <script type="text/javascript" src="//t1.kakaocdn.net/kas/static/ba.min.js" async></script>
+  <script>
+  (function () {
+    var likeBtn = document.getElementById('feedbackLike');
+    var dislikeBtn = document.getElementById('feedbackDislike');
+    var likeCountEl = document.getElementById('feedbackLikeCount');
+    var dislikeCountEl = document.getElementById('feedbackDislikeCount');
+    var likes = parseInt(localStorage.getItem('fb_likes') || '0', 10);
+    var dislikes = parseInt(localStorage.getItem('fb_dislikes') || '0', 10);
+    var voted = localStorage.getItem('fb_voted');
+
+    function render() {
+      likeCountEl.textContent = likes;
+      dislikeCountEl.textContent = dislikes;
+      likeBtn.classList.toggle('active', voted === 'like');
+      dislikeBtn.classList.toggle('active', voted === 'dislike');
+    }
+
+    function vote(type) {
+      if (voted === type) return;
+      if (voted === 'like') likes--;
+      if (voted === 'dislike') dislikes--;
+      if (type === 'like') likes++; else dislikes++;
+      voted = type;
+      localStorage.setItem('fb_likes', likes);
+      localStorage.setItem('fb_dislikes', dislikes);
+      localStorage.setItem('fb_voted', voted);
+      render();
+    }
+
+    likeBtn.addEventListener('click', function () { vote('like'); });
+    dislikeBtn.addEventListener('click', function () { vote('dislike'); });
+    render();
+  })();
+  </script>
 </body>
 </html>
