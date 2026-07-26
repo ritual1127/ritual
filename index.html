@@ -380,15 +380,21 @@
       });
       html += '</div>';
       body.innerHTML = html;
-      body.querySelectorAll('.ocr-score').forEach(inp => inp.addEventListener('input', () => sanitizeScoreInput(inp)));
+      body.querySelectorAll('.ocr-score').forEach(inp => {
+        sanitizeScoreInput(inp);
+        inp.addEventListener('input', () => sanitizeScoreInput(inp));
+      });
       document.getElementById('ocrApplyBtn').style.display = 'block';
     }
 
     document.getElementById('ocrApplyBtn').onclick = () => {
       document.querySelectorAll('#ocrModalBody .ocr-score').forEach(inp => {
         if (!inp.value) return;
+        if (inp.dataset.kind === 't' && document.getElementById('if' + inp.dataset.i)?.classList.contains('active')) return;
         const target = document.getElementById(`${inp.dataset.kind}${inp.dataset.i}`);
-        if (target) target.value = inp.value;
+        if (!target) return;
+        target.value = inp.value;
+        sanitizeScoreInput(target);
       });
       document.getElementById('ocrModal').style.display = 'none';
       saveDraft();
@@ -402,12 +408,23 @@
       const file = e.target.files[0];
       e.target.value = '';
       if (!file || !currentCfg) return;
+      const subjectAtStart = selectedSubject;
       const body = document.getElementById('ocrModalBody');
       document.getElementById('ocrApplyBtn').style.display = 'none';
       body.innerHTML = '<div class="empty-hint">인식 중...</div>';
       document.getElementById('ocrModal').style.display = 'flex';
+      const ocrTriggerBtn = document.getElementById('ocrTriggerBtn');
+      if (ocrTriggerBtn) ocrTriggerBtn.disabled = true;
       try {
-        const text = await recognizeReportCard(file);
+        const text = await recognizeReportCard(file, (m) => {
+          if (m.status === 'recognizing text' && typeof m.progress === 'number') {
+            body.innerHTML = `<div class="empty-hint">인식 중... ${Math.round(m.progress * 100)}%</div>`;
+          }
+        });
+        if (selectedSubject !== subjectAtStart) {
+          body.innerHTML = '<div class="empty-hint">다른 과목으로 전환되어 인식을 취소했어요. 다시 시도해주세요.</div>';
+          return;
+        }
         const blocks = parseReportCardText(text);
         const match = matchOcrBlockToSubject(blocks, selectedSubject, currentCfg);
         if (!match) {
@@ -416,7 +433,14 @@
         }
         renderOcrReview(match);
       } catch (err) {
-        body.innerHTML = '<div class="empty-hint">OCR 엔진을 불러오지 못했어요. 인터넷 연결을 확인하거나 직접 입력해주세요.</div>';
+        if (err.message === 'tesseract-load-failed') {
+          body.innerHTML = '<div class="empty-hint">OCR 엔진을 불러오지 못했어요. 인터넷 연결을 확인하거나 직접 입력해주세요.</div>';
+        } else {
+          console.error(err);
+          body.innerHTML = '<div class="empty-hint">사진을 처리하는 중 오류가 났어요. 다시 시도해주세요.</div>';
+        }
+      } finally {
+        if (ocrTriggerBtn) ocrTriggerBtn.disabled = false;
       }
     };
 

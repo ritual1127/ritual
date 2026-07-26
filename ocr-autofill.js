@@ -34,11 +34,13 @@ function parseReportCardText(text) {
 // "구분 + 등장 순서" 기준으로 매칭한다. 항목명 텍스트는 절대 비교하지 않는다.
 function matchOcrBlockToSubject(blocks, subjectName, cfg) {
   const norm = s => (s || '').replace(/\s/g, '');
-  let block = blocks.find(b => b.subject && (
-    norm(b.subject) === norm(subjectName) ||
-    norm(b.subject).includes(norm(subjectName)) ||
-    norm(subjectName).includes(norm(b.subject))
-  ));
+  let block = blocks.find(b => b.subject && norm(b.subject) === norm(subjectName));
+  if (!block) {
+    block = blocks.find(b => b.subject && (
+      norm(b.subject).includes(norm(subjectName)) ||
+      norm(subjectName).includes(norm(b.subject))
+    ));
+  }
   if (!block && blocks.length === 1) block = blocks[0];
   if (!block) return null;
 
@@ -75,8 +77,8 @@ function loadTesseractScript() {
   return tesseractLoadPromise;
 }
 
-async function recognizeReportCard(file) {
+async function recognizeReportCard(file, onProgress) {
   await loadTesseractScript();
-  const result = await Tesseract.recognize(file, 'kor+eng');
+  const result = await Tesseract.recognize(file, 'kor+eng', { logger: onProgress ? (m) => onProgress(m) : undefined });
   return result.data.text;
 }
