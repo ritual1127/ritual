@@ -152,7 +152,6 @@
 
   <div id="subjectModal" class="modal">
     <div class="modal-content">
-      <button id="subjectModalCloseBtn" class="modal-close-btn">✕</button>
       <h2 style="margin-bottom:16px;">과목 추가/관리</h2>
 
       <div class="section-head">
@@ -784,7 +783,6 @@
     const modal = document.getElementById('detailModal');
     const subjectModal = document.getElementById('subjectModal');
     document.getElementById('modalCloseBtn').onclick = () => modal.style.display = 'none';
-    document.getElementById('subjectModalCloseBtn').onclick = () => subjectModal.style.display = 'none';
     [modal, subjectModal].forEach(m => {
       m.addEventListener('click', e => { if (e.target === m) m.style.display = 'none'; });
     });
