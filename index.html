@@ -157,8 +157,14 @@
 
       <div class="section-head">
         <h3 style="font-size:16px;">등록된 과목</h3>
-        <button type="button" class="mini-btn" id="addNewSubjectBtn">+ 새 과목</button>
+        <div style="display:flex;gap:6px;">
+          <button type="button" class="mini-btn" id="excelImportBtn">📊 엑셀로 추가</button>
+          <button type="button" class="mini-btn" id="addNewSubjectBtn">+ 새 과목</button>
+        </div>
       </div>
+      <a href="#" id="excelTemplateLink" style="display:block;font-size:12px;color:var(--muted);text-decoration:underline;margin:-6px 0 14px;">엑셀 양식 다운로드 (과목명 / 구분(수행·지필) / 항목명 / 비중)</a>
+      <input type="file" id="excelFileInput" accept=".xlsx,.xls,.csv" style="display:none;">
+      <div id="excelImportMsg"></div>
       <div id="modalSubjectList" style="margin-bottom:20px;"></div>
 
       <div class="section-head" id="subjectFormHead">
@@ -199,6 +205,7 @@
 
   <div id="pdfPrintArea"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script>
     const IF_SCENARIOS = [60, 70, 80, 90, 100];
     const GRADE_COLORS = { A: '#10b981', B: '#4f46e5', C: '#f59e0b', D: '#f97316', E: '#ef4444' };
@@ -543,6 +550,75 @@
       resetSubjectForm();
       document.getElementById('subjectModal').style.display = 'none';
       loadSubject(name);
+    }
+
+    function downloadExcelTemplate() {
+      const data = [
+        ['과목명', '구분', '항목명', '비중(%)'],
+        ['수학', '수행', '수행1', 20],
+        ['수학', '수행', '수행2', 20],
+        ['수학', '지필', '중간고사', 30],
+        ['수학', '지필', '기말고사', 30],
+        ['영어', '수행', '수행1', 40],
+        ['영어', '지필', '지필고사', 60]
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, '과목비중');
+      XLSX.writeFile(wb, '과목_비중_양식.xlsx');
+    }
+
+    function parseExcelSubjects(rows) {
+      const subjects = {};
+      rows.slice(1).forEach(row => {
+        const [subjectName, kind, label, weight] = row || [];
+        if (!subjectName || !kind) return;
+        const name = String(subjectName).trim();
+        const kindStr = String(kind).trim();
+        const w = +weight || 0;
+        if (!subjects[name]) subjects[name] = { performances: [], exams: [] };
+        if (kindStr.includes('수행')) {
+          subjects[name].performances.push({ label: String(label || `수행${subjects[name].performances.length + 1}`).trim(), weight: w, memo: '' });
+        } else if (kindStr.includes('지필')) {
+          subjects[name].exams.push({ label: String(label || `지필${subjects[name].exams.length + 1}`).trim(), weight: w });
+        }
+      });
+      return subjects;
+    }
+
+    async function importSubjectsFromExcel(file) {
+      const msgBox = document.getElementById('excelImportMsg');
+      try {
+        const buf = await file.arrayBuffer();
+        const wb = XLSX.read(buf, { type: 'array' });
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+        const parsed = parseExcelSubjects(rows);
+        const names = Object.keys(parsed);
+        if (!names.length) {
+          msgBox.innerHTML = '<div class="empty-hint">엑셀에서 과목 정보를 찾지 못했어요. 양식을 확인해주세요.</div>';
+          return;
+        }
+
+        const all = loadCustomSubjects();
+        const warnings = [];
+        names.forEach(name => {
+          const cfg = parsed[name];
+          const sum = cfg.performances.reduce((s, p) => s + p.weight, 0) + cfg.exams.reduce((s, ex) => s + ex.weight, 0);
+          if (sum !== 100) warnings.push(`${name}(${sum}%)`);
+          all[name] = cfg;
+        });
+        saveCustomSubjectsMap(all);
+        renderModalSubjectList();
+        renderSubjectChips();
+
+        const warnHtml = warnings.length
+          ? `<div style="color:var(--danger);margin-top:6px;">⚠️ 비중 합계가 100%가 아닌 과목: ${warnings.join(', ')} — 수정에서 확인해주세요.</div>`
+          : '';
+        msgBox.innerHTML = `<div class="modal-section" style="margin-bottom:16px;">✅ ${names.length}개 과목을 추가했어요: ${names.join(', ')}${warnHtml}</div>`;
+      } catch (err) {
+        msgBox.innerHTML = '<div class="empty-hint">엑셀 파일을 읽지 못했어요. 양식에 맞게 저장했는지 확인해주세요.</div>';
+      }
     }
 
     function renderModalSubjectList() {
@@ -998,6 +1074,13 @@
         document.getElementById('subjectFormHead').scrollIntoView({ behavior: 'smooth', block: 'start' });
       };
       document.getElementById('cancelEditBtn').onclick = resetSubjectForm;
+      document.getElementById('excelTemplateLink').onclick = (e) => { e.preventDefault(); downloadExcelTemplate(); };
+      document.getElementById('excelImportBtn').onclick = () => document.getElementById('excelFileInput').click();
+      document.getElementById('excelFileInput').onchange = (e) => {
+        const file = e.target.files[0];
+        e.target.value = '';
+        if (file) importSubjectsFromExcel(file);
+      };
       document.querySelectorAll('.stepper-btn').forEach(btn => {
         btn.onclick = () => {
           const inp = document.getElementById(btn.dataset.target);
