@@ -2,6 +2,8 @@ const ALLOWED_ORIGINS = new Set([
   "https://naver1.cloud",
 ]);
 
+const VAPID_PUBLIC_KEY = "BMK5uCsTJJQZYXyFmwW-tepqmX-uldSkUa4GWijuK7TB_MXeU8ZYZYS5KLeWYpPsijZ_SVeZhlCcyqwMQBJHNxA";
+
 function corsHeaders(origin) {
   const allow = ALLOWED_ORIGINS.has(origin) ? origin : "https://naver1.cloud";
   return {
@@ -9,6 +11,51 @@ function corsHeaders(origin) {
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
   };
+}
+
+function base64urlEncodeBytes(bytes) {
+  let str = "";
+  bytes.forEach((b) => (str += String.fromCharCode(b)));
+  return btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function base64urlEncodeString(str) {
+  return base64urlEncodeBytes(new TextEncoder().encode(str));
+}
+
+async function importVapidPrivateKey(env) {
+  const jwk = JSON.parse(env.VAPID_PRIVATE_KEY_JWK);
+  return crypto.subtle.importKey("jwk", jwk, { name: "ECDSA", namedCurve: "P-256" }, false, ["sign"]);
+}
+
+// RFC 8292 VAPID: 엔드포인트별로 서명한 JWT를 Authorization 헤더에 실어보낸다.
+// payload(알림 내용)를 안 보내는 빈 푸시라 암호화(aes128gcm) 관련 헤더는 필요 없다.
+async function buildVapidAuthHeader(endpoint, env) {
+  const aud = new URL(endpoint).origin;
+  const header = { typ: "JWT", alg: "ES256" };
+  const claims = {
+    aud,
+    exp: Math.floor(Date.now() / 1000) + 12 * 60 * 60,
+    sub: "mailto:smilepea@naver.com",
+  };
+  const unsigned = `${base64urlEncodeString(JSON.stringify(header))}.${base64urlEncodeString(JSON.stringify(claims))}`;
+  const key = await importVapidPrivateKey(env);
+  const sigBuf = await crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, key, new TextEncoder().encode(unsigned));
+  const signature = base64urlEncodeBytes(new Uint8Array(sigBuf));
+  return `vapid t=${unsigned}.${signature}, k=${VAPID_PUBLIC_KEY}`;
+}
+
+async function hashEndpoint(endpoint) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(endpoint));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
+}
+
+async function sendEmptyPush(subscription, env) {
+  const auth = await buildVapidAuthHeader(subscription.endpoint, env);
+  return fetch(subscription.endpoint, {
+    method: "POST",
+    headers: { Authorization: auth, TTL: "60" },
+  });
 }
 
 export default {
@@ -21,6 +68,38 @@ export default {
     }
 
     const url = new URL(request.url);
+
+    if (url.pathname === "/subscribe" && request.method === "POST") {
+      let body;
+      try {
+        body = await request.json();
+      } catch {
+        return new Response(JSON.stringify({ error: "invalid body" }), { status: 400, headers });
+      }
+      const subscription = body.subscription;
+      if (!subscription || !subscription.endpoint) {
+        return new Response(JSON.stringify({ error: "invalid subscription" }), { status: 400, headers });
+      }
+      const key = await hashEndpoint(subscription.endpoint);
+      await env.PUSH_KV.put(key, JSON.stringify(subscription));
+      return new Response(JSON.stringify({ ok: true }), { headers });
+    }
+
+    if (url.pathname === "/unsubscribe" && request.method === "POST") {
+      let body;
+      try {
+        body = await request.json();
+      } catch {
+        return new Response(JSON.stringify({ error: "invalid body" }), { status: 400, headers });
+      }
+      if (!body.endpoint) {
+        return new Response(JSON.stringify({ error: "invalid endpoint" }), { status: 400, headers });
+      }
+      const key = await hashEndpoint(body.endpoint);
+      await env.PUSH_KV.delete(key);
+      return new Response(JSON.stringify({ ok: true }), { headers });
+    }
+
     if (url.pathname !== "/vote") {
       return new Response(JSON.stringify({ error: "not found" }), { status: 404, headers });
     }
@@ -71,5 +150,20 @@ export default {
     }
 
     return new Response(JSON.stringify({ error: "method not allowed" }), { status: 405, headers });
+  },
+
+  // 매일 KST 11:30(=UTC 02:30)에 저장된 모든 구독자에게 빈 푸시를 보낸다.
+  // 실제 급식 메뉴 조회는 각 기기의 서비스워커가 push 이벤트를 받은 순간 직접 한다.
+  async scheduled(event, env, ctx) {
+    const list = await env.PUSH_KV.list();
+    for (const { name } of list.keys) {
+      const raw = await env.PUSH_KV.get(name);
+      if (!raw) continue;
+      const subscription = JSON.parse(raw);
+      const res = await sendEmptyPush(subscription, env).catch(() => null);
+      if (res && (res.status === 404 || res.status === 410)) {
+        await env.PUSH_KV.delete(name);
+      }
+    }
   },
 };

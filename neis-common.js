@@ -199,3 +199,43 @@ function renderSchoolPicker(container, onReady) {
     if (e.key === 'Enter') { e.preventDefault(); doSearch(); }
   });
 }
+
+// 급식 알림용 학교 정보 저장소. localStorage는 서비스워커에서 못 쓰므로
+// 페이지와 서비스워커가 공유 가능한 IndexedDB를 쓴다.
+function openNotifyDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('seongjeokNotify', 1);
+    req.onupgradeneeded = () => req.result.createObjectStore('school');
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function saveNotifySchool(school) {
+  const db = await openNotifyDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('school', 'readwrite');
+    tx.objectStore('school').put(school, 'current');
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function loadNotifySchool() {
+  const db = await openNotifyDB();
+  return new Promise((resolve, reject) => {
+    const req = db.transaction('school', 'readonly').objectStore('school').get('current');
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function clearNotifySchool() {
+  const db = await openNotifyDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('school', 'readwrite');
+    tx.objectStore('school').delete('current');
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+}

@@ -39,6 +39,11 @@
     </div>
     <div class="meal-tabs" id="mealTabs"></div>
     <div id="dishList"><div class="empty-hint">학교를 선택하면 급식이 표시돼요.</div></div>
+
+    <div class="notify-row">
+      <button type="button" class="mini-btn" id="notifyToggleBtn">🔔 급식 알림 받기</button>
+      <span class="notify-hint">매일 오전 11시 30분에 오늘 중식을 알려드려요. (iOS는 홈 화면에 추가해야 백그라운드에서도 알림이 와요)</span>
+    </div>
   </div>
 
   <div style="text-align:center; margin:16px 0;">
@@ -105,11 +110,84 @@
       renderMeal(loadNeisSchool());
     };
 
+    // --- 급식 알림 (Web Push) ---
+    const PUSH_API = 'https://seongjeok-feedback-api.smilepea.workers.dev';
+    const VAPID_PUBLIC_KEY = 'BMK5uCsTJJQZYXyFmwW-tepqmX-uldSkUa4GWijuK7TB_MXeU8ZYZYS5KLeWYpPsijZ_SVeZhlCcyqwMQBJHNxA';
+
+    function urlBase64ToUint8Array(base64Url) {
+      const padding = '='.repeat((4 - base64Url.length % 4) % 4);
+      const base64 = (base64Url + padding).replace(/-/g, '+').replace(/_/g, '/');
+      const raw = atob(base64);
+      return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+    }
+
+    function setNotifyBtnState(subscribed) {
+      const btn = document.getElementById('notifyToggleBtn');
+      btn.classList.toggle('active', subscribed);
+      btn.textContent = subscribed ? '🔔 알림 켜짐 (끄려면 클릭)' : '🔔 급식 알림 받기';
+    }
+
+    async function refreshNotifyBtnState() {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        document.getElementById('notifyToggleBtn').style.display = 'none';
+        return;
+      }
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      setNotifyBtnState(!!sub);
+    }
+
+    async function enableMealNotify(school) {
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') { alert('알림을 켜려면 브라우저 설정에서 권한을 허용해주세요.'); return; }
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+      await saveNotifySchool(school);
+      await fetch(`${PUSH_API}/subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscription: sub.toJSON() })
+      }).catch(() => {});
+      setNotifyBtnState(true);
+    }
+
+    async function disableMealNotify() {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      if (sub) {
+        await fetch(`${PUSH_API}/unsubscribe`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ endpoint: sub.endpoint })
+        }).catch(() => {});
+        await sub.unsubscribe();
+      }
+      await clearNotifySchool();
+      setNotifyBtnState(false);
+    }
+
+    document.getElementById('notifyToggleBtn').onclick = async () => {
+      const school = loadNeisSchool();
+      if (!school) { alert('먼저 학교를 선택해주세요.'); return; }
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      try {
+        if (sub) await disableMealNotify();
+        else await enableMealNotify(school);
+      } catch {
+        alert('알림 등록에 실패했어요. 잠시 후 다시 시도해주세요.');
+      }
+    };
+
     renderSchoolPicker(document.getElementById('schoolPicker'), (school) => {
       document.title = `오늘의 급식 - ${school.schoolName} 급식표 | 성적 계산기`;
       document.getElementById('mealBox').style.display = 'block';
       renderMeal(school);
     });
+    refreshNotifyBtnState();
   </script>
   <script type="text/javascript" src="//t1.kakaocdn.net/kas/static/ba.min.js" async></script>
 </body>
