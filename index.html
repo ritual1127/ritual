@@ -494,12 +494,16 @@
         </div>`;
       });
       document.getElementById('modalWeightInputs').innerHTML = html;
-      document.querySelectorAll('.modal-weight-inp').forEach(inp => inp.addEventListener('input', updateModalWeightBar));
+      document.querySelectorAll('.modal-weight-inp').forEach(inp => inp.addEventListener('input', e => {
+        clampWeightTotal(e.target);
+        updateModalWeightBar();
+      }));
       document.querySelectorAll('.pct-step').forEach(btn => {
         btn.onclick = () => {
           const inp = document.getElementById(btn.dataset.target);
           const min = +inp.min || 0, max = +inp.max || 100;
           inp.value = Math.max(min, Math.min(max, (+inp.value || 0) + (+btn.dataset.delta)));
+          clampWeightTotal(inp);
           updateModalWeightBar();
         };
       });
@@ -508,6 +512,15 @@
         updateModalWeightBar();
       };
       updateModalWeightBar();
+    }
+
+    function clampWeightTotal(changed) {
+      let sum = 0;
+      document.querySelectorAll('.modal-weight-inp').forEach(inp => { sum += +inp.value || 0; });
+      if (sum > 100) {
+        const min = +changed.min || 0;
+        changed.value = Math.max(min, (+changed.value || 0) - (sum - 100));
+      }
     }
 
     function updateModalWeightBar() {
