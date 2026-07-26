@@ -197,17 +197,9 @@
     </div>
   </div>
 
-  <div id="ocrModal" class="modal">
-    <div class="modal-content">
-      <button id="ocrModalCloseBtn" class="modal-close-btn">✕</button>
-      <h2 style="margin-bottom:16px;">사진 인식 결과 확인</h2>
-      <div id="ocrModalBody"></div>
-      <button type="button" class="btn" id="ocrApplyBtn" style="display:none;">적용</button>
-    </div>
-  </div>
-  <input type="file" id="ocrFileInput" accept="image/*" capture="environment" style="display:none;">
+  <input type="file" id="photoPdfInput" accept="image/*" capture="environment" style="display:none;">
+  <div id="pdfPrintArea"></div>
 
-  <script src="ocr-autofill.js"></script>
   <script>
     const IF_SCENARIOS = [60, 70, 80, 90, 100];
     const GRADE_COLORS = { A: '#10b981', B: '#4f46e5', C: '#f59e0b', D: '#f97316', E: '#ef4444' };
@@ -319,7 +311,7 @@
       if (!currentCfg) { box.innerHTML = '<div class="empty-hint">과목을 선택하거나 새로 등록하세요.</div>'; return; }
 
       let html = `<h2 style="margin-bottom:12px;">${selectedSubject}</h2>`;
-      html += `<button type="button" class="mini-btn" id="ocrTriggerBtn" style="margin-bottom:12px;">📷 사진으로 채우기 (베타)</button>`;
+      html += `<button type="button" class="mini-btn" id="photoToPdfBtn" style="margin-bottom:12px;">📄 성적표 사진을 PDF로 저장</button>`;
       html += '<h2 style="font-size:16px;margin-bottom:12px;">수행평가</h2>';
       currentCfg.performances.forEach((p, i) => {
         html += `
@@ -342,7 +334,7 @@
       });
 
       box.innerHTML = html;
-      document.getElementById('ocrTriggerBtn').onclick = () => document.getElementById('ocrFileInput').click();
+      document.getElementById('photoToPdfBtn').onclick = () => document.getElementById('photoPdfInput').click();
       box.querySelectorAll('.score-input').forEach(inp => inp.addEventListener('input', () => sanitizeScoreInput(inp)));
       currentCfg.exams.forEach((_, i) => {
         document.getElementById(`if${i}`).onclick = function() {
@@ -366,93 +358,16 @@
       }
     }
 
-    function renderOcrReview(match) {
-      const body = document.getElementById('ocrModalBody');
-      let html = '';
-      if (match.countMismatch.performances) {
-        html += `<div class="ocr-warn-banner">⚠️ 수행평가 개수가 등록(${currentCfg.performances.length}개)과 사진 인식 결과가 달라요 — 순서대로 매칭했으니 확인해주세요.</div>`;
-      }
-      if (match.countMismatch.exams) {
-        html += `<div class="ocr-warn-banner">⚠️ 지필평가 개수가 등록(${currentCfg.exams.length}개)과 사진 인식 결과가 달라요 — 순서대로 매칭했으니 확인해주세요.</div>`;
-      }
-      html += '<div class="ocr-review-section"><h3>수행평가</h3>';
-      match.performances.forEach(p => {
-        html += `<div class="entry">
-          <label>${p.label} (${p.weight}%)${p.weightMismatch ? ' <span style="color:#f59e0b;">⚠️ 비중 다름</span>' : ''}</label>
-          <input type="text" inputmode="decimal" class="score-input ocr-score" data-kind="s" data-i="${p.index}" value="${p.score !== null ? p.score : ''}" placeholder="점수">
-        </div>`;
-      });
-      html += '</div><div class="ocr-review-section"><h3>지필평가</h3>';
-      match.exams.forEach(ex => {
-        html += `<div class="entry">
-          <label>${ex.label} (${ex.weight}%)${ex.weightMismatch ? ' <span style="color:#f59e0b;">⚠️ 비중 다름</span>' : ''}</label>
-          <input type="text" inputmode="decimal" class="score-input ocr-score" data-kind="t" data-i="${ex.index}" value="${ex.score !== null ? ex.score : ''}" placeholder="점수">
-        </div>`;
-      });
-      html += '</div>';
-      body.innerHTML = html;
-      body.querySelectorAll('.ocr-score').forEach(inp => {
-        sanitizeScoreInput(inp);
-        inp.addEventListener('input', () => sanitizeScoreInput(inp));
-      });
-      document.getElementById('ocrApplyBtn').style.display = 'block';
-    }
-
-    document.getElementById('ocrApplyBtn').onclick = () => {
-      document.querySelectorAll('#ocrModalBody .ocr-score').forEach(inp => {
-        if (!inp.value) return;
-        if (inp.dataset.kind === 't' && document.getElementById('if' + inp.dataset.i)?.classList.contains('active')) return;
-        const target = document.getElementById(`${inp.dataset.kind}${inp.dataset.i}`);
-        if (!target) return;
-        target.value = inp.value;
-        sanitizeScoreInput(target);
-      });
-      document.getElementById('ocrModal').style.display = 'none';
-      saveDraft();
-    };
-    document.getElementById('ocrModalCloseBtn').onclick = () => document.getElementById('ocrModal').style.display = 'none';
-    document.getElementById('ocrModal').addEventListener('click', (e) => {
-      if (e.target.id === 'ocrModal') document.getElementById('ocrModal').style.display = 'none';
-    });
-
-    document.getElementById('ocrFileInput').onchange = async (e) => {
+    document.getElementById('photoPdfInput').onchange = (e) => {
       const file = e.target.files[0];
       e.target.value = '';
-      if (!file || !currentCfg) return;
-      const subjectAtStart = selectedSubject;
-      const body = document.getElementById('ocrModalBody');
-      document.getElementById('ocrApplyBtn').style.display = 'none';
-      body.innerHTML = '<div class="empty-hint">인식 중...</div>';
-      document.getElementById('ocrModal').style.display = 'flex';
-      const ocrTriggerBtn = document.getElementById('ocrTriggerBtn');
-      if (ocrTriggerBtn) ocrTriggerBtn.disabled = true;
-      try {
-        const text = await recognizeReportCard(file, (m) => {
-          if (m.status === 'recognizing text' && typeof m.progress === 'number') {
-            body.innerHTML = `<div class="empty-hint">인식 중... ${Math.round(m.progress * 100)}%</div>`;
-          }
-        });
-        if (selectedSubject !== subjectAtStart) {
-          body.innerHTML = '<div class="empty-hint">다른 과목으로 전환되어 인식을 취소했어요. 다시 시도해주세요.</div>';
-          return;
-        }
-        const blocks = parseReportCardText(text);
-        const match = matchOcrBlockToSubject(blocks, selectedSubject, currentCfg);
-        if (!match) {
-          body.innerHTML = '<div class="empty-hint">사진에서 글자를 인식하지 못했어요. 더 밝은 곳에서 정면으로 다시 찍어보세요.</div>';
-          return;
-        }
-        renderOcrReview(match);
-      } catch (err) {
-        if (err.message === 'tesseract-load-failed') {
-          body.innerHTML = '<div class="empty-hint">OCR 엔진을 불러오지 못했어요. 인터넷 연결을 확인하거나 직접 입력해주세요.</div>';
-        } else {
-          console.error(err);
-          body.innerHTML = '<div class="empty-hint">사진을 처리하는 중 오류가 났어요. 다시 시도해주세요.</div>';
-        }
-      } finally {
-        if (ocrTriggerBtn) ocrTriggerBtn.disabled = false;
-      }
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById('pdfPrintArea').innerHTML = `<img src="${reader.result}">`;
+        window.print();
+      };
+      reader.readAsDataURL(file);
     };
 
     function collectData() {

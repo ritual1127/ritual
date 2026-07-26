@@ -496,11 +496,13 @@ body {
   display: flex; align-items: center; justify-content: center;
 }
 
-.ocr-warn-banner {
-  background: rgba(245,158,11,0.12); border: 1px solid #f59e0b; color: #f59e0b;
-  border-radius: 10px; padding: 10px 14px; font-size: 13px; margin-bottom: 14px;
+#pdfPrintArea { display: none; }
+@media print {
+  body * { visibility: hidden; }
+  #pdfPrintArea, #pdfPrintArea * { visibility: visible; }
+  #pdfPrintArea { display: block; position: fixed; top: 0; left: 0; width: 100%; }
+  #pdfPrintArea img { width: 100%; }
 }
-.ocr-review-section h3 { font-size: 15px; margin: 14px 0 8px; color: var(--fg); }
 
 .notify-row { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--inp-border); }
 .notify-row .mini-btn.active { background: var(--primary); color: #fff; }
