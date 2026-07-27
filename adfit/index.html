@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>애드핏 대시보드 - 카카오애드핏 데일리 리포트 분석 | 성적 계산기</title>
+  <meta name="description" content="카카오애드핏 데일리 리포트 문자를 붙여넣기만 하면 예상 적립금·요청수·노출수·클릭수·CTR·eCPM 추이를 그래프로 분석해주는 무료 대시보드">
+  <meta name="keywords" content="카카오애드핏, 애드핏 리포트, 애드핏 대시보드, 애드핏 분석, adfit dashboard">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://naver1.cloud/adfit">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="애드핏 대시보드 - 카카오애드핏 리포트 분석">
+  <meta property="og:description" content="데일리 리포트 문자를 붙여넣으면 자동으로 파싱해 추이 그래프를 그려드려요.">
+  <meta property="og:url" content="https://naver1.cloud/adfit">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="icon" href="../icon-192.png">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .paste-box textarea {
+      width: 100%; min-height: 220px; padding: 12px;
+      font-size: 13px; line-height: 1.6; font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+      background: var(--inp-bg); border: 1px solid var(--inp-border);
+      border-radius: 10px; color: var(--fg); resize: vertical;
+    }
+    .metric-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;
+    }
+    @media (min-width: 768px) { .metric-grid { grid-template-columns: repeat(4, 1fr); } }
+    .metric-card {
+      background: var(--inp-bg); border-radius: 12px; padding: 14px;
+      border: 1px solid var(--inp-border);
+    }
+    .metric-card .label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .metric-card .value { font-size: 20px; font-weight: 700; }
+    .metric-card .delta { font-size: 12px; margin-top: 4px; }
+    .metric-card .delta.up { color: var(--success); }
+    .metric-card .delta.down { color: var(--danger); }
+    .metric-select {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;
+    }
+    .metric-select button {
+      padding: 6px 12px; border-radius: 16px; font-size: 13px; font-weight: 600;
+      border: 1px solid var(--inp-border); background: var(--inp-bg); color: var(--fg); cursor: pointer;
+    }
+    .metric-select button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    #adfitChart { width: 100%; height: 280px; display: block; }
+    @media (min-width: 768px) { #adfitChart { height: 360px; } }
+    .log-table th, .log-table td { white-space: nowrap; }
+    .empty-hint.small { padding: 24px 0; }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <h1><span>애드핏</span> 대시보드</h1>
+  </div>
+  <p class="tagline">카카오애드핏 데일리 리포트 문자를 붙여넣으면 추이를 그래프로 보여드려요</p>
+
+  <div class="nav-tabs">
+    <a class="nav-tab" href="../index.html">계산기</a>
+    <a class="nav-tab" href="../todayfood/">급식</a>
+    <a class="nav-tab" href="../todayclass/">시간표</a>
+    <a class="nav-tab active" href="./">애드핏</a>
+  </div>
+
+  <div class="box paste-box">
+    <label style="display:block; font-size:14px; color:var(--muted); margin-bottom:8px;">데일리 리포트 붙여넣기</label>
+    <textarea id="reportInput" placeholder="[카카오애드핏 데일리 리포트]
+
+▶︎ 조회일:  2026년 7월 26일 (Sun)
+
+✓ 예상 적립금 : 4,407원  (+3,980.56%)
++ 요청수 : 62,645 (+4,911.6%)
+..."></textarea>
+    <button type="button" class="btn" id="parseBtn">리포트 추가</button>
+    <div id="parseMsg" style="font-size:13px; color:var(--muted); text-align:center;"></div>
+  </div>
+
+  <div id="dashboard" style="display:none;">
+    <div class="box">
+      <div class="section-head"><h2>최신 리포트 (<span id="latestDate"></span>)</h2></div>
+      <div class="metric-grid" id="metricGrid"></div>
+      <div style="display:flex; justify-content:space-between; font-size:14px; color:var(--muted);">
+        <span>전체 예상 적립금: <strong id="totalEstimate" style="color:var(--fg);"></strong></span>
+        <span>확정 적립금: <strong id="totalConfirmed" style="color:var(--fg);"></strong></span>
+      </div>
+    </div>
+
+    <div class="box chart-wrap">
+      <h3>지표 추이</h3>
+      <div class="metric-select" id="metricSelect"></div>
+      <canvas id="adfitChart"></canvas>
+    </div>
+
+    <div class="box">
+      <div class="section-head">
+        <h2>기록</h2>
+        <button class="mini-btn" id="clearBtn">전체 삭제</button>
+      </div>
+      <div class="table-container">
+        <table class="record-table log-table" id="logTable">
+          <thead>
+            <tr><th>조회일</th><th>적립금</th><th>요청수</th><th>노출수</th><th>클릭수</th><th>CTR</th><th>eCPM</th><th></th></tr>
+          </thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="emptyState" class="box">
+    <div class="empty-hint small">아직 등록된 리포트가 없어요. 위에 데일리 리포트를 붙여넣고 [리포트 추가]를 눌러주세요.</div>
+  </div>
+
+  <div style="text-align:center; margin:16px 0;">
+    <ins class="kakao_ad_area" style="display:none;"
+    data-ad-unit = "DAN-qFgxh1fm4CIwM4Ry"
+    data-ad-width = "320"
+    data-ad-height = "50"></ins>
+  </div>
+
+  <footer class="site-footer">
+    애드핏 대시보드 · 붙여넣은 리포트는 이 기기의 브라우저에만 저장됩니다.<br>
+    © 2026 성적 계산기. All rights reserved.
+  </footer>
+  <div class="footer-links">
+    <a href="../guide/">사용법 안내</a>·
+    <a href="../blog/">블로그</a>·
+    <a href="../privacy/">개인정보처리방침</a>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'adfitReports';
+    const METRICS = [
+      { key: 'estimate', label: '예상 적립금', unit: '원', color: '#4f46e5' },
+      { key: 'requests', label: '요청수', unit: '', color: '#0ea5e9' },
+      { key: 'impressions', label: '노출수', unit: '', color: '#f59e0b' },
+      { key: 'rendered', label: '렌더드 노출수', unit: '', color: '#8b5cf6' },
+      { key: 'clicks', label: '클릭수', unit: '', color: '#ec4899' },
+      { key: 'ctr', label: 'CTR', unit: '%', color: '#10b981' },
+      { key: 'ecpm', label: 'eCPM', unit: '원', color: '#ef4444' },
+    ];
+
+    function loadReports() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+      catch { return []; }
+    }
+    function saveReports(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+
+    function num(str) {
+      if (str == null) return null;
+      const n = parseFloat(str.replace(/[,%]/g, ''));
+      return isNaN(n) ? null : n;
+    }
+
+    // Exact label -> field key. Order matters: longer labels ("렌더드 노출수") are matched
+    // before their substrings ("노출수") by checking full-line equality, not substring search.
+    const LINE_FIELDS = [
+      ['예상 적립금', 'estimate'],
+      ['요청수', 'requests'],
+      ['렌더드 노출수', 'rendered'],
+      ['노출수', 'impressions'],
+      ['클릭수', 'clicks'],
+      ['CTR', 'ctr'],
+      ['eCPM', 'ecpm'],
+    ];
+
+    function parseReport(text) {
+      const dateMatch = text.match(/조회일\s*:\s*(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/);
+      if (!dateMatch) return null;
+      const date = `${dateMatch[1]}-${String(dateMatch[2]).padStart(2, '0')}-${String(dateMatch[3]).padStart(2, '0')}`;
+
+      const result = { date, savedAt: Date.now() };
+      const lines = text.split('\n');
+      for (const rawLine of lines) {
+        const line = rawLine.replace(/^[✓+\-\s]+/, '').trim();
+        for (const [label, key] of LINE_FIELDS) {
+          if (!line.startsWith(label)) continue;
+          const rest = line.slice(label.length);
+          if (!/^\s*:/.test(rest)) continue;
+          const valueMatch = rest.match(/:\s*([\d,\.]+)/);
+          const deltaMatch = rest.match(/\(([+\-][\d,\.]+)%\)/);
+          result[key] = valueMatch ? num(valueMatch[1]) : null;
+          result[key + 'Delta'] = deltaMatch ? num(deltaMatch[1]) : null;
+          break;
+        }
+      }
+
+      const totalEstimateMatch = text.match(/전체 예상 적립금\s*:\s*([\d,\.]+)\s*원/);
+      const confirmedMatch = text.match(/확정 적립금\s*:\s*([\d,\.]+)\s*원/);
+      result.totalEstimate = totalEstimateMatch ? num(totalEstimateMatch[1]) : null;
+      result.totalConfirmed = confirmedMatch ? num(confirmedMatch[1]) : null;
+
+      return result;
+    }
+
+    function fmt(n, unit) {
+      if (n == null) return '-';
+      const s = unit === '%' ? n.toFixed(2) : Math.round(n).toLocaleString('ko-KR');
+      return s + unit;
+    }
+
+    let activeMetric = 'estimate';
+
+    function render() {
+      const reports = loadReports().sort((a, b) => a.date.localeCompare(b.date));
+      const hasData = reports.length > 0;
+      document.getElementById('dashboard').style.display = hasData ? 'block' : 'none';
+      document.getElementById('emptyState').style.display = hasData ? 'none' : 'block';
+      if (!hasData) return;
+
+      const latest = reports[reports.length - 1];
+      document.getElementById('latestDate').textContent = latest.date;
+      document.getElementById('totalEstimate').textContent = fmt(latest.totalEstimate, '원');
+      document.getElementById('totalConfirmed').textContent = fmt(latest.totalConfirmed, '원');
+
+      const grid = document.getElementById('metricGrid');
+      grid.innerHTML = METRICS.map(m => {
+        const v = latest[m.key];
+        const d = latest[m.key + 'Delta'];
+        const deltaHtml = d == null ? '' : `<div class="delta ${d >= 0 ? 'up' : 'down'}">${d >= 0 ? '▲' : '▼'} ${Math.abs(d).toLocaleString('ko-KR')}%</div>`;
+        return `<div class="metric-card"><div class="label">${m.label}</div><div class="value">${fmt(v, m.unit)}</div>${deltaHtml}</div>`;
+      }).join('');
+
+      const select = document.getElementById('metricSelect');
+      select.innerHTML = METRICS.map(m =>
+        `<button data-key="${m.key}" class="${m.key === activeMetric ? 'active' : ''}">${m.label}</button>`
+      ).join('');
+      select.querySelectorAll('button').forEach(btn => {
+        btn.onclick = () => { activeMetric = btn.dataset.key; render(); };
+      });
+
+      drawChart(reports);
+
+      const body = document.getElementById('logBody');
+      body.innerHTML = reports.slice().reverse().map(r => `
+        <tr>
+          <td>${r.date}</td>
+          <td>${fmt(r.estimate, '원')}</td>
+          <td>${fmt(r.requests, '')}</td>
+          <td>${fmt(r.impressions, '')}</td>
+          <td>${fmt(r.clicks, '')}</td>
+          <td>${fmt(r.ctr, '%')}</td>
+          <td>${fmt(r.ecpm, '원')}</td>
+          <td><button class="delete-btn" data-date="${r.date}">삭제</button></td>
+        </tr>
+      `).join('');
+      body.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.onclick = () => {
+          const list = loadReports().filter(r => r.date !== btn.dataset.date);
+          saveReports(list);
+          render();
+        };
+      });
+    }
+
+    function drawChart(reports) {
+      const canvas = document.getElementById('adfitChart');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width, h = canvas.clientHeight || 280;
+      canvas.width = w * dpr; canvas.height = h * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+
+      const metric = METRICS.find(m => m.key === activeMetric);
+      const points = reports.map(r => ({ date: r.date, value: r[metric.key] })).filter(p => p.value != null);
+      if (points.length === 0) return;
+
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+      const textColor = isDark ? '#9a9ab0' : '#6b7280';
+
+      const padL = 48, padR = 12, padT = 16, padB = 28;
+      const plotW = w - padL - padR, plotH = h - padT - padB;
+
+      const values = points.map(p => p.value);
+      let min = Math.min(...values), max = Math.max(...values);
+      if (min === max) { min -= 1; max += 1; }
+      const margin = (max - min) * 0.1;
+      min -= margin; max += margin;
+
+      ctx.strokeStyle = gridColor; ctx.fillStyle = textColor;
+      ctx.font = '11px -apple-system, sans-serif';
+      ctx.lineWidth = 1;
+      const ySteps = 4;
+      for (let i = 0; i <= ySteps; i++) {
+        const y = padT + (plotH / ySteps) * i;
+        ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+        const val = max - ((max - min) / ySteps) * i;
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        ctx.fillText(Math.round(val).toLocaleString('ko-KR'), padL - 6, y);
+      }
+
+      const xStep = points.length > 1 ? plotW / (points.length - 1) : 0;
+      const coords = points.map((p, i) => ({
+        x: padL + xStep * i,
+        y: padT + plotH - ((p.value - min) / (max - min)) * plotH,
+      }));
+
+      ctx.strokeStyle = metric.color; ctx.lineWidth = 2;
+      ctx.beginPath();
+      coords.forEach((c, i) => i === 0 ? ctx.moveTo(c.x, c.y) : ctx.lineTo(c.x, c.y));
+      ctx.stroke();
+
+      const grad = ctx.createLinearGradient(0, padT, 0, padT + plotH);
+      grad.addColorStop(0, metric.color + '33');
+      grad.addColorStop(1, metric.color + '00');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      coords.forEach((c, i) => i === 0 ? ctx.moveTo(c.x, c.y) : ctx.lineTo(c.x, c.y));
+      ctx.lineTo(coords[coords.length - 1].x, padT + plotH);
+      ctx.lineTo(coords[0].x, padT + plotH);
+      ctx.closePath(); ctx.fill();
+
+      ctx.fillStyle = metric.color;
+      coords.forEach(c => { ctx.beginPath(); ctx.arc(c.x, c.y, 3, 0, Math.PI * 2); ctx.fill(); });
+
+      ctx.fillStyle = textColor; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      const labelEvery = Math.ceil(points.length / 6) || 1;
+      points.forEach((p, i) => {
+        if (i % labelEvery !== 0 && i !== points.length - 1) return;
+        const label = p.date.slice(5).replace('-', '/');
+        ctx.fillText(label, coords[i].x, padT + plotH + 6);
+      });
+    }
+
+    document.getElementById('parseBtn').onclick = () => {
+      const text = document.getElementById('reportInput').value.trim();
+      const msg = document.getElementById('parseMsg');
+      if (!text) { msg.textContent = '리포트 내용을 붙여넣어주세요.'; return; }
+      const parsed = parseReport(text);
+      if (!parsed) { msg.textContent = '조회일을 찾을 수 없어요. 형식을 확인해주세요.'; return; }
+      const list = loadReports().filter(r => r.date !== parsed.date);
+      list.push(parsed);
+      saveReports(list);
+      document.getElementById('reportInput').value = '';
+      msg.textContent = `${parsed.date} 리포트를 저장했어요.`;
+      render();
+    };
+
+    document.getElementById('clearBtn').onclick = () => {
+      if (!confirm('저장된 모든 리포트를 삭제할까요?')) return;
+      saveReports([]);
+      render();
+    };
+
+    window.addEventListener('resize', () => { if (loadReports().length) drawChart(loadReports().sort((a,b)=>a.date.localeCompare(b.date))); });
+
+    render();
+  </script>
+  <script type="text/javascript" src="//t1.kakaocdn.net/kas/static/ba.min.js" async></script>
+</body>
+</html>
