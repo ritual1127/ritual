@@ -534,5 +534,8 @@ body {
 [data-theme="dark"] .cut-table tbody tr:nth-child(even) td { background: var(--inp-bg); }
 .cut-table tr.hit td { background: var(--primary) !important; color: #fff; font-weight: 700; }
 .calc-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.calc-scroll .calc-row, .calc-scroll .calc-head { min-width: 460px; }
+.calc-scroll .calc-row, .calc-scroll .calc-head { min-width: 430px; }
 .calc-scroll .calc-row.gpa, .calc-scroll .calc-head.gpa { min-width: 320px; }
+/* 4열짜리 결과표는 좁은 화면에서도 그대로 들어가게 */
+.record-table.compact { min-width: 0; }
+.record-table.compact th, .record-table.compact td { width: auto !important; }
