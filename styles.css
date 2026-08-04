@@ -378,26 +378,6 @@ body {
   .graph-summary { grid-template-columns: 1fr; }
 }
 
-.ad-desktop, .ad-mobile { text-align: center; margin-top: 20px; }
-.ad-mobile { display: block; }
-.ad-desktop { display: none; }
-@media (min-width: 768px) {
-  .ad-mobile { display: none; }
-  .ad-desktop { display: block; }
-}
-
-.ad-side { display: none; position: fixed; top: 50%; transform: translateY(-50%); }
-.ad-side.left { left: 20px; }
-.ad-side.right { right: 20px; }
-@media (min-width: 1440px) {
-  .ad-side { display: block; }
-}
-
-.ad-mobile-top, .ad-mobile-strip { display: block; text-align: center; margin: 16px 0; }
-@media (min-width: 768px) {
-  .ad-mobile-top, .ad-mobile-strip { display: none; }
-}
-
 .site-banner {
   display: flex; gap: 12px; flex-wrap: wrap;
 }
