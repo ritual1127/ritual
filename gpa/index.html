@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>학점 계산기 - 평점평균(GPA) 4.5·4.3·4.0 자동 계산 | 성적 계산기</title>
+  <meta name="description" content="과목별 학점과 성적만 입력하면 평점평균(GPA)을 바로 계산해주는 무료 학점 계산기. 4.5 / 4.3 / 4.0 만점 기준을 모두 지원합니다.">
+  <meta name="keywords" content="학점 계산기, 평점평균 계산기, GPA 계산기, 4.5 만점, 4.3 만점, 백분위 환산">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://naver1.cloud/gpa/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="학점 계산기 - 평점평균(GPA) 자동 계산">
+  <meta property="og:description" content="과목별 학점과 성적만 입력하면 평점평균이 바로 나와요.">
+  <meta property="og:url" content="https://naver1.cloud/gpa/">
+  <meta property="og:image" content="https://naver1.cloud/icon-512.png">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="icon" href="../icon-192.png">
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../site-nav.js"></script>
+</head>
+<body>
+
+  <div class="top-bar">
+    <h1><span>학점</span> 계산기</h1>
+    <div class="top-controls">
+      <button id="themeToggle">다크 모드</button>
+    </div>
+  </div>
+  <p class="tagline">과목별 학점과 성적만 입력하면 평점평균이 바로 나와요</p>
+
+  <div class="mode-tabs">
+    <button type="button" class="scale-btn active" data-scale="4.5">4.5 만점</button>
+    <button type="button" class="scale-btn" data-scale="4.3">4.3 만점</button>
+    <button type="button" class="scale-btn" data-scale="4.0">4.0 만점</button>
+  </div>
+
+  <div class="box">
+    <div class="section-head">
+      <h2 style="font-size:16px;">수강 과목</h2>
+      <button type="button" class="mini-btn" id="addRowBtn">+ 과목 추가</button>
+    </div>
+
+    <div class="calc-scroll">
+      <div class="calc-head gpa"><span>과목명</span><span>학점</span><span>성적</span><span></span></div>
+      <div id="rows"></div>
+    </div>
+
+    <button type="button" class="btn" id="calcBtn">평점 계산하기</button>
+  </div>
+
+  <div class="box" id="resultBox" style="display:none;">
+    <div class="big-result">
+      <div class="num" id="gpaNum">-</div>
+      <div class="sub" id="gpaSub"></div>
+    </div>
+    <div class="table-container">
+      <table class="record-table">
+        <thead><tr><th>과목</th><th>학점</th><th>성적</th><th>평점</th></tr></thead>
+        <tbody id="resultBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="box">
+    <h2 style="font-size:16px;margin-bottom:12px;" id="scaleTitle">성적별 평점표</h2>
+    <table class="cut-table">
+      <thead><tr><th>성적</th><th>평점</th></tr></thead>
+      <tbody id="scaleBody"></tbody>
+    </table>
+    <p style="font-size:12px;color:var(--muted);margin-top:12px;line-height:1.7;">
+      평점평균 = Σ(과목 평점 × 학점) ÷ Σ학점<br>
+      P(패스)는 평점 계산에서 제외되고, F는 0점으로 학점에 포함됩니다.
+    </p>
+  </div>
+
+  <div style="text-align:center; margin:16px 0;">
+    <ins class="kakao_ad_area" style="display:none;"
+    data-ad-unit = "DAN-i1g4HxCv6ixUUKmt"
+    data-ad-width = "320"
+    data-ad-height = "50"></ins>
+  </div>
+
+  <footer class="site-footer">
+    학점 계산기 · 대학별 평점 기준이 다를 수 있으니 학교 학사 규정을 함께 확인하세요.<br>
+    © 2026 성적 계산기. All rights reserved.
+  </footer>
+  <div class="footer-links">
+    <a href="../guide/">사용법 안내</a>·
+    <a href="../blog/">블로그</a>·
+    <a href="../privacy/">개인정보처리방침</a>
+  </div>
+
+  <script async src="//t1.daumcdn.net/kas/static/ba.min.js"></script>
+  <script>
+    const SCALES = {
+      '4.5': { 'A+':4.5,'A0':4.0,'B+':3.5,'B0':3.0,'C+':2.5,'C0':2.0,'D+':1.5,'D0':1.0,'F':0 },
+      '4.3': { 'A+':4.3,'A0':4.0,'A-':3.7,'B+':3.3,'B0':3.0,'B-':2.7,'C+':2.3,'C0':2.0,'C-':1.7,'D+':1.3,'D0':1.0,'D-':0.7,'F':0 },
+      '4.0': { 'A+':4.0,'A0':4.0,'A-':3.7,'B+':3.3,'B0':3.0,'B-':2.7,'C+':2.3,'C0':2.0,'C-':1.7,'D+':1.3,'D0':1.0,'D-':0.7,'F':0 },
+    };
+    let scale = '4.5';
+
+    const $ = id => document.getElementById(id);
+    const rowsEl = $('rows');
+
+    function gradeOptions(sel) {
+      const keys = [...Object.keys(SCALES[scale]), 'P'];
+      const pick = keys.includes(sel) ? sel : 'A+';
+      return keys.map(k => `<option value="${k}"${k === pick ? ' selected' : ''}>${k}</option>`).join('');
+    }
+
+    function addRow(d = {}) {
+      const div = document.createElement('div');
+      div.className = 'calc-row gpa';
+      div.innerHTML = `
+        <input type="text" class="c-name" placeholder="예: 미적분학" value="${d.name || ''}">
+        <input type="number" class="c-credit" min="0" step="0.5" placeholder="3" value="${d.credit || ''}">
+        <select class="c-grade">${gradeOptions(d.grade)}</select>
+        <button type="button" class="del" title="삭제">✕</button>`;
+      div.querySelector('.del').onclick = () => { div.remove(); save(); };
+      div.querySelectorAll('input,select').forEach(i => i.addEventListener('change', save));
+      rowsEl.appendChild(div);
+    }
+
+    function readRows() {
+      return [...rowsEl.children].map(r => ({
+        name: r.querySelector('.c-name').value.trim(),
+        credit: parseFloat(r.querySelector('.c-credit').value),
+        grade: r.querySelector('.c-grade').value,
+      }));
+    }
+
+    function save() {
+      localStorage.setItem('gpaRows', JSON.stringify(readRows()));
+      localStorage.setItem('gpaScale', scale);
+    }
+
+    function renderScaleTable() {
+      $('scaleTitle').textContent = scale + ' 만점 기준 평점표';
+      $('scaleBody').innerHTML =
+        Object.entries(SCALES[scale]).map(([k, v]) => `<tr><td>${k}</td><td>${v.toFixed(1)}</td></tr>`).join('') +
+        '<tr><td>P</td><td>계산 제외</td></tr>';
+    }
+
+    function calc() {
+      const rows = readRows().filter(r => r.credit > 0);
+      if (!rows.length) { alert('학점을 입력한 과목이 없어요.'); return; }
+
+      const table = SCALES[scale];
+      let sumC = 0, sumP = 0, totalCredit = 0;
+      $('resultBody').innerHTML = rows.map(r => {
+        totalCredit += r.credit;
+        if (r.grade === 'P') {
+          return `<tr><td class="subject">${r.name || '(과목)'}</td><td>${r.credit}</td><td>P</td><td>제외</td></tr>`;
+        }
+        const p = table[r.grade] ?? 0;
+        sumC += r.credit; sumP += p * r.credit;
+        return `<tr><td class="subject">${r.name || '(과목)'}</td><td>${r.credit}</td>
+                <td>${r.grade}</td><td>${p.toFixed(1)}</td></tr>`;
+      }).join('');
+
+      if (!sumC) { alert('P를 제외한 과목이 없어 평점을 계산할 수 없어요.'); return; }
+      const gpa = sumP / sumC;
+      $('gpaNum').textContent = gpa.toFixed(2) + ' / ' + scale;
+      $('gpaSub').textContent =
+        `총 이수 ${totalCredit}학점 · 평점 반영 ${sumC}학점 · 백분위 환산 약 ${(gpa / parseFloat(scale) * 100).toFixed(1)}점`;
+      $('resultBox').style.display = 'block';
+      save();
+    }
+
+    function setScale(s) {
+      const prev = readRows();
+      scale = s;
+      document.querySelectorAll('.scale-btn').forEach(b => b.classList.toggle('active', b.dataset.scale === s));
+      rowsEl.innerHTML = '';
+      prev.forEach(addRow);           // 새 기준에 없는 등급은 A+로 되돌아감
+      renderScaleTable();
+      if ($('resultBox').style.display === 'block') calc();
+      save();
+    }
+
+    document.querySelectorAll('.scale-btn').forEach(b => b.onclick = () => setScale(b.dataset.scale));
+    $('addRowBtn').onclick = () => addRow();
+    $('calcBtn').onclick = calc;
+
+    // 테마
+    const themeToggle = $('themeToggle');
+    function applyTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      themeToggle.textContent = t === 'dark' ? '라이트 모드' : '다크 모드';
+      localStorage.setItem('theme', t);
+    }
+    applyTheme(document.documentElement.getAttribute('data-theme') || 'light');
+    themeToggle.onclick = () =>
+      applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+
+    // 초기화
+    scale = SCALES[localStorage.getItem('gpaScale')] ? localStorage.getItem('gpaScale') : '4.5';
+    const saved = JSON.parse(localStorage.getItem('gpaRows') || '[]');
+    (saved.length ? saved : [{}, {}, {}]).forEach(addRow);
+    setScale(scale);
+
+    // 자체 점검 (콘솔)
+    console.assert(SCALES['4.5']['A+'] === 4.5 && SCALES['4.3']['A+'] === 4.3, '만점 기준');
+    console.assert(
+      (4.5 * 3 + 3.0 * 2) / 5 === 3.9, '평점평균 산식'
+    );
+  </script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>내신 석차등급 계산기 - 9등급제·5등급제 자동 계산 | 성적 계산기</title>
+  <meta name="description" content="수강자 수와 석차만 입력하면 내신 석차등급(9등급제·5등급제)과 과목별 평균 등급을 자동으로 계산해주는 무료 계산기입니다.">
+  <meta name="keywords" content="내신 석차등급 계산기, 9등급제, 5등급제, 내신 등급 계산기, 석차 백분율, 평균 등급">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://naver1.cloud/rank/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="내신 석차등급 계산기 - 9등급제·5등급제">
+  <meta property="og:description" content="수강자 수와 석차만 입력하면 내신 석차등급을 바로 계산해드려요.">
+  <meta property="og:url" content="https://naver1.cloud/rank/">
+  <meta property="og:image" content="https://naver1.cloud/icon-512.png">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="icon" href="../icon-192.png">
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../site-nav.js"></script>
+</head>
+<body>
+
+  <div class="top-bar">
+    <h1><span>내신</span> 석차등급</h1>
+    <div class="top-controls">
+      <button id="themeToggle">다크 모드</button>
+    </div>
+  </div>
+  <p class="tagline">수강자 수와 석차만 입력하면 등급이 바로 나와요</p>
+
+  <div class="mode-tabs">
+    <button type="button" id="mode9" class="active">9등급제</button>
+    <button type="button" id="mode5">5등급제</button>
+  </div>
+
+  <div class="box">
+    <div class="section-head">
+      <h2 style="font-size:16px;">과목별 입력</h2>
+      <button type="button" class="mini-btn" id="addRowBtn">+ 과목 추가</button>
+    </div>
+
+    <div class="calc-scroll">
+      <div class="calc-head">
+        <span>과목명</span><span>단위수</span><span>수강자수</span><span>석차</span><span>동점자</span><span></span>
+      </div>
+      <div id="rows"></div>
+    </div>
+
+    <button type="button" class="btn" id="calcBtn">등급 계산하기</button>
+  </div>
+
+  <div class="box" id="resultBox" style="display:none;">
+    <div class="big-result">
+      <div class="num" id="avgGrade">-</div>
+      <div class="sub" id="avgSub">전 과목 평균 등급</div>
+    </div>
+    <div class="table-container">
+      <table class="record-table" id="resultTable">
+        <thead>
+          <tr><th>과목</th><th>단위</th><th>백분율</th><th>등급</th></tr>
+        </thead>
+        <tbody id="resultBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="box">
+    <h2 style="font-size:16px;margin-bottom:12px;" id="cutTitle">9등급제 등급 구간</h2>
+    <table class="cut-table">
+      <thead><tr><th>등급</th><th>누적 백분율</th><th>비율</th></tr></thead>
+      <tbody id="cutBody"></tbody>
+    </table>
+    <p style="font-size:12px;color:var(--muted);margin-top:12px;line-height:1.7;">
+      석차 백분율 = (석차 + (동점자 수 − 1) ÷ 2) ÷ 수강자 수 × 100<br>
+      동점자가 없으면 동점자 수는 1로 두면 됩니다.
+    </p>
+  </div>
+
+  <div style="text-align:center; margin:16px 0;">
+    <ins class="kakao_ad_area" style="display:none;"
+    data-ad-unit = "DAN-i1g4HxCv6ixUUKmt"
+    data-ad-width = "320"
+    data-ad-height = "50"></ins>
+  </div>
+
+  <footer class="site-footer">
+    내신 석차등급 계산기 · 2028 대입 개편(5등급제)과 기존 9등급제를 모두 지원합니다.<br>
+    © 2026 성적 계산기. All rights reserved.
+  </footer>
+  <div class="footer-links">
+    <a href="../guide/">사용법 안내</a>·
+    <a href="../blog/">블로그</a>·
+    <a href="../privacy/">개인정보처리방침</a>
+  </div>
+
+  <script async src="//t1.daumcdn.net/kas/static/ba.min.js"></script>
+  <script>
+    // 등급 커트라인: [최대 누적 백분율, 해당 구간 비율(%)]
+    const CUTS = {
+      9: [[4,4],[11,7],[23,12],[40,17],[60,20],[77,17],[89,12],[96,7],[100,4]],
+      5: [[10,10],[34,24],[66,32],[90,24],[100,10]],
+    };
+    let system = 9;
+
+    const $ = id => document.getElementById(id);
+    const rowsEl = $('rows');
+
+    function gradeOf(pct, sys) {
+      const cuts = CUTS[sys];
+      for (let i = 0; i < cuts.length; i++) if (pct <= cuts[i][0]) return i + 1;
+      return cuts.length;
+    }
+
+    function addRow(d = {}) {
+      const div = document.createElement('div');
+      div.className = 'calc-row';
+      div.innerHTML = `
+        <input type="text" class="c-name" placeholder="예: 수학" value="${d.name || ''}">
+        <input type="number" class="c-unit" min="1" placeholder="4" value="${d.unit || ''}">
+        <input type="number" class="c-total" min="1" placeholder="200" value="${d.total || ''}">
+        <input type="number" class="c-rank" min="1" placeholder="15" value="${d.rank || ''}">
+        <input type="number" class="c-tie" min="1" value="${d.tie || 1}">
+        <button type="button" class="del" title="삭제">✕</button>`;
+      div.querySelector('.del').onclick = () => { div.remove(); save(); };
+      div.querySelectorAll('input').forEach(i => i.addEventListener('change', save));
+      rowsEl.appendChild(div);
+    }
+
+    function readRows() {
+      return [...rowsEl.children].map(r => ({
+        name: r.querySelector('.c-name').value.trim(),
+        unit: parseFloat(r.querySelector('.c-unit').value),
+        total: parseFloat(r.querySelector('.c-total').value),
+        rank: parseFloat(r.querySelector('.c-rank').value),
+        tie: parseFloat(r.querySelector('.c-tie').value) || 1,
+      }));
+    }
+
+    function save() {
+      localStorage.setItem('rankRows', JSON.stringify(readRows()));
+      localStorage.setItem('rankSystem', system);
+    }
+
+    function renderCuts() {
+      $('cutTitle').textContent = system + '등급제 등급 구간';
+      $('cutBody').innerHTML = CUTS[system]
+        .map((c, i) => `<tr data-g="${i + 1}"><td>${i + 1}등급</td><td>~ ${c[0]}%</td><td>${c[1]}%</td></tr>`)
+        .join('');
+    }
+
+    function calc() {
+      const rows = readRows().filter(r => r.total > 0 && r.rank > 0 && r.rank <= r.total);
+      if (!rows.length) {
+        alert('수강자 수와 석차를 정확히 입력해주세요. (석차는 수강자 수보다 클 수 없어요)');
+        return;
+      }
+
+      let sumU = 0, sumGU = 0;
+      $('resultBody').innerHTML = rows.map(r => {
+        const pct = (r.rank + (r.tie - 1) / 2) / r.total * 100;
+        const g = gradeOf(pct, system);
+        const unit = r.unit > 0 ? r.unit : 1;
+        sumU += unit; sumGU += g * unit;
+        return `<tr><td class="subject">${r.name || '(과목)'}</td><td>${unit}</td>
+                <td>${pct.toFixed(2)}%</td><td>${g}등급</td></tr>`;
+      }).join('');
+
+      const avg = sumGU / sumU;
+      $('avgGrade').textContent = avg.toFixed(2);
+      $('avgSub').textContent = `전 과목 평균 등급 (단위수 ${sumU} 반영, ${system}등급제)`;
+      $('resultBox').style.display = 'block';
+
+      // 커트라인 표에서 평균 등급 구간 강조
+      document.querySelectorAll('.cut-table tr.hit').forEach(t => t.classList.remove('hit'));
+      const hit = document.querySelector(`.cut-table tr[data-g="${Math.round(avg)}"]`);
+      if (hit) hit.classList.add('hit');
+      save();
+    }
+
+    function setSystem(s) {
+      system = s;
+      $('mode9').classList.toggle('active', s === 9);
+      $('mode5').classList.toggle('active', s === 5);
+      renderCuts();
+      if ($('resultBox').style.display === 'block') calc();
+      save();
+    }
+
+    $('mode9').onclick = () => setSystem(9);
+    $('mode5').onclick = () => setSystem(5);
+    $('addRowBtn').onclick = () => addRow();
+    $('calcBtn').onclick = calc;
+
+    // 테마
+    const themeToggle = $('themeToggle');
+    function applyTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      themeToggle.textContent = t === 'dark' ? '라이트 모드' : '다크 모드';
+      localStorage.setItem('theme', t);
+    }
+    applyTheme(document.documentElement.getAttribute('data-theme') || 'light');
+    themeToggle.onclick = () =>
+      applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+
+    // 초기화
+    const saved = JSON.parse(localStorage.getItem('rankRows') || '[]');
+    (saved.length ? saved : [{}, {}, {}]).forEach(addRow);
+    setSystem(parseInt(localStorage.getItem('rankSystem')) === 5 ? 5 : 9);
+
+    // 자체 점검 (콘솔)
+    console.assert(gradeOf(4, 9) === 1 && gradeOf(4.01, 9) === 2, '9등급 1등급 컷');
+    console.assert(gradeOf(100, 9) === 9 && gradeOf(96, 9) === 8, '9등급 하위 컷');
+    console.assert(gradeOf(10, 5) === 1 && gradeOf(10.1, 5) === 2, '5등급 1등급 컷');
+    console.assert(gradeOf(100, 5) === 5, '5등급 하위 컷');
+  </script>
+</body>
+</html>
