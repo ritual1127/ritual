@@ -685,3 +685,105 @@ body {
   .record-table:not(.compact) th,
   .record-table:not(.compact) td { width: auto !important; padding: 11px 5px; font-size: 13px; }
 }
+
+/* 첫 화면: 저장 없이 바로 계산하는 단일 계산기 */
+.direct-calculator-page .site-nav { margin-bottom: 18px; }
+.direct-header {
+  max-width: 720px; margin: 26px auto 0; justify-content: center; text-align: center;
+}
+.direct-header h1 { margin: 0; cursor: default; font-size: 34px; }
+.direct-tagline {
+  max-width: 720px; margin: 7px auto 22px; text-align: center; font-size: 15px; line-height: 1.55;
+}
+.direct-main { max-width: 720px; margin: 0 auto; }
+.direct-calculator { padding: 28px; }
+.direct-title-row {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 18px;
+  margin-bottom: 22px;
+}
+.direct-title-row h2 { font-size: 22px; line-height: 1.35; }
+.direct-title-row p { margin-top: 5px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.direct-add {
+  flex: 0 0 auto; min-height: 38px; padding: 0 13px; border: 1px solid var(--primary);
+  border-radius: 10px; background: transparent; color: var(--primary); font-size: 13px;
+  font-weight: 700; cursor: pointer;
+}
+.direct-add:hover { background: rgba(79,70,229,.08); }
+.direct-rows { display: grid; gap: 10px; }
+.direct-row {
+  display: grid; grid-template-columns: minmax(140px,1.35fr) minmax(110px,1fr) minmax(110px,1fr) 34px;
+  gap: 10px; align-items: end; padding: 14px; border: 1px solid var(--inp-border);
+  border-radius: 13px; background: var(--bg);
+}
+.direct-field { display: block; min-width: 0; }
+.direct-field > span:first-child {
+  display: block; margin: 0 0 6px 2px; color: var(--muted); font-size: 12px; font-weight: 700;
+}
+.direct-field input {
+  width: 100%; height: 44px; padding: 0 11px; border: 1px solid var(--inp-border);
+  border-radius: 10px; outline: none; background: var(--inp-bg); color: var(--fg); font-size: 16px;
+}
+.direct-field input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,.12); }
+.direct-input-suffix { position: relative; display: block; }
+.direct-input-suffix input { padding-right: 32px; }
+.direct-input-suffix b {
+  position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); font-size: 13px; font-weight: 500; pointer-events: none;
+}
+.direct-delete {
+  width: 34px; height: 44px; border: 0; border-radius: 9px; background: transparent;
+  color: var(--muted); font-size: 24px; line-height: 1; cursor: pointer;
+}
+.direct-delete:hover { background: rgba(239,68,68,.08); color: var(--danger); }
+.direct-weight {
+  display: flex; align-items: center; justify-content: space-between; margin: 14px 0;
+  padding: 13px 15px; border-radius: 11px; background: rgba(239,68,68,.08); font-size: 14px;
+}
+.direct-weight strong { color: var(--danger); font-size: 16px; }
+.direct-weight.ok { background: rgba(16,185,129,.1); }
+.direct-weight.ok strong { color: var(--success); }
+.direct-submit {
+  width: 100%; min-height: 54px; border: 0; border-radius: 12px;
+  background: var(--primary-fill); color: #fff; font-size: 17px; font-weight: 800; cursor: pointer;
+  box-shadow: 0 8px 18px rgba(79,70,229,.2);
+}
+.direct-submit:hover { background: var(--primary-fill-dark); }
+.direct-submit:active { transform: translateY(1px); }
+.direct-result { margin-top: 16px; padding: 20px; border-radius: 13px; text-align: center; }
+.direct-result[hidden] { display: none; }
+.direct-result.success { border: 1px solid rgba(16,185,129,.32); background: rgba(16,185,129,.1); }
+.direct-result.error { border: 1px solid rgba(239,68,68,.3); background: rgba(239,68,68,.08); }
+.direct-result > span { display: block; margin-bottom: 5px; color: var(--muted); font-size: 13px; }
+.direct-result > strong { display: block; font-size: 30px; line-height: 1.3; }
+.direct-result strong em {
+  display: inline-flex; align-items: center; justify-content: center; margin-left: 7px; padding: 3px 9px;
+  border-radius: 8px; background: var(--primary-fill); color: #fff; font-size: 18px; font-style: normal;
+  vertical-align: 3px;
+}
+.direct-result p { margin-top: 5px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.direct-result.error strong { color: var(--danger); font-size: 17px; }
+.direct-calculator-page .site-footer { max-width: 720px; margin-left: auto; margin-right: auto; }
+
+@media (max-width: 600px) {
+  .direct-calculator-page { padding-left: 12px; padding-right: 12px; }
+  .direct-calculator-page .site-nav { margin-bottom: 12px; }
+  .direct-header { margin-top: 17px; }
+  .direct-header h1 { margin: 0; font-size: 28px; }
+  .direct-tagline { margin: 5px 8px 16px; font-size: 13px; }
+  .direct-calculator { margin-bottom: 12px; padding: 17px 14px; border-radius: 15px; }
+  .direct-title-row { align-items: center; margin-bottom: 16px; gap: 8px; }
+  .direct-title-row h2 { font-size: 19px; }
+  .direct-title-row p { max-width: 210px; font-size: 12px; }
+  .direct-add { min-height: 40px; padding: 0 10px; white-space: nowrap; }
+  .direct-row {
+    position: relative; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 11px 8px;
+    padding: 13px; padding-top: 14px;
+  }
+  .direct-name { grid-column: 1 / -1; padding-right: 34px; }
+  .direct-field input { height: 47px; font-size: 16px; }
+  .direct-delete { position: absolute; top: 29px; right: 10px; width: 34px; height: 40px; }
+  .direct-weight { margin: 12px 0; }
+  .direct-submit { min-height: 54px; font-size: 16px; }
+  .direct-result { padding: 17px 12px; }
+  .direct-result > strong { font-size: 27px; }
+}
