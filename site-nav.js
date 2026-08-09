@@ -3,6 +3,7 @@
   const CURRENT_PATH = location.pathname.replace(/index\.html$/, '');
   const CALCULATOR_PATHS = ['/', '/target-score/', '/rank/', '/gpa/', '/gpa-converter/'];
   if (CALCULATOR_PATHS.includes(CURRENT_PATH)) document.documentElement.classList.add('calculator-page');
+  if (CALCULATOR_PATHS.includes(CURRENT_PATH) && CURRENT_PATH !== '/') document.documentElement.classList.add('tool-page');
 
   document.documentElement.setAttribute(
     'data-theme',
