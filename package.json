@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node scripts/validate.mjs"
+    "test": "node scripts/validate.mjs",
+    "test:seo": "node scripts/seo-audit.mjs"
   }
 }

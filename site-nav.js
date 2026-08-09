@@ -62,7 +62,7 @@
     const grid = document.querySelector('.article-card-grid');
     if (!grid) return;
     const groups = [
-      ['점수 계산', '반영비율과 목표점수를 계산할 때', ['performance-exam-weight','target-exam-score','raw-score-and-grade']],
+      ['점수 계산', '반영비율과 목표점수를 계산할 때', ['performance-exam-weight','target-exam-score','raw-score-and-grade','grade-calculation']],
       ['내신등급', '석차와 5·9등급제가 궁금할 때', ['five-grade-system','nine-grade-system','rank-percentile','tied-rank']],
       ['대학 학점', 'GPA 평균과 만점 환산이 필요할 때', ['gpa-average','gpa-scale-conversion']]
     ];
@@ -99,9 +99,9 @@
     [...article.querySelectorAll(':scope > h2')].forEach(heading => {
       const section = document.createElement('section');
       section.className = 'article-section';
-      if (heading.textContent.startsWith('숫자 예시')) section.classList.add('article-example');
-      if (heading.textContent === '계산 공식') section.classList.add('article-formula');
-      if (heading.textContent === '관련 글') section.classList.add('article-related');
+      if (heading.textContent.includes('예시')) section.classList.add('article-example');
+      if (heading.textContent.includes('공식')) section.classList.add('article-formula');
+      if (heading.textContent === '관련 글' || heading.textContent === '이어서 확인하기') section.classList.add('article-related');
       heading.parentNode.insertBefore(section, heading);
       section.appendChild(heading);
       while (section.nextSibling && section.nextSibling.tagName !== 'H2') section.appendChild(section.nextSibling);

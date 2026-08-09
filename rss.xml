@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>성적 계산기 가이드</title>
+    <link>https://naver1.cloud/blog/</link>
+    <description>내신, 목표점수, 석차백분율과 GPA 계산을 숫자 예시로 설명합니다.</description>
+    <language>ko</language>
+    <lastBuildDate>Sun, 09 Aug 2026 20:00:00 +0900</lastBuildDate>
+    <item>
+      <title>수행평가·지필고사 반영비율 계산법</title>
+      <link>https://naver1.cloud/blog/performance-exam-weight/</link>
+      <guid>https://naver1.cloud/blog/performance-exam-weight/</guid>
+      <pubDate>Sun, 09 Aug 2026 20:00:00 +0900</pubDate>
+      <description>각 점수에 반영 비율을 곱해 최종 반영점수를 구하는 공식과 예시입니다.</description>
+    </item>
+    <item>
+      <title>남은 시험에서 몇 점 받아야 할까?</title>
+      <link>https://naver1.cloud/blog/target-exam-score/</link>
+      <guid>https://naver1.cloud/blog/target-exam-score/</guid>
+      <pubDate>Sun, 09 Aug 2026 20:00:00 +0900</pubDate>
+      <description>받은 점수와 반영 비율로 남은 시험의 필요점수를 구하는 방법입니다.</description>
+    </item>
+    <item>
+      <title>원점수와 A~E·내신등급의 차이</title>
+      <link>https://naver1.cloud/blog/raw-score-and-grade/</link>
+      <guid>https://naver1.cloud/blog/raw-score-and-grade/</guid>
+      <pubDate>Sun, 09 Aug 2026 20:00:00 +0900</pubDate>
+      <description>원점수, 성취도 A~E, 석차등급이 나타내는 정보의 차이를 설명합니다.</description>
+    </item>
+    <item>
+      <title>내신 5등급제 구간과 경계 계산법</title>
+      <link>https://naver1.cloud/blog/five-grade-system/</link>
+      <guid>https://naver1.cloud/blog/five-grade-system/</guid>
+      <pubDate>Sun, 09 Aug 2026 20:00:00 +0900</pubDate>
+      <description>5등급제 누적 비율과 경계 바로 앞뒤의 석차백분율 사례입니다.</description>
+    </item>
+    <item>
+      <title>내신 9등급제 석차백분율 경계표</title>
+      <link>https://naver1.cloud/blog/nine-grade-system/</link>
+      <guid>https://naver1.cloud/blog/nine-grade-system/</guid>
+      <pubDate>Sun, 09 Aug 2026 20:00:00 +0900</pubDate>
+      <description>9등급제 누적 경계와 등급이 바뀌는 석차백분율 사례입니다.</description>
+    </item>
+    <item>
+      <title>석차백분율 계산법과 등급 찾는 순서</title>
+      <link>https://naver1.cloud/blog/rank-percentile/</link>
+      <guid>https://naver1.cloud/blog/rank-percentile/</guid>
+      <pubDate>Sun, 09 Aug 2026 20:00:00 +0900</pubDate>
+      <description>중간석차를 수강자 수로 나눠 석차백분율을 구하는 순서입니다.</description>
+    </item>
+    <item>
+      <title>동석차·동점자 중간석차 계산법</title>
+      <link>https://naver1.cloud/blog/tied-rank/</link>
+      <guid>https://naver1.cloud/blog/tied-rank/</guid>
+      <pubDate>Sun, 09 Aug 2026 20:00:00 +0900</pubDate>
+      <description>동점자가 차지한 순위 범위의 가운데 값인 중간석차 계산법입니다.</description>
+    </item>
+    <item>
+      <title>대학 GPA 학점 평균 계산법</title>
+      <link>https://naver1.cloud/blog/gpa-average/</link>
+      <guid>https://naver1.cloud/blog/gpa-average/</guid>
+      <pubDate>Sun, 09 Aug 2026 20:00:00 +0900</pubDate>
+      <description>과목별 평점과 학점 수를 반영한 GPA 가중평균 공식입니다.</description>
+    </item>
+    <item>
+      <title>GPA 4.5·4.3·4.0 만점 환산법</title>
+      <link>https://naver1.cloud/blog/gpa-scale-conversion/</link>
+      <guid>https://naver1.cloud/blog/gpa-scale-conversion/</guid>
+      <pubDate>Sun, 09 Aug 2026 20:00:00 +0900</pubDate>
+      <description>GPA 만점 체계를 단순 비례로 환산하는 공식과 주의사항입니다.</description>
+    </item>
+    <item>
+      <title>내신 등급, 원점수와 반영비율로 계산하기</title>
+      <link>https://naver1.cloud/blog/grade-calculation/</link>
+      <guid>https://naver1.cloud/blog/grade-calculation/</guid>
+      <pubDate>Sun, 26 Jul 2026 12:00:00 +0900</pubDate>
+      <description>수행평가와 지필고사의 반영비율을 사용해 최종점수를 계산합니다.</description>
+    </item>
+  </channel>
+</rss>
