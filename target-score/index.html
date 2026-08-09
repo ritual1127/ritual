@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>목표점수 계산기 - 남은 시험에서 몇 점 받아야 할까?</title>
+  <meta name="description" content="지금까지 본 수행평가와 시험의 점수·반영 비율을 입력하면 남은 시험에서 몇 점을 받아야 하는지 계산합니다.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://naver1.cloud/target-score/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="남은 시험에서 몇 점 받아야 할까?">
+  <meta property="og:description" content="지금까지 받은 점수와 반영 비율을 입력해 남은 시험의 필요 점수를 확인하세요.">
+  <meta property="og:url" content="https://naver1.cloud/target-score/">
+  <meta property="og:image" content="https://naver1.cloud/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="목표점수 계산기">
+  <meta name="twitter:description" content="남은 시험에서 몇 점을 받아야 하는지 바로 계산합니다.">
+  <meta name="twitter:image" content="https://naver1.cloud/og.png">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="icon" href="../icon-192.png">
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../site-nav.js"></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"목표점수 계산기","description":"지금까지 받은 점수로 남은 시험에서 필요한 점수를 계산합니다.","url":"https://naver1.cloud/target-score/","applicationCategory":"EducationalApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
+</head>
+<body>
+  <header class="top-bar">
+    <h1><span>남은 시험에서 몇 점 받아야 할까?</span></h1>
+  </header>
+  <p class="tagline">이미 받은 점수를 적으면 목표 성적에 필요한 시험 점수를 알려드려요.</p>
+
+  <main>
+    <section class="box target-calculator">
+      <div class="goal-mode" role="group" aria-label="목표 선택 방법">
+        <button type="button" class="active" data-goal-mode="score" aria-pressed="true">점수로 정하기</button>
+        <button type="button" data-goal-mode="grade" aria-pressed="false">등급으로 정하기</button>
+      </div>
+      <div class="target-goal" id="scoreGoal">
+        <label for="target">이번 학기 최종 성적 목표</label>
+        <div class="score-suffix"><input id="target" type="number" min="0" max="100" step="0.01" value="90"><span>점</span></div>
+      </div>
+      <div class="grade-goal" id="gradeGoal" hidden>
+        <div class="grade-goal-top"><strong>받고 싶은 등급</strong><span id="gradeStandard">A등급 이상 · 최종 90점 이상</span></div>
+        <div class="grade-choice" role="group" aria-label="목표 등급">
+          <button type="button" class="active" data-grade="A" aria-pressed="true">A</button>
+          <button type="button" data-grade="B" aria-pressed="false">B</button>
+          <button type="button" data-grade="C" aria-pressed="false">C</button>
+          <button type="button" data-grade="D" aria-pressed="false">D</button>
+          <button type="button" data-grade="E" aria-pressed="false">E</button>
+        </div>
+        <p>A 90점 이상 · B 80점 이상 · C 70점 이상 · D 60점 이상 · E 60점 미만 기준</p>
+      </div>
+
+      <div class="target-section-head">
+        <div><h2>지금까지 본 평가</h2><p>수행평가나 시험에서 받은 점수를 그대로 적으세요.</p></div>
+        <button type="button" class="mini-btn" id="addCompleted">+ 평가 추가</button>
+      </div>
+      <div class="target-row-head" aria-hidden="true"><span>평가 이름</span><span>받은 점수</span><span>최종 성적 중 몇 %</span><span></span></div>
+      <div id="completedRows"></div>
+
+      <div class="target-section-head remaining-head">
+        <div><h2>앞으로 볼 시험</h2><p>아직 점수가 나오지 않은 시험 하나를 적으세요.</p></div>
+      </div>
+      <div class="target-row remaining-row">
+        <input id="remainingName" type="text" value="기말고사" aria-label="앞으로 볼 시험 이름">
+        <span class="target-empty">아직 모름</span>
+        <div class="percent-suffix"><input id="remainingWeight" type="number" min="0" max="100" step="0.01" value="40" aria-label="앞으로 볼 시험의 성적 반영 비율"><span>%</span></div>
+        <span></span>
+      </div>
+
+      <div class="weight-check"><span>입력한 비율 합계</span><strong id="weightTotal">100%</strong></div>
+      <button class="btn" id="calc">몇 점 받아야 하는지 계산</button>
+      <div id="result" class="target-result" aria-live="polite"></div>
+    </section>
+
+    <section class="content-section">
+      <h2>남은 시험 점수 계산법</h2>
+      <p>이미 본 평가의 점수에 각각 반영 비율을 곱해 더한 뒤, 목표 성적까지 모자란 점수를 남은 시험 비율로 나눕니다.</p>
+    </section>
+    <nav class="related-tools"><h2>관련 도구</h2><a href="/blog/target-exam-score/">쉬운 계산법 읽기</a></nav>
+  </main>
+
+  <footer class="site-footer">학교의 반올림·결시 처리 규정에 따라 실제 성적은 달라질 수 있습니다.<br>© 2026 성적 계산기.</footer>
+  <div class="footer-links"><a href="/blog/">계산 가이드</a> · <a href="/faq/">자주 묻는 질문</a> · <a href="/privacy/">개인정보처리방침</a></div>
+
+  <script>
+    const rowsEl = document.getElementById('completedRows');
+    const totalEl = document.getElementById('weightTotal');
+    const gradeMinimum = { A: 90, B: 80, C: 70, D: 60, E: 0 };
+    let goalMode = 'score';
+    let selectedGrade = 'A';
+
+    function requiredScore(target, completedScore, remainingPercent) {
+      if (remainingPercent <= 0) return { status: 'no-remaining-weight' };
+      const score = (target - completedScore) / (remainingPercent / 100);
+      if (score <= 0) return { status: 'already-reached', score: 0 };
+      if (score > 100) return { status: 'impossible', score };
+      return { status: 'possible', score };
+    }
+
+    function addCompletedRow(data = {}) {
+      const row = document.createElement('div');
+      row.className = 'target-row';
+      row.innerHTML = `
+        <input class="completed-name" type="text" placeholder="예: 수행평가" aria-label="평가 이름">
+        <div class="score-suffix"><input class="completed-score" type="number" min="0" max="100" step="0.01" placeholder="0" aria-label="받은 점수"><span>점</span></div>
+        <div class="percent-suffix"><input class="completed-weight" type="number" min="0" max="100" step="0.01" placeholder="0" aria-label="최종 성적에서 차지하는 비율"><span>%</span></div>
+        <button type="button" class="target-delete" aria-label="이 평가 삭제">×</button>`;
+      row.querySelector('.completed-name').value = data.name || '';
+      row.querySelector('.completed-score').value = data.score ?? '';
+      row.querySelector('.completed-weight').value = data.weight ?? '';
+      row.querySelectorAll('input').forEach(input => input.addEventListener('input', updateWeightTotal));
+      row.querySelector('.target-delete').onclick = () => { row.remove(); updateWeightTotal(); };
+      rowsEl.appendChild(row);
+      updateWeightTotal();
+    }
+
+    function readCompletedRows() {
+      return [...rowsEl.querySelectorAll('.target-row')].map(row => ({
+        score: Number(row.querySelector('.completed-score').value),
+        weight: Number(row.querySelector('.completed-weight').value),
+        scoreRaw: row.querySelector('.completed-score').value,
+        weightRaw: row.querySelector('.completed-weight').value
+      }));
+    }
+
+    function updateWeightTotal() {
+      const completed = readCompletedRows().reduce((sum, row) => sum + (Number.isFinite(row.weight) ? row.weight : 0), 0);
+      const remaining = Number(document.getElementById('remainingWeight').value) || 0;
+      const total = completed + remaining;
+      totalEl.textContent = `${Number(total.toFixed(2))}%`;
+      totalEl.classList.toggle('ok', Math.abs(total - 100) <= 0.01);
+    }
+
+    function showResult(kind, title, detail) {
+      const result = document.getElementById('result');
+      result.className = `target-result ${kind}`;
+      result.innerHTML = `<strong>${title}</strong><p>${detail}</p>`;
+    }
+
+    function setGoalMode(mode) {
+      goalMode = mode;
+      document.getElementById('scoreGoal').hidden = mode !== 'score';
+      document.getElementById('gradeGoal').hidden = mode !== 'grade';
+      document.querySelectorAll('[data-goal-mode]').forEach(button => {
+        const active = button.dataset.goalMode === mode;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', active);
+      });
+      document.getElementById('result').className = 'target-result';
+    }
+
+    document.querySelectorAll('[data-goal-mode]').forEach(button => {
+      button.onclick = () => setGoalMode(button.dataset.goalMode);
+    });
+    document.querySelectorAll('[data-grade]').forEach(button => {
+      button.onclick = () => {
+        selectedGrade = button.dataset.grade;
+        document.querySelectorAll('[data-grade]').forEach(item => {
+          const active = item.dataset.grade === selectedGrade;
+          item.classList.toggle('active', active);
+          item.setAttribute('aria-pressed', active);
+        });
+        const standard = `${selectedGrade}등급 이상 · 최종 ${gradeMinimum[selectedGrade]}점 이상`;
+        document.getElementById('gradeStandard').textContent = standard;
+        document.getElementById('result').className = 'target-result';
+      };
+    });
+
+    document.getElementById('addCompleted').onclick = () => addCompletedRow();
+    document.getElementById('remainingWeight').addEventListener('input', updateWeightTotal);
+    document.getElementById('calc').onclick = () => {
+      const targetInput = document.getElementById('target').value;
+      const target = goalMode === 'grade' ? gradeMinimum[selectedGrade] : Number(targetInput);
+      const remaining = Number(document.getElementById('remainingWeight').value);
+      const rows = readCompletedRows();
+      const hasBlank = rows.some(row => row.scoreRaw === '' || row.weightRaw === '');
+      const outOfRange = rows.some(row => row.score < 0 || row.score > 100 || row.weight < 0 || row.weight > 100);
+      const completedWeight = rows.reduce((sum, row) => sum + row.weight, 0);
+
+      if ((goalMode === 'score' && (targetInput === '' || !Number.isFinite(target) || target < 0 || target > 100)) || !Number.isFinite(remaining) || remaining < 0 || remaining > 100 || hasBlank || outOfRange) {
+        showResult('error', '입력값을 다시 확인해 주세요.', '모든 점수와 반영 비율을 0부터 100 사이로 적어 주세요.');
+        return;
+      }
+      if (Math.abs(completedWeight + remaining - 100) > 0.01) {
+        showResult('error', '입력한 비율을 모두 더하면 100%가 되어야 해요.', `현재 합계는 ${Number((completedWeight + remaining).toFixed(2))}%입니다.`);
+        return;
+      }
+
+      const completedScore = rows.reduce((sum, row) => sum + row.score * row.weight / 100, 0);
+      const answer = requiredScore(target, completedScore, remaining);
+      const goalReachedText = goalMode === 'grade' ? `${selectedGrade}등급 이상 기준에 이미 도달했어요.` : '입력한 목표 점수에 이미 도달했어요.';
+      const possibleText = goalMode === 'grade' ? `받으면 최종 ${selectedGrade}등급 이상을 받을 수 있어요.` : `받으면 최종 성적 ${target}점을 만들 수 있어요.`;
+      if (answer.status === 'already-reached') {
+        showResult('success', '목표를 이미 달성했어요.', goalReachedText);
+      } else if (answer.status === 'possible') {
+        showResult('success', `남은 시험에서 ${answer.score.toFixed(2)}점 이상`, possibleText);
+      } else if (answer.status === 'impossible') {
+        showResult('warning', `필요한 점수는 ${answer.score.toFixed(2)}점이에요.`, '100점을 넘어 현재 입력한 조건으로는 목표 달성이 어려워요.');
+      } else {
+        showResult('error', '남은 시험의 반영 비율이 0%예요.', '앞으로 점수가 반영될 시험이 없어 필요한 점수를 계산할 수 없습니다.');
+      }
+    };
+
+    addCompletedRow({ name: '수행평가', score: 90, weight: 30 });
+    addCompletedRow({ name: '중간고사', score: 80, weight: 30 });
+    updateWeightTotal();
+
+    console.assert(requiredScore(90, 54, 40).score === 90, '가능한 목표');
+    console.assert(requiredScore(80, 85, 20).status === 'already-reached', '이미 달성');
+    console.assert(requiredScore(95, 50, 40).status === 'impossible', '100점 초과');
+    console.assert(requiredScore(90, 90, 0).status === 'no-remaining-weight', '남은 비중 없음');
+  </script>
+</body>
+</html>

@@ -10,17 +10,19 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- End Google Tag Manager -->
 
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>학점 계산기 - 평점평균(GPA) 4.5·4.3·4.0 자동 계산 | 성적 계산기</title>
   <meta name="description" content="과목별 학점과 성적만 입력하면 평점평균(GPA)을 바로 계산해주는 무료 학점 계산기. 4.5 / 4.3 / 4.0 만점 기준을 모두 지원합니다.">
-  <meta name="keywords" content="학점 계산기, 평점평균 계산기, GPA 계산기, 4.5 만점, 4.3 만점, 백분위 환산">
+  <meta name="keywords" content="학점 계산기, 평점평균 계산기, GPA 계산기, 4.5 만점, 4.3 만점, 만점 대비 비율">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://naver1.cloud/gpa/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="학점 계산기 - 평점평균(GPA) 자동 계산">
   <meta property="og:description" content="과목별 학점과 성적만 입력하면 평점평균이 바로 나와요.">
   <meta property="og:url" content="https://naver1.cloud/gpa/">
-  <meta property="og:image" content="https://naver1.cloud/icon-512.png">
+  <meta property="og:image" content="https://naver1.cloud/og.png">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="학점 계산기 - GPA 평균"><meta name="twitter:description" content="P/F와 학점을 반영해 평점평균을 계산합니다."><meta name="twitter:image" content="https://naver1.cloud/og.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"학점 계산기","url":"https://naver1.cloud/gpa/","applicationCategory":"EducationalApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
   <meta name="theme-color" content="#4f46e5">
   <link rel="icon" href="../icon-192.png">
   <link rel="stylesheet" href="../styles.css">
@@ -35,12 +37,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
 
-  <div class="top-bar">
+  <header class="top-bar">
     <h1><span>학점</span> 계산기</h1>
     <div class="top-controls">
       <button id="themeToggle">다크 모드</button>
     </div>
-  </div>
+  </header>
+
+  <main>
+  <section class="content-section">
+    <h2>평점평균(GPA) 계산법</h2><p>평점평균은 Σ(과목 평점 × 학점) ÷ Σ평점 반영 학점입니다. F는 0점으로 분모에 포함되고 P는 평점 평균에서 제외됩니다.</p>
+    <div class="example-grid"><article><h3>가중평균 예시</h3><p>3학점 A+(4.5), 2학점 B0(3.0)이면 (13.5 + 6.0) ÷ 5 = 3.90입니다.</p></article><article><h3>P/F 예시</h3><p>2학점 P는 총 이수학점에는 보이지만 평점의 분자와 분모에서는 제외됩니다.</p></article></div>
+    <h2>재수강과 만점 체계</h2><p>재수강 성적의 대체·상한 규정, A+ 점수, P/F 반영 방식은 대학마다 다릅니다. 이 계산기는 입력한 성적표만 계산하므로 학교 학사 규정을 함께 확인하세요.</p>
+    <details><summary>만점 대비 비율은 백분위인가요?</summary><p>아닙니다. GPA ÷ 만점 × 100인 단순 비율이며 학생 집단 내 위치를 뜻하는 백분위와 다릅니다.</p></details>
+    <details><summary>P 과목만 있으면 계산되나요?</summary><p>평점에 반영되는 학점이 없으므로 GPA를 계산하지 않습니다.</p></details>
+  </section>
+  <nav class="related-tools" aria-label="관련 도구"><h2>관련 도구</h2><a href="/gpa-converter/">GPA 만점 환산</a><a href="/rank/">내신등급 계산기</a><a href="/blog/gpa-average/">GPA 평균 계산법</a><a href="/faq/">자주 묻는 질문</a></nav>
   <p class="tagline">과목별 학점과 성적만 입력하면 평점평균이 바로 나와요</p>
 
   <div class="mode-tabs">
@@ -87,6 +99,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       P(패스)는 평점 계산에서 제외되고, F는 0점으로 학점에 포함됩니다.
     </p>
   </div>
+  </main>
 
   <footer class="site-footer">
     학점 계산기 · 대학별 평점 기준이 다를 수 있으니 학교 학사 규정을 함께 확인하세요.<br>
@@ -119,9 +132,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const div = document.createElement('div');
       div.className = 'calc-row gpa';
       div.innerHTML = `
-        <input type="text" class="c-name" placeholder="예: 미적분학" value="${d.name || ''}">
-        <input type="number" class="c-credit" min="0" step="0.5" placeholder="3" value="${d.credit || ''}">
-        <select class="c-grade">${gradeOptions(d.grade)}</select>
+        <label class="calc-cell name"><span class="mobile-label">과목명</span><input type="text" class="c-name" placeholder="예: 미적분학" value="${d.name || ''}"></label>
+        <label class="calc-cell"><span class="mobile-label">학점</span><input type="number" class="c-credit" min="0" step="0.5" placeholder="3" value="${d.credit || ''}"></label>
+        <label class="calc-cell"><span class="mobile-label">성적</span><select class="c-grade">${gradeOptions(d.grade)}</select></label>
         <button type="button" class="del" title="삭제">✕</button>`;
       div.querySelector('.del').onclick = () => { div.remove(); save(); };
       div.querySelectorAll('input,select').forEach(i => i.addEventListener('change', save));
@@ -169,7 +182,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const gpa = sumP / sumC;
       $('gpaNum').textContent = gpa.toFixed(2) + ' / ' + scale;
       $('gpaSub').textContent =
-        `총 이수 ${totalCredit}학점 · 평점 반영 ${sumC}학점 · 백분위 환산 약 ${(gpa / parseFloat(scale) * 100).toFixed(1)}점`;
+        `총 이수 ${totalCredit}학점 · 평점 반영 ${sumC}학점 · 만점 대비 비율 ${(gpa / parseFloat(scale) * 100).toFixed(1)}%`;
       $('resultBox').style.display = 'block';
       save();
     }
@@ -203,7 +216,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // 초기화
     scale = SCALES[localStorage.getItem('gpaScale')] ? localStorage.getItem('gpaScale') : '4.5';
     const saved = JSON.parse(localStorage.getItem('gpaRows') || '[]');
-    (saved.length ? saved : [{}, {}, {}]).forEach(addRow);
+    (saved.length ? saved : (window.matchMedia('(max-width: 600px)').matches ? [{}] : [{}, {}, {}])).forEach(addRow);
     setScale(scale);
 
     // 자체 점검 (콘솔)

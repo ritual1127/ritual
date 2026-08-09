@@ -1,3 +1,4 @@
-.claude/
+dist/
+og-source.png
+build-seo-content.mjs
 .wrangler/
-.superpowers/

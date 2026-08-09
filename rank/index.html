@@ -10,7 +10,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- End Google Tag Manager -->
 
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>내신 석차등급 계산기 - 9등급제·5등급제 자동 계산 | 성적 계산기</title>
   <meta name="description" content="수강자 수와 석차만 입력하면 내신 석차등급(9등급제·5등급제)과 과목별 평균 등급을 자동으로 계산해주는 무료 계산기입니다.">
   <meta name="keywords" content="내신 석차등급 계산기, 9등급제, 5등급제, 내신 등급 계산기, 석차 백분율, 평균 등급">
@@ -20,7 +20,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <meta property="og:title" content="내신 석차등급 계산기 - 9등급제·5등급제">
   <meta property="og:description" content="수강자 수와 석차만 입력하면 내신 석차등급을 바로 계산해드려요.">
   <meta property="og:url" content="https://naver1.cloud/rank/">
-  <meta property="og:image" content="https://naver1.cloud/icon-512.png">
+  <meta property="og:image" content="https://naver1.cloud/og.png">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="내신 석차등급 계산기 - 9등급제·5등급제"><meta name="twitter:description" content="동석차와 단위수까지 반영해 내신등급을 계산합니다."><meta name="twitter:image" content="https://naver1.cloud/og.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"내신 석차등급 계산기","url":"https://naver1.cloud/rank/","applicationCategory":"EducationalApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
   <meta name="theme-color" content="#4f46e5">
   <link rel="icon" href="../icon-192.png">
   <link rel="stylesheet" href="../styles.css">
@@ -35,14 +37,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
 
-  <div class="top-bar">
+  <header class="top-bar">
     <h1><span>내신</span> 석차등급</h1>
     <div class="top-controls">
       <button id="themeToggle">다크 모드</button>
     </div>
-  </div>
+  </header>
   <p class="tagline">수강자 수와 석차만 입력하면 등급이 바로 나와요</p>
 
+  <main>
   <div class="mode-tabs">
     <button type="button" id="mode9" class="active">9등급제</button>
     <button type="button" id="mode5">5등급제</button>
@@ -63,6 +66,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <button type="button" class="btn" id="calcBtn">등급 계산하기</button>
   </div>
+
+  <section class="content-section">
+    <h2>석차백분율과 내신등급 계산법</h2>
+    <p>동점자가 있으면 중간석차를 사용합니다. 중간석차는 <strong>석차 + (동점자 수 − 1) ÷ 2</strong>, 석차백분율은 중간석차 ÷ 수강자 수 × 100입니다. 과목 평균은 단순 평균이 아니라 각 등급에 단위수를 곱한 가중평균으로 계산합니다.</p>
+    <div class="example-grid"><article><h3>9등급제 예시</h3><p>200명 중 8등, 동점자 1명이면 4.00%로 1등급입니다.</p></article><article><h3>동석차 예시</h3><p>100명 중 10등에 3명이 동점이면 중간석차는 11등, 백분율은 11%입니다.</p></article></div>
+    <h2>5등급제와 9등급제</h2><p>이 계산기는 선택한 구간표에 따라 참고 결과를 보여 줍니다. 교육과정·입학전형 적용 시점과 학교 성적 처리 규정은 반드시 공식 안내를 확인하세요.</p>
+    <details><summary>석차와 동점자 입력에는 어떤 제한이 있나요?</summary><p>석차 + 동점자 수 − 1이 수강자 수를 넘을 수 없습니다.</p></details>
+    <details><summary>단위수를 비우면 어떻게 되나요?</summary><p>계산 편의를 위해 1로 처리합니다. 정확한 가중평균에는 실제 단위수를 입력하세요.</p></details>
+  </section>
+  <nav class="related-tools" aria-label="관련 도구"><h2>관련 도구</h2><a href="/target-score/">목표점수 계산기</a><a href="/gpa/">학점 계산기</a><a href="/blog/rank-percentile/">석차백분율 설명</a><a href="/faq/">자주 묻는 질문</a></nav>
 
   <div class="box" id="resultBox" style="display:none;">
     <div class="big-result">
@@ -90,6 +103,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       동점자가 없으면 동점자 수는 1로 두면 됩니다.
     </p>
   </div>
+  </main>
 
   <footer class="site-footer">
     내신 석차등급 계산기 · 2028 대입 개편(5등급제)과 기존 9등급제를 모두 지원합니다.<br>
@@ -122,11 +136,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const div = document.createElement('div');
       div.className = 'calc-row';
       div.innerHTML = `
-        <input type="text" class="c-name" placeholder="예: 수학" value="${d.name || ''}">
-        <input type="number" class="c-unit" min="1" placeholder="4" value="${d.unit || ''}">
-        <input type="number" class="c-total" min="1" placeholder="200" value="${d.total || ''}">
-        <input type="number" class="c-rank" min="1" placeholder="15" value="${d.rank || ''}">
-        <input type="number" class="c-tie" min="1" value="${d.tie || 1}">
+        <label class="calc-cell name"><span class="mobile-label">과목명</span><input type="text" class="c-name" placeholder="예: 수학" value="${d.name || ''}"></label>
+        <label class="calc-cell"><span class="mobile-label">단위수</span><input type="number" class="c-unit" min="1" placeholder="4" value="${d.unit || ''}"></label>
+        <label class="calc-cell"><span class="mobile-label">수강자 수</span><input type="number" class="c-total" min="1" placeholder="200" value="${d.total || ''}"></label>
+        <label class="calc-cell"><span class="mobile-label">내 석차</span><input type="number" class="c-rank" min="1" placeholder="15" value="${d.rank || ''}"></label>
+        <label class="calc-cell"><span class="mobile-label">동점자 수</span><input type="number" class="c-tie" min="1" value="${d.tie || 1}"></label>
         <button type="button" class="del" title="삭제">✕</button>`;
       div.querySelector('.del').onclick = () => { div.remove(); save(); };
       div.querySelectorAll('input').forEach(i => i.addEventListener('change', save));
@@ -156,7 +170,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     function calc() {
-      const rows = readRows().filter(r => r.total > 0 && r.rank > 0 && r.rank <= r.total);
+      const inputRows = readRows();
+      const invalid = inputRows.some(r => r.total > 0 && r.rank > 0 && (r.rank > r.total || r.tie < 1 || r.rank + r.tie - 1 > r.total));
+      if (invalid) { alert('석차 + 동점자 수 − 1은 수강자 수를 넘을 수 없어요.'); return; }
+      const rows = inputRows.filter(r => r.total > 0 && r.rank > 0 && r.rank <= r.total);
       if (!rows.length) {
         alert('수강자 수와 석차를 정확히 입력해주세요. (석차는 수강자 수보다 클 수 없어요)');
         return;
@@ -211,7 +228,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // 초기화
     const saved = JSON.parse(localStorage.getItem('rankRows') || '[]');
-    (saved.length ? saved : [{}, {}, {}]).forEach(addRow);
+    (saved.length ? saved : (window.matchMedia('(max-width: 600px)').matches ? [{}] : [{}, {}, {}])).forEach(addRow);
     setSystem(parseInt(localStorage.getItem('rankSystem')) === 5 ? 5 : 9);
 
     // 자체 점검 (콘솔)
