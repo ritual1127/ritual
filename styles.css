@@ -734,80 +734,67 @@ input[type="number"]::-webkit-outer-spin-button { margin: 0; -webkit-appearance:
 }
 .direct-title-row h2 { font-size: 22px; line-height: 1.35; }
 .direct-title-row p { margin-top: 5px; color: var(--muted); font-size: 13px; line-height: 1.5; }
-.direct-counts {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px;
-}
-.direct-count-control {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 13px 14px; border: 1px solid var(--inp-border); border-radius: 12px; background: var(--bg);
-}
-.direct-count-control label { font-size: 14px; font-weight: 800; white-space: nowrap; }
 .direct-count-stepper {
-  display: grid; grid-template-columns: 34px 46px 34px; height: 38px;
-  overflow: hidden; border: 1px solid var(--inp-border); border-radius: 10px; background: var(--inp-bg);
+  display: grid; grid-template-columns: 28px 34px 28px; width: 90px; height: 34px;
+  overflow: hidden; border: 1px solid var(--inp-border); border-radius: 9px; background: var(--inp-bg);
 }
 .direct-count-stepper button {
-  border: 0; background: transparent; color: var(--primary); font-size: 19px; font-weight: 800; cursor: pointer;
+  border: 0; background: transparent; color: var(--primary); font-size: 17px; font-weight: 800; cursor: pointer;
 }
 .direct-count-stepper button:first-child { border-right: 1px solid var(--inp-border); }
 .direct-count-stepper button:last-child { border-left: 1px solid var(--inp-border); }
 .direct-count-stepper button:active { background: rgba(79,70,229,.08); }
 .direct-count-stepper input {
-  width: 46px; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--fg);
-  font-size: 16px; font-weight: 800; text-align: center; -moz-appearance: textfield;
+  width: 34px; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--fg);
+  font-size: 14px; font-weight: 800; text-align: center; -moz-appearance: textfield;
 }
 .direct-count-stepper input::-webkit-inner-spin-button,
 .direct-count-stepper input::-webkit-outer-spin-button { margin: 0; -webkit-appearance: none; }
-.direct-add {
-  flex: 0 0 auto; min-height: 38px; padding: 0 13px; border: 1px solid var(--primary);
-  border-radius: 10px; background: transparent; color: var(--primary); font-size: 13px;
-  font-weight: 700; cursor: pointer;
-}
-.direct-add:hover { background: rgba(79,70,229,.08); }
-.direct-evaluation-groups { display: grid; gap: 16px; }
+.direct-evaluation-groups { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
 .direct-evaluation-group {
   overflow: hidden; border: 1px solid var(--inp-border); border-radius: 14px; background: var(--inp-bg);
 }
-.performance-group { border-left: 4px solid var(--primary); }
-.exam-group { border-left: 4px solid var(--success); }
 .direct-group-title {
-  display: flex; align-items: center; justify-content: space-between; padding: 11px 14px;
-  border-bottom: 1px solid var(--inp-border); background: rgba(79,70,229,.06);
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 13px 12px;
+  border-bottom: 1px solid var(--inp-border); background: var(--bg);
 }
-.exam-group .direct-group-title { background: rgba(16,185,129,.07); }
-.direct-group-title h3 { font-size: 15px; }
-.direct-group-title span { color: var(--muted); font-size: 11px; font-weight: 700; }
-.direct-group-empty { padding: 17px; color: var(--muted); font-size: 12px; text-align: center; }
-.direct-rows { display: grid; gap: 10px; }
-.direct-evaluation-group .direct-rows { padding: 12px; }
+.direct-group-name { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.direct-group-name i { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
+.exam-group .direct-group-name i { background: var(--success); }
+.direct-group-name h3 { font-size: 15px; line-height: 1.25; }
+.direct-group-name p { margin-top: 2px; color: var(--muted); font-size: 10px; white-space: nowrap; }
+.direct-inline-count { display: flex; align-items: center; gap: 6px; }
+.direct-inline-count > span { color: var(--muted); font-size: 10px; font-weight: 700; }
+.direct-column-head {
+  display: grid; grid-template-columns: 22px minmax(0,1fr) minmax(0,1fr); gap: 6px;
+  padding: 8px 12px 3px; color: var(--muted); font-size: 10px; font-weight: 700; text-align: center;
+}
+.direct-group-empty { padding: 18px; color: var(--muted); font-size: 12px; text-align: center; }
+.direct-rows { display: grid; }
+.direct-evaluation-group .direct-rows { padding: 0 12px 8px; }
 .direct-row {
-  display: grid; grid-template-columns: 44px minmax(150px,1fr) minmax(150px,1fr);
-  gap: 10px; align-items: end; padding: 12px; border: 1px solid var(--inp-border);
-  border-radius: 13px; background: var(--bg);
+  display: grid; grid-template-columns: 22px minmax(0,1fr) minmax(0,1fr);
+  gap: 6px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--inp-border);
 }
+.direct-row:last-child { border-bottom: 0; }
 .direct-evaluation-name {
-  align-self: center; color: var(--muted); font-size: 11px; font-weight: 800; text-align: center; white-space: nowrap;
+  display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px;
+  border-radius: 50%; background: var(--bg); color: var(--muted); font-size: 10px; font-weight: 800;
 }
 .direct-field { display: block; min-width: 0; }
-.direct-field > span:first-child {
-  display: block; margin: 0 0 6px 2px; color: var(--muted); font-size: 12px; font-weight: 700;
-}
 .direct-field input {
   width: 100%; height: 44px; padding: 0 11px; border: 1px solid var(--inp-border);
   border-radius: 10px; outline: none; background: var(--inp-bg); color: var(--fg); font-size: 16px;
 }
 .direct-field input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,.12); }
+.direct-row .number-stepper { grid-template-columns: 32px minmax(30px,1fr) 32px; height: 42px; }
+.direct-row .number-step-button { font-size: 18px; }
 .direct-input-suffix { position: relative; display: block; }
 .direct-input-suffix input { padding-right: 32px; }
 .direct-input-suffix b {
   position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
   color: var(--muted); font-size: 13px; font-weight: 500; pointer-events: none;
 }
-.direct-delete {
-  width: 34px; height: 44px; border: 0; border-radius: 9px; background: transparent;
-  color: var(--muted); font-size: 24px; line-height: 1; cursor: pointer;
-}
-.direct-delete:hover { background: rgba(239,68,68,.08); color: var(--danger); }
 .direct-weight {
   display: flex; align-items: center; justify-content: space-between; margin: 14px 0;
   padding: 13px 15px; border-radius: 11px; background: rgba(239,68,68,.08); font-size: 14px;
@@ -849,22 +836,21 @@ input[type="number"]::-webkit-outer-spin-button { margin: 0; -webkit-appearance:
   .direct-title-row { align-items: center; margin-bottom: 16px; gap: 8px; }
   .direct-title-row h2 { font-size: 19px; }
   .direct-title-row p { max-width: 210px; font-size: 12px; }
-  .direct-counts { gap: 8px; margin-bottom: 14px; }
-  .direct-count-control { display: block; padding: 11px; }
-  .direct-count-control label { display: block; margin-bottom: 8px; font-size: 13px; text-align: center; }
-  .direct-count-stepper { grid-template-columns: 1fr 42px 1fr; width: 100%; height: 42px; }
-  .direct-count-stepper input { width: 42px; }
-  .direct-add { min-height: 40px; padding: 0 10px; white-space: nowrap; }
-  .direct-evaluation-groups { gap: 12px; }
-  .direct-group-title { padding: 10px 12px; }
-  .direct-evaluation-group .direct-rows { padding: 9px; gap: 8px; }
+  .direct-evaluation-groups { grid-template-columns: 1fr; gap: 12px; }
+  .direct-group-title { padding: 11px 10px; }
+  .direct-group-name h3 { font-size: 14px; }
+  .direct-group-name p { font-size: 9px; }
+  .direct-inline-count > span { display: none; }
+  .direct-count-stepper { grid-template-columns: 30px 36px 30px; width: 96px; height: 36px; }
+  .direct-count-stepper input { width: 36px; }
+  .direct-column-head { padding-left: 10px; padding-right: 10px; }
+  .direct-evaluation-group .direct-rows { padding: 0 10px 7px; }
   .direct-row {
-    position: relative; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 11px 8px;
-    padding: 11px; padding-top: 30px;
+    grid-template-columns: 22px minmax(0,1fr) minmax(0,1fr); gap: 6px; padding: 8px 0;
   }
-  .direct-evaluation-name { position: absolute; top: 9px; left: 12px; font-size: 10px; text-align: left; }
+  .direct-row .number-stepper { grid-template-columns: 34px minmax(28px,1fr) 34px; height: 44px; }
+  .direct-row .number-step-button { font-size: 20px; }
   .direct-field input { height: 47px; font-size: 16px; }
-  .direct-delete { position: absolute; top: 29px; right: 10px; width: 34px; height: 40px; }
   .direct-weight { margin: 12px 0; }
   .direct-submit { min-height: 54px; font-size: 16px; }
   .direct-result { padding: 17px 12px; }
