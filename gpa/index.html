@@ -130,9 +130,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const div = document.createElement('div');
       div.className = 'calc-row gpa';
       div.innerHTML = `
-        <input type="text" class="c-name" placeholder="예: 미적분학" value="${d.name || ''}">
-        <input type="number" class="c-credit" min="0" step="0.5" placeholder="3" value="${d.credit || ''}">
-        <select class="c-grade">${gradeOptions(d.grade)}</select>
+        <label class="calc-cell name"><span class="mobile-label">과목명</span><input type="text" class="c-name" placeholder="예: 미적분학" value="${d.name || ''}"></label>
+        <label class="calc-cell"><span class="mobile-label">학점</span><input type="number" class="c-credit" min="0" step="0.5" placeholder="3" value="${d.credit || ''}"></label>
+        <label class="calc-cell"><span class="mobile-label">성적</span><select class="c-grade">${gradeOptions(d.grade)}</select></label>
         <button type="button" class="del" title="삭제">✕</button>`;
       div.querySelector('.del').onclick = () => { div.remove(); save(); };
       div.querySelectorAll('input,select').forEach(i => i.addEventListener('change', save));
@@ -214,7 +214,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // 초기화
     scale = SCALES[localStorage.getItem('gpaScale')] ? localStorage.getItem('gpaScale') : '4.5';
     const saved = JSON.parse(localStorage.getItem('gpaRows') || '[]');
-    (saved.length ? saved : [{}, {}, {}]).forEach(addRow);
+    (saved.length ? saved : (window.matchMedia('(max-width: 600px)').matches ? [{}] : [{}, {}, {}])).forEach(addRow);
     setScale(scale);
 
     // 자체 점검 (콘솔)

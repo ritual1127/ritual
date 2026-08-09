@@ -47,6 +47,8 @@
         support.innerHTML = `<span>공식이 궁금한가요?</span><a href="${href}">${label} 읽기 →</a>`;
         content.replaceWith(support);
         document.querySelector('.related-tools')?.remove();
+        const footer = document.querySelector('.site-footer');
+        if (footer) footer.parentNode.insertBefore(support, footer);
       }
     }
 

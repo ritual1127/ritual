@@ -134,11 +134,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const div = document.createElement('div');
       div.className = 'calc-row';
       div.innerHTML = `
-        <input type="text" class="c-name" placeholder="예: 수학" value="${d.name || ''}">
-        <input type="number" class="c-unit" min="1" placeholder="4" value="${d.unit || ''}">
-        <input type="number" class="c-total" min="1" placeholder="200" value="${d.total || ''}">
-        <input type="number" class="c-rank" min="1" placeholder="15" value="${d.rank || ''}">
-        <input type="number" class="c-tie" min="1" value="${d.tie || 1}">
+        <label class="calc-cell name"><span class="mobile-label">과목명</span><input type="text" class="c-name" placeholder="예: 수학" value="${d.name || ''}"></label>
+        <label class="calc-cell"><span class="mobile-label">단위수</span><input type="number" class="c-unit" min="1" placeholder="4" value="${d.unit || ''}"></label>
+        <label class="calc-cell"><span class="mobile-label">수강자 수</span><input type="number" class="c-total" min="1" placeholder="200" value="${d.total || ''}"></label>
+        <label class="calc-cell"><span class="mobile-label">내 석차</span><input type="number" class="c-rank" min="1" placeholder="15" value="${d.rank || ''}"></label>
+        <label class="calc-cell"><span class="mobile-label">동점자 수</span><input type="number" class="c-tie" min="1" value="${d.tie || 1}"></label>
         <button type="button" class="del" title="삭제">✕</button>`;
       div.querySelector('.del').onclick = () => { div.remove(); save(); };
       div.querySelectorAll('input').forEach(i => i.addEventListener('change', save));
@@ -226,7 +226,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // 초기화
     const saved = JSON.parse(localStorage.getItem('rankRows') || '[]');
-    (saved.length ? saved : [{}, {}, {}]).forEach(addRow);
+    (saved.length ? saved : (window.matchMedia('(max-width: 600px)').matches ? [{}] : [{}, {}, {}])).forEach(addRow);
     setSystem(parseInt(localStorage.getItem('rankSystem')) === 5 ? 5 : 9);
 
     // 자체 점검 (콘솔)
