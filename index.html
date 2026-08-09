@@ -91,7 +91,24 @@
           </div>
         </div>
 
-        <div id="evaluationRows" class="direct-rows"></div>
+        <div id="evaluationRows" class="direct-evaluation-groups">
+          <section class="direct-evaluation-group performance-group" aria-labelledby="performanceTitle">
+            <div class="direct-group-title">
+              <h3 id="performanceTitle">수행평가</h3>
+              <span>점수 · 반영비율</span>
+            </div>
+            <div id="performanceRows" class="direct-rows"></div>
+            <p id="performanceEmpty" class="direct-group-empty" hidden>수행평가 없음</p>
+          </section>
+          <section class="direct-evaluation-group exam-group" aria-labelledby="examTitle">
+            <div class="direct-group-title">
+              <h3 id="examTitle">정기고사</h3>
+              <span>점수 · 반영비율</span>
+            </div>
+            <div id="examRows" class="direct-rows"></div>
+            <p id="examEmpty" class="direct-group-empty" hidden>정기고사 없음</p>
+          </section>
+        </div>
 
         <div class="direct-weight" id="weightStatus" aria-live="polite">
           <span>반영비율 합계</span>
@@ -131,10 +148,7 @@
 
   <template id="evaluationTemplate">
     <div class="direct-row">
-      <label class="direct-field direct-name">
-        <span>평가 이름</span>
-        <input type="text" class="evaluation-name" maxlength="20" autocomplete="off" aria-label="평가 이름">
-      </label>
+      <span class="direct-evaluation-name"></span>
       <label class="direct-field">
         <span>받은 점수</span>
         <span class="direct-input-suffix"><input type="number" class="evaluation-score" min="0" max="100" step="0.01" inputmode="decimal" placeholder="예: 85" aria-label="받은 점수"><b>점</b></span>
@@ -150,15 +164,23 @@
     (() => {
       const initialRows = {
         performance: [
-          { name: '수행평가 1', score: '', weight: 20 },
-          { name: '수행평가 2', score: '', weight: 20 }
+          { score: '', weight: 20 },
+          { score: '', weight: 20 }
         ],
         exam: [
-          { name: '정기고사 1', score: '', weight: 30 },
-          { name: '정기고사 2', score: '', weight: 30 }
+          { score: '', weight: 30 },
+          { score: '', weight: 30 }
         ]
       };
       const rows = document.getElementById('evaluationRows');
+      const rowContainers = {
+        performance: document.getElementById('performanceRows'),
+        exam: document.getElementById('examRows')
+      };
+      const emptyStates = {
+        performance: document.getElementById('performanceEmpty'),
+        exam: document.getElementById('examEmpty')
+      };
       const template = document.getElementById('evaluationTemplate');
       const form = document.getElementById('gradeForm');
       const result = document.getElementById('calculationResult');
@@ -195,14 +217,19 @@
         return { total, valid };
       }
 
-      function addRow(kind, data) {
+      function addRow(kind, index, data) {
         const row = template.content.firstElementChild.cloneNode(true);
+        const kindLabel = kind === 'performance' ? '수행평가' : '정기고사';
         row.dataset.kind = kind;
-        row.querySelector('.evaluation-name').value = data.name;
-        row.querySelector('.evaluation-score').value = data.score ?? '';
-        row.querySelector('.evaluation-weight').value = data.weight;
+        row.querySelector('.direct-evaluation-name').textContent = `${index + 1}번`;
+        const scoreInput = row.querySelector('.evaluation-score');
+        const weightInput = row.querySelector('.evaluation-weight');
+        scoreInput.value = data.score ?? '';
+        weightInput.value = data.weight;
+        scoreInput.setAttribute('aria-label', `${kindLabel} ${index + 1}번 받은 점수`);
+        weightInput.setAttribute('aria-label', `${kindLabel} ${index + 1}번 반영비율`);
         row.querySelector('.evaluation-weight').addEventListener('input', updateWeight);
-        rows.appendChild(row);
+        rowContainers[kind].appendChild(row);
       }
 
       function normalizeCount(input) {
@@ -216,7 +243,6 @@
         const values = { performance: [], exam: [] };
         currentRows().forEach(row => {
           values[row.dataset.kind].push({
-            name: row.querySelector('.evaluation-name').value,
             score: row.querySelector('.evaluation-score').value,
             weight: row.querySelector('.evaluation-weight').value
           });
@@ -226,17 +252,17 @@
 
       function rebuildRows() {
         const previous = currentValues();
-        rows.replaceChildren();
+        Object.values(rowContainers).forEach(container => container.replaceChildren());
 
         Object.entries(countInputs).forEach(([kind, input]) => {
           const count = normalizeCount(input);
+          emptyStates[kind].hidden = count !== 0;
           for (let index = 0; index < count; index += 1) {
             const fallback = initialRows[kind][index] || {
-              name: `${kind === 'performance' ? '수행평가' : '정기고사'} ${index + 1}`,
               score: '',
               weight: ''
             };
-            addRow(kind, previous[kind][index] || fallback);
+            addRow(kind, index, previous[kind][index] || fallback);
           }
         });
 
@@ -268,7 +294,6 @@
       form.addEventListener('submit', event => {
         event.preventDefault();
         const entries = currentRows().map(row => ({
-          name: row.querySelector('.evaluation-name').value.trim(),
           scoreText: row.querySelector('.evaluation-score').value,
           weightText: row.querySelector('.evaluation-weight').value,
           score: Number(row.querySelector('.evaluation-score').value),
