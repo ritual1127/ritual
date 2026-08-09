@@ -35,7 +35,7 @@
       if (content) {
         const guides = {
           '/': ['/blog/performance-exam-weight/', '수행·지필 반영비율 계산법'],
-          '/target-score/': ['/blog/target-exam-score/', '목표 시험점수 역산법'],
+          '/target-score/': ['/blog/target-exam-score/', '남은 시험 점수 계산법'],
           '/rank/': ['/blog/rank-percentile/', '석차백분율과 등급 계산법'],
           '/gpa/': ['/blog/gpa-average/', 'GPA 평점평균 계산법'],
           '/gpa-converter/': ['/blog/gpa-scale-conversion/', 'GPA 만점 환산 방법']
@@ -64,6 +64,11 @@
       ['대학 학점', 'GPA 평균과 만점 환산이 필요할 때', ['gpa-average','gpa-scale-conversion']]
     ];
     const cards = [...grid.querySelectorAll('.article-card')];
+    const targetCard = cards.find(card => card.getAttribute('href').includes('target-exam-score'));
+    if (targetCard) {
+      targetCard.querySelector('h2').textContent = '남은 시험에서 몇 점 받아야 할까?';
+      targetCard.querySelector('p').textContent = '이미 받은 점수와 반영 비율을 적으면 필요한 시험 점수를 알 수 있어요.';
+    }
     grid.className = 'blog-library';
     for (const [title, desc, slugs] of groups) {
       const section = document.createElement('section');
