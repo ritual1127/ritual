@@ -530,21 +530,20 @@ body {
 .field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field label{display:block;font-size:14px;color:var(--muted);margin-bottom:6px}.field input,.field select{width:100%;height:44px;border:1px solid var(--inp-border);border-radius:10px;background:var(--inp-bg);color:var(--fg);padding:0 12px;font-size:16px}.notice{padding:12px 14px;border-radius:10px;background:rgba(79,70,229,.09);line-height:1.6}.error{color:var(--danger)}
 @media(max-width:600px){.example-grid,.article-card-grid,.field-grid{grid-template-columns:1fr}.content-section,.related-tools,.article-card-grid{padding:16px}}
 
-/* 계산기는 즉시 사용하고, 긴 설명은 원하는 사람만 펼쳐봅니다. */
-.seo-drawer {
-  max-width: 900px; margin: 18px auto 8px; border: 1px solid var(--inp-border);
-  border-radius: 14px; background: var(--box-bg); overflow: hidden;
-}
-.seo-drawer > summary {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 15px 18px; cursor: pointer; color: var(--muted); list-style: none;
-  font-size: 14px; font-weight: 700; user-select: none;
-}
-.seo-drawer > summary::-webkit-details-marker { display: none; }
-.seo-drawer > summary::after { content: '＋'; color: var(--primary); font-size: 20px; line-height: 1; }
-.seo-drawer[open] > summary::after { content: '−'; }
-.seo-drawer > summary small { margin-left: auto; font-size: 12px; font-weight: 500; color: var(--muted); }
-.seo-drawer .content-section,.seo-drawer .related-tools {
-  max-width: none; margin: 0; border: 0; border-top: 1px solid var(--inp-border); border-radius: 0;
-}
-@media(max-width:600px){.seo-drawer{margin-top:14px}.seo-drawer>summary{padding:13px 15px}.seo-drawer>summary small{display:none}}
+/* 계산기와 읽을거리를 물리적으로 분리합니다. */
+.calculator-page .content-section:not(.article),.calculator-page .related-tools{display:none}
+.calc-support{max-width:900px;margin:18px auto 6px;padding:12px 4px;display:flex;justify-content:flex-end;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+.calc-support a{color:var(--primary);font-weight:700;text-decoration:none}.calc-support a:hover{text-decoration:underline}
+
+/* 글 목록: 주제별 서가 */
+.blog-hub .top-bar{margin-top:24px}.blog-library{max-width:960px;margin:28px auto 48px}.topic-group{margin-bottom:36px}.topic-heading{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:14px;padding:0 2px}.topic-heading h2{font-size:21px}.topic-heading p{font-size:13px;color:var(--muted)}
+.topic-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.topic-cards .article-card{min-height:160px;display:flex;flex-direction:column;padding:20px}.topic-cards .article-card h2{font-size:17px;line-height:1.45;margin-bottom:10px}.topic-cards .article-card p{font-size:14px;line-height:1.6;color:var(--muted);margin-bottom:18px}.topic-cards .article-card small{margin-top:auto;color:var(--primary);font-weight:700}
+
+/* 글 본문: 좁은 본문, 명확한 현재 위치, 데스크톱 목차 */
+.article-page .site-nav{max-width:1040px;margin-left:auto;margin-right:auto}.breadcrumb{max-width:1040px;margin:24px auto 12px;display:flex;gap:8px;font-size:13px;color:var(--muted)}.breadcrumb a{color:var(--muted);text-decoration:none}.breadcrumb a:hover{color:var(--primary)}
+.article-page .top-bar{display:block;max-width:1040px;margin:0 auto;padding:18px 276px 12px 0}.article-page .top-bar h1{font-size:34px;line-height:1.3;letter-spacing:-.03em}.article-page .top-bar .tagline{margin:12px 0 0;text-align:left;font-size:17px;line-height:1.65;color:var(--muted)}
+.article-layout{max-width:1040px;margin:8px auto 60px;display:grid;grid-template-columns:minmax(0,720px) 220px;gap:56px;align-items:start}.article-page .content-section.article{max-width:none;margin:0;padding:32px 36px}.article-page .article .updated{font-size:12px;color:var(--muted);margin-bottom:20px}.article-answer{margin:0 -10px 30px;padding:20px 22px;border-left:4px solid var(--primary);border-radius:0 12px 12px 0;background:rgba(79,70,229,.08);font-size:17px;line-height:1.75}.article-page .article h2{font-size:22px;margin:38px 0 12px}.article-page .article p{font-size:16px;line-height:1.85}.article-page .article .btn{display:inline-flex;width:auto;height:auto;line-height:1.2;padding:13px 18px;margin:26px 0 4px;font-size:15px;text-decoration:none}
+.article-toc{position:sticky;top:20px;padding:18px 0;border-top:2px solid var(--fg)}.article-toc strong{display:block;font-size:13px;margin-bottom:12px}.article-toc a{display:block;padding:7px 0;color:var(--muted);font-size:13px;line-height:1.4;text-decoration:none}.article-toc a:hover{color:var(--primary)}
+.article-section{margin-top:36px}.article-section h2{margin-top:0!important}.article-example{padding:18px 20px;border:1px solid var(--inp-border);border-radius:12px;background:var(--bg)}.article-example+.article-example{margin-top:12px}.article-example h2{font-size:17px!important}.article-example p:last-child{margin-bottom:0}.article-formula{padding-bottom:8px;border-bottom:1px solid var(--inp-border)}.article-related{padding:18px 20px;border-radius:12px;background:var(--bg)}
+@media(max-width:800px){.topic-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.article-layout{display:block}.article-toc{display:none}.article-page .top-bar,.breadcrumb{padding-left:16px;padding-right:16px}.article-page .top-bar h1{font-size:29px}.article-page .content-section.article{margin:0 12px;padding:26px 20px}}
+@media(max-width:520px){.topic-heading{display:block}.topic-heading p{margin-top:5px}.topic-cards{grid-template-columns:1fr}.topic-cards .article-card{min-height:0}.calc-support{justify-content:center;flex-wrap:wrap;padding:10px 12px}}
