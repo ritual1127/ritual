@@ -83,6 +83,19 @@
       control.append(down, valueWrap, up);
       input.setAttribute('step', String(step));
 
+      function clampTypedValue() {
+        if (input.value === '') return;
+        const value = input.valueAsNumber;
+        if (!Number.isFinite(value)) return;
+        const min = input.min === '' ? -Infinity : Number(input.min);
+        const max = input.max === '' ? Infinity : Number(input.max);
+        const clamped = Math.min(max, Math.max(min, value));
+        if (clamped !== value) input.value = String(clamped);
+      }
+
+      input.addEventListener('input', clampTypedValue, true);
+      input.addEventListener('blur', clampTypedValue);
+
       function adjust(direction) {
         const min = input.min === '' ? -Infinity : Number(input.min);
         const max = input.max === '' ? Infinity : Number(input.max);

@@ -621,7 +621,31 @@ body {
 .score-suffix,.percent-suffix{position:relative}.score-suffix input,.percent-suffix input{padding-right:30px}.score-suffix>span,.percent-suffix>span{position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}.target-delete{border:0;background:none;color:var(--muted);font-size:21px;cursor:pointer}.target-delete:hover{color:var(--danger)}.target-empty{height:44px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--inp-border);border-radius:10px;color:var(--muted);font-size:13px}
 .weight-check{display:flex;justify-content:space-between;margin-top:18px;padding:13px 15px;border-radius:10px;background:var(--bg);font-size:14px}.weight-check strong{color:var(--danger)}.weight-check strong.ok{color:var(--success)}
 .target-result{display:none;margin-top:14px;padding:18px 20px;border-radius:12px}.target-result strong{display:block;font-size:21px;margin-bottom:7px}.target-result p{line-height:1.6}.target-result.success{display:block;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.35)}.target-result.warning{display:block;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35)}.target-result.error{display:block;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3)}
-@media(max-width:600px){.target-goal{align-items:flex-start;flex-direction:column}.target-goal .score-suffix{width:100%}.grade-goal-top{display:block}.grade-goal-top span{display:block;margin-top:4px}.grade-choice{gap:5px}.target-row-head{display:none}.target-row{grid-template-columns:1fr 1fr 30px}.target-row>input:first-child{grid-column:1/-1;max-width:60%;height:40px}.target-row .percent-suffix{grid-column:2}.target-row .target-delete{grid-column:3;grid-row:2}.remaining-row>span:last-child{display:none}.remaining-row .target-empty{grid-column:1}.remaining-row .percent-suffix{grid-column:2}.target-section-head{align-items:flex-start}.target-section-head p{max-width:230px}}
+@media(max-width:600px){
+  .target-calculator{overflow:hidden}
+  .target-goal{align-items:flex-start;flex-direction:column}
+  .target-goal .score-suffix{width:100%}
+  .grade-goal-top{display:block}
+  .grade-goal-top span{display:block;margin-top:4px}
+  .grade-choice{gap:5px}
+  .target-row-head{display:none}
+  .target-row{
+    position:relative;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px 8px;
+    padding:11px;margin-bottom:10px;border:1px solid var(--inp-border);border-radius:12px;background:var(--bg)
+  }
+  .target-row>input:first-child{grid-column:1/-1;width:calc(100% - 38px);max-width:180px;height:40px;font-size:13px}
+  .target-row .score-suffix{grid-column:1}
+  .target-row .percent-suffix{grid-column:2}
+  .target-row .number-stepper{grid-template-columns:36px minmax(28px,1fr) 36px;height:44px}
+  .target-row .number-step-button{font-size:20px}
+  .target-row .target-delete{position:absolute;top:12px;right:8px;width:32px;height:36px}
+  .remaining-row>span:last-child{display:none}
+  .remaining-row .target-empty{grid-column:1;height:44px}
+  .remaining-row .percent-suffix{grid-column:2}
+  .target-section-head{align-items:flex-start}
+  .target-section-head p{max-width:210px}
+  .target-section-head .mini-btn{flex:0 0 auto}
+}
 
 /* 휴대폰: 가로 스크롤 대신 손가락으로 누르기 쉬운 입력 카드 */
 @media (max-width: 600px) {
