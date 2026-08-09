@@ -23,13 +23,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <meta property="og:title" content="성적 계산기 - 수행평가·지필고사 등급 자동 계산">
   <meta property="og:description" content="수행평가·지필고사 비율만 입력하면 최종 원점수와 등급을 바로 계산. 목표 등급별 필요 점수와 과목별 그래프까지 무료로 제공합니다.">
   <meta property="og:url" content="https://naver1.cloud/">
-  <meta property="og:image" content="https://naver1.cloud/icon-512.png">
+  <meta property="og:image" content="https://naver1.cloud/og.png">
   <meta property="og:locale" content="ko_KR">
 
-  <meta name="twitter:card" content="summary">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="성적 계산기 - 수행평가·지필고사 등급 자동 계산">
   <meta name="twitter:description" content="수행평가·지필고사 비율만 입력하면 최종 원점수와 등급을 바로 계산해주는 무료 성적 계산기.">
-  <meta name="twitter:image" content="https://naver1.cloud/icon-512.png">
+  <meta name="twitter:image" content="https://naver1.cloud/og.png">
 
   <script type="application/ld+json">
   {
@@ -669,6 +669,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return sims;
     }
 
+    function requiredScore(target, completedWeighted, remainingWeight) {
+      if (remainingWeight <= 0) return { status: 'no-remaining-weight' };
+      const score = (target - completedWeighted) / remainingWeight;
+      if (score <= 0) return { status: 'already-reached', score: 0 };
+      if (score > 100) return { status: 'impossible', score };
+      return { status: 'possible', score };
+    }
+
     function buildTargetHints(data, final, grade) {
       const { sSum, mid, finalW, exms, ifActive, tCnt } = data;
       if (finalW <= 0) return '';
@@ -677,10 +685,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         { g: 'A', th: 90 }, { g: 'B', th: 80 }, { g: 'C', th: 70 }, { g: 'D', th: 60 }
       ];
       const chips = targets.map(({ g, th }) => {
-        const need = (th - sSum - mid) / finalW;
-        if (need > 100) return `<span class="target-chip">${g} 등급: 불가</span>`;
-        if (need <= 0) return `<span class="target-chip">${g} 등급: 이미 달성 ✓</span>`;
-        return `<span class="target-chip">${g} 등급: ${exms[lastIdx]?.label || '기말'} <strong>${need.toFixed(1)}점</strong> 필요</span>`;
+        const result = requiredScore(th, sSum + mid, finalW);
+        if (result.status === 'impossible') return `<span class="target-chip">${g} 등급: 불가</span>`;
+        if (result.status === 'already-reached') return `<span class="target-chip">${g} 등급: 이미 달성 ✓</span>`;
+        if (result.status === 'no-remaining-weight') return `<span class="target-chip">${g} 등급: 남은 비중 없음</span>`;
+        return `<span class="target-chip">${g} 등급: ${exms[lastIdx]?.label || '기말'} <strong>${result.score.toFixed(1)}점</strong> 필요</span>`;
       }).join('');
       return `<div class="target-box"><h4>🎯 목표 등급별 필요 점수 (마지막 시험 기준)</h4><div class="target-chips">${chips}</div></div>`;
     }
@@ -1124,6 +1133,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       우리학교 시간표 보러가기
     </a>
   </div>
+
+  <section class="content-section">
+    <h2>수행평가·지필고사 최종점수 계산법</h2>
+    <p>각 평가 점수에 반영비율을 곱한 가중점수를 모두 더합니다. 공식은 <strong>Σ(평가 점수 × 반영비율 ÷ 100)</strong>입니다. 학교에서 안내한 비율 합계가 100%인지 먼저 확인하세요.</p>
+    <div class="example-grid"><article><h3>수행 40% · 지필 60%</h3><p>수행 80점, 지필 90점이면 80×0.4 + 90×0.6 = 86점입니다.</p></article><article><h3>평가가 세 개인 경우</h3><p>수행 95점×30%, 중간 80점×30%, 기말 90점×40% = 88.5점입니다.</p></article></div>
+    <h2>목표점수 역산</h2><p>남은 시험 필요점수는 (목표 최종점수 − 확정 가중점수) ÷ 남은 반영비율입니다. 100점을 넘으면 현재 조건으로 달성이 어렵고, 이미 목표를 넘었다면 최소 필요점수는 0점입니다.</p>
+    <details><summary>반영비율은 어디에서 확인하나요?</summary><p>학교 평가계획 또는 학교알리미 등 공식 안내를 확인하세요. 과목과 학기마다 다를 수 있습니다.</p></details>
+    <details><summary>계산값과 성적표가 다를 수 있나요?</summary><p>학교의 소수점 처리, 결시, 가산점 규정에 따라 달라질 수 있어 계산 결과는 참고용입니다.</p></details>
+  </section>
+  <nav class="related-tools" aria-label="관련 도구"><h2>관련 도구</h2><a href="/target-score/">목표점수 계산기</a><a href="/rank/">내신등급 계산기</a><a href="/gpa/">학점 계산기</a><a href="/blog/performance-exam-weight/">반영비율 설명</a><a href="/faq/">FAQ</a></nav>
 
   <footer class="site-footer">
     성적 계산기 · 수행평가와 지필고사 반영 비율을 입력해 최종 원점수와 등급을 무료로 계산하는 온라인 도구입니다.<br>

@@ -519,3 +519,13 @@ body {
 /* 4열짜리 결과표는 좁은 화면에서도 그대로 들어가게 */
 .record-table.compact { min-width: 0; }
 .record-table.compact th, .record-table.compact td { width: auto !important; }
+
+/* 검색 도움말·블로그·FAQ 공통 */
+.content-section,.related-tools,.article-card-grid{max-width:900px;margin:20px auto;padding:22px;background:var(--box-bg);border:1px solid var(--inp-border);border-radius:16px}
+.content-section h2,.related-tools h2{font-size:21px;margin:22px 0 10px}.content-section h2:first-child{margin-top:0}.content-section h3{font-size:16px;margin-bottom:7px}.content-section p,.content-section li{line-height:1.75;color:var(--fg)}
+.content-section ul{padding-left:22px;margin:8px 0 18px}.content-section details{border-top:1px solid var(--inp-border);padding:14px 0}.content-section summary{cursor:pointer;font-weight:700}.content-section details p{margin-top:8px;color:var(--muted)}
+.example-grid,.article-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.example-grid article,.article-card{padding:16px;border:1px solid var(--inp-border);border-radius:12px;background:var(--inp-bg)}
+.article-card{text-decoration:none;color:var(--fg)}.article-card:hover,.related-tools a:hover{border-color:var(--primary)}.article-card small{color:var(--muted)}
+.related-tools{display:flex;gap:10px;flex-wrap:wrap}.related-tools h2{width:100%;margin:0}.related-tools a{padding:10px 14px;border:1px solid var(--inp-border);border-radius:999px;text-decoration:none;color:var(--primary);font-weight:600}
+.field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field label{display:block;font-size:14px;color:var(--muted);margin-bottom:6px}.field input,.field select{width:100%;height:44px;border:1px solid var(--inp-border);border-radius:10px;background:var(--inp-bg);color:var(--fg);padding:0 12px;font-size:16px}.notice{padding:12px 14px;border-radius:10px;background:rgba(79,70,229,.09);line-height:1.6}.error{color:var(--danger)}
+@media(max-width:600px){.example-grid,.article-card-grid,.field-grid{grid-template-columns:1fr}.content-section,.related-tools,.article-card-grid{padding:16px}}
