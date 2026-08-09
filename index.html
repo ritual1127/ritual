@@ -75,19 +75,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
   <div id="calcView">
+    <ol class="quick-steps" aria-label="성적 계산 순서">
+      <li><span>1</span><strong>과목 확인</strong></li>
+      <li><span>2</span><strong>받은 점수 입력</strong></li>
+      <li><span>3</span><strong>결과 확인</strong></li>
+    </ol>
     <div class="desktop-grid">
       <div class="left-col">
         <div class="box subject-picker">
           <div class="section-head">
-            <label style="font-size:15px;color:var(--muted);">과목 선택</label>
-            <button type="button" class="mini-btn" id="manageSubjectsBtn">+ 과목 추가/관리</button>
+            <div><span class="step-kicker">STEP 1</span><h2>계산할 과목</h2></div>
+            <button type="button" class="mini-btn" id="manageSubjectsBtn">과목·비율 설정</button>
           </div>
           <div class="subject-chips" id="subjectChips"></div>
         </div>
 
         <div id="inputs" class="box"></div>
-        <button id="calcBtn" class="btn">계산하기</button>
-        <div id="result" class="span-full"></div>
+        <button id="calcBtn" class="btn">내 최종점수 계산하기</button>
+        <div id="result" class="span-full" role="status" aria-live="polite"></div>
 
       </div>
 
@@ -205,6 +210,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <script>
     const IF_SCENARIOS = [60, 70, 80, 90, 100];
     const GRADE_COLORS = { A: '#10b981', B: '#4f46e5', C: '#f59e0b', D: '#f97316', E: '#ef4444' };
+    const QUICK_START_MARKER = 'quickStartSubjectInitialized';
+    const LAST_SUBJECT_KEY = 'lastSelectedSubject';
 
     let selectedSubject = null;
     let currentCfg = null;
@@ -212,6 +219,45 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     function loadCustomSubjects() { return JSON.parse(localStorage.getItem('customSubjects') || '{}'); }
     function saveCustomSubjectsMap(map) { localStorage.setItem('customSubjects', JSON.stringify(map)); }
+
+    function quickStartConfig() {
+      return {
+        performances: [{ label: '수행평가', weight: 40, memo: '' }],
+        exams: [{ label: '중간고사', weight: 30 }, { label: '기말고사', weight: 30 }]
+      };
+    }
+
+    function createQuickStartSubject() {
+      const all = loadCustomSubjects();
+      let name = '과목 1';
+      let number = 1;
+      while (all[name]) name = `과목 ${++number}`;
+      all[name] = quickStartConfig();
+      saveCustomSubjectsMap(all);
+      localStorage.setItem(QUICK_START_MARKER, '1');
+      loadSubject(name);
+    }
+
+    function initializeSubjectSelection() {
+      let all = loadCustomSubjects();
+      let names = Object.keys(all);
+      if (!names.length && !localStorage.getItem(QUICK_START_MARKER)) {
+        all['과목 1'] = quickStartConfig();
+        saveCustomSubjectsMap(all);
+        localStorage.setItem(QUICK_START_MARKER, '1');
+        names = ['과목 1'];
+      } else if (names.length) {
+        localStorage.setItem(QUICK_START_MARKER, '1');
+      }
+
+      if (!names.length) {
+        renderSubjectChips();
+        renderScoreInputs();
+        return;
+      }
+      const last = localStorage.getItem(LAST_SUBJECT_KEY);
+      loadSubject(names.includes(last) ? last : names[0]);
+    }
 
     function getGrade(score) {
       return score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'E';
@@ -263,7 +309,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       draft.examScores.forEach((v, i) => { const el = document.getElementById(`t${i}`); if (el) el.value = v; });
       draft.ifModes.forEach((on, i) => {
         const btn = document.getElementById(`if${i}`);
-        if (btn) { btn.classList.toggle('active', on); toggleIfMode(i, on); }
+        if (btn) {
+          btn.classList.toggle('active', on);
+          btn.setAttribute('aria-pressed', on);
+          toggleIfMode(i, on);
+        }
       });
     }
 
@@ -272,14 +322,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const container = document.getElementById('subjectChips');
       container.innerHTML = names.length
         ? names.map(name => `<button type="button" class="subject-chip${selectedSubject === name ? ' active' : ''}" data-subject="${name}">${name}</button>`).join('')
-        : '<span class="empty-hint">등록된 과목이 없습니다. "+ 과목 추가/관리"로 추가하세요.</span>';
+        : '<button type="button" class="empty-start" id="quickStartBtn">기본 양식으로 바로 시작</button>';
       container.querySelectorAll('.subject-chip').forEach(chip => {
         chip.onclick = () => {
           saveDraft();
-          if (selectedSubject === chip.dataset.subject) deselectSubject();
-          else loadSubject(chip.dataset.subject);
+          if (selectedSubject !== chip.dataset.subject) loadSubject(chip.dataset.subject);
         };
       });
+      document.getElementById('quickStartBtn')?.addEventListener('click', createQuickStartSubject);
     }
 
     function deselectSubject() {
@@ -292,6 +342,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     function loadSubject(name) {
       selectedSubject = name;
       currentCfg = loadCustomSubjects()[name];
+      localStorage.setItem(LAST_SUBJECT_KEY, name);
       renderSubjectChips();
       renderScoreInputs();
       const draft = loadDraft(name);
@@ -310,39 +361,65 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     function renderScoreInputs() {
       const box = document.getElementById('inputs');
-      if (!currentCfg) { box.innerHTML = '<div class="empty-hint">과목을 선택하거나 새로 등록하세요.</div>'; return; }
+      if (!currentCfg) { box.innerHTML = '<div class="empty-score-state"><strong>바로 계산할 준비가 필요해요</strong><p>위의 기본 양식 버튼을 누르면 입력칸이 바로 만들어집니다.</p></div>'; return; }
 
-      let html = `<h2 style="margin-bottom:12px;">${selectedSubject}</h2>`;
-      html += '<h2 style="font-size:16px;margin-bottom:12px;">수행평가</h2>';
+      const ratioSummary = [...currentCfg.performances, ...currentCfg.exams]
+        .map(item => `${item.label} ${item.weight}%`).join(' · ');
+      let html = `<div class="score-input-head"><div><span class="step-kicker">STEP 2</span><h2>${selectedSubject} 점수 입력</h2><p>성적표에 적힌 받은 점수를 그대로 적으세요.</p></div><button type="button" class="example-btn" id="exampleFillBtn">예시 결과 보기</button></div>`;
+      html += `<div class="ratio-summary"><span>현재 반영 비율</span><strong>${ratioSummary}</strong><button type="button" id="editRatioBtn">바꾸기</button></div>`;
+      html += '<h3 class="score-group-title">수행평가</h3>';
       currentCfg.performances.forEach((p, i) => {
         html += `
           <div class="entry">
-            <label>${p.label} (${p.weight}%)${p.memo ? `<br><span style="font-size:12px;color:var(--muted);">${p.memo}</span>` : ''}</label>
-            <input type="text" inputmode="decimal" class="score-input" id="s${i}" placeholder="점수">
+            <label for="s${i}"><strong>${p.label}</strong><small>최종 성적의 ${p.weight}%${p.memo ? ` · ${p.memo}` : ''}</small></label>
+            <input type="text" inputmode="decimal" class="score-input" id="s${i}" placeholder="0~100점 입력" aria-label="${p.label}에서 받은 점수">
           </div>`;
       });
 
-      html += '<h2 style="font-size:16px;margin:16px 0 12px;">지필평가</h2>';
+      html += '<h3 class="score-group-title">지필평가</h3>';
       currentCfg.exams.forEach((ex, i) => {
         html += `
           <div class="entry" id="examEntry${i}">
-            <label>${ex.label} (${ex.weight}%)</label>
+            <label for="t${i}"><strong>${ex.label}</strong><small>최종 성적의 ${ex.weight}%</small></label>
             <div class="score-row">
-              <input type="text" inputmode="decimal" id="t${i}" class="score-input exam-score" placeholder="점수">
-              <button type="button" class="if-btn" id="if${i}" title="IF 모드: 시험 점수별 예상 원점수">IF</button>
+              <input type="text" inputmode="decimal" id="t${i}" class="score-input exam-score" placeholder="0~100점 입력" aria-label="${ex.label}에서 받은 점수">
+              <button type="button" class="if-btn" id="if${i}" aria-pressed="false" title="아직 안 본 시험이라면 누르세요">아직 안 봄</button>
             </div>
           </div>`;
       });
+      html += '<p class="score-tip">아직 안 본 시험은 <strong>‘아직 안 봄’</strong>을 누르면 점수별 예상 결과를 보여드려요.</p>';
 
       box.innerHTML = html;
       box.querySelectorAll('.score-input').forEach(inp => inp.addEventListener('input', () => sanitizeScoreInput(inp)));
+      document.getElementById('exampleFillBtn').onclick = fillExampleScores;
+      document.getElementById('editRatioBtn').onclick = () => editSubjectInModal(selectedSubject);
       currentCfg.exams.forEach((_, i) => {
         document.getElementById(`if${i}`).onclick = function() {
           const on = !this.classList.contains('active');
           this.classList.toggle('active', on);
+          this.setAttribute('aria-pressed', on);
           toggleIfMode(i, on);
         };
       });
+    }
+
+    function fillExampleScores() {
+      const inputs = [...document.querySelectorAll('#inputs .score-input')];
+      if (inputs.some(input => input.value.trim()) && !confirm('입력한 점수를 예시 점수로 바꿀까요?')) return;
+      const examples = [85, 90, 80, 92, 88];
+      currentCfg.exams.forEach((_, i) => {
+        const button = document.getElementById(`if${i}`);
+        button.classList.remove('active');
+        button.setAttribute('aria-pressed', 'false');
+        toggleIfMode(i, false);
+      });
+      inputs.forEach((input, i) => {
+        input.value = examples[i % examples.length];
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+      calculate({ saveToHistory: false });
+      document.getElementById('result').insertAdjacentHTML('afterbegin', '<div class="example-result-label">예시 점수로 계산한 결과</div>');
+      document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function toggleIfMode(i, on) {
@@ -350,11 +427,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const inp = document.getElementById(`t${i}`);
       if (on) {
         entry.classList.add('if-mode');
-        inp.placeholder = 'IF 시뮬레이션';
+        inp.placeholder = '점수별 결과 확인';
         inp.value = '';
       } else {
         entry.classList.remove('if-mode');
-        inp.placeholder = '점수';
+        inp.placeholder = '0~100점 입력';
       }
     }
 
@@ -647,7 +724,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const all = loadCustomSubjects();
         delete all[name];
         saveCustomSubjectsMap(all);
-        if (selectedSubject === name) { selectedSubject = null; currentCfg = null; renderScoreInputs(); }
+        if (selectedSubject === name) {
+          selectedSubject = null;
+          currentCfg = null;
+          localStorage.removeItem(LAST_SUBJECT_KEY);
+          const remaining = Object.keys(all);
+          if (remaining.length) loadSubject(remaining[0]); else renderScoreInputs();
+        }
         if (editingSubject === name) resetSubjectForm(); else renderModalSubjectList();
         renderSubjectChips();
       });
@@ -695,7 +778,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return `<div class="target-box"><h4>🎯 목표 등급별 필요 점수 (마지막 시험 기준)</h4><div class="target-chips">${chips}</div></div>`;
     }
 
-    function calculate() {
+    function calculate(options = {}) {
       if (!currentCfg) { alert('먼저 과목을 선택하거나 등록하세요.'); return; }
 
       const emptyScore = currentCfg.performances.some((_, i) => !document.getElementById(`s${i}`).value.trim())
@@ -718,7 +801,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       if (anyIf) {
         const sims = buildSimulations(data);
-        let html = '<div class="result-main"><strong>📊 IF 시뮬레이션 결과</strong><br><span style="font-size:14px;color:var(--muted)">현재 수행평가 + 입력된 시험 점수 기준</span></div>';
+        let html = '<div class="result-main"><strong>아직 안 본 시험의 예상 결과</strong><br><span style="font-size:14px;color:var(--muted)">현재 수행평가와 이미 본 시험 점수를 기준으로 계산했어요.</span></div>';
         sims.forEach(sim => {
           html += `<div class="sim-box"><h4>${sim.label} 점수별 예상 원점수</h4><div class="sim-grid">`;
           sim.rows.forEach(r => {
@@ -754,8 +837,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const now = new Date();
       const formattedTime = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-      saveHistory({ time: formattedTime, subject: subj, final, grade, nextMsg, dropMsg, performances: perf, exams: exms });
-      renderHistory();
+      if (options.saveToHistory !== false) {
+        saveHistory({ time: formattedTime, subject: subj, final, grade, nextMsg, dropMsg, performances: perf, exams: exms });
+        renderHistory();
+      }
     }
 
     function getLatestScoresForGraph() {
@@ -1072,10 +1157,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     window.onload = () => {
-      renderSubjectChips();
-      renderScoreInputs();
+      initializeSubjectSelection();
       renderHistory();
-      document.getElementById('calcBtn').onclick = calculate;
+      document.getElementById('calcBtn').onclick = () => calculate();
       document.getElementById('manageSubjectsBtn').onclick = openSubjectModal;
       document.getElementById('modalSaveBtn').onclick = saveSubjectFromModal;
       document.getElementById('addNewSubjectBtn').onclick = () => {
