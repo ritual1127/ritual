@@ -703,6 +703,30 @@ body {
 }
 .direct-title-row h2 { font-size: 22px; line-height: 1.35; }
 .direct-title-row p { margin-top: 5px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.direct-counts {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px;
+}
+.direct-count-control {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 13px 14px; border: 1px solid var(--inp-border); border-radius: 12px; background: var(--bg);
+}
+.direct-count-control label { font-size: 14px; font-weight: 800; white-space: nowrap; }
+.direct-count-stepper {
+  display: grid; grid-template-columns: 34px 46px 34px; height: 38px;
+  overflow: hidden; border: 1px solid var(--inp-border); border-radius: 10px; background: var(--inp-bg);
+}
+.direct-count-stepper button {
+  border: 0; background: transparent; color: var(--primary); font-size: 19px; font-weight: 800; cursor: pointer;
+}
+.direct-count-stepper button:first-child { border-right: 1px solid var(--inp-border); }
+.direct-count-stepper button:last-child { border-left: 1px solid var(--inp-border); }
+.direct-count-stepper button:active { background: rgba(79,70,229,.08); }
+.direct-count-stepper input {
+  width: 46px; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--fg);
+  font-size: 16px; font-weight: 800; text-align: center; -moz-appearance: textfield;
+}
+.direct-count-stepper input::-webkit-inner-spin-button,
+.direct-count-stepper input::-webkit-outer-spin-button { margin: 0; -webkit-appearance: none; }
 .direct-add {
   flex: 0 0 auto; min-height: 38px; padding: 0 13px; border: 1px solid var(--primary);
   border-radius: 10px; background: transparent; color: var(--primary); font-size: 13px;
@@ -711,7 +735,7 @@ body {
 .direct-add:hover { background: rgba(79,70,229,.08); }
 .direct-rows { display: grid; gap: 10px; }
 .direct-row {
-  display: grid; grid-template-columns: minmax(140px,1.35fr) minmax(110px,1fr) minmax(110px,1fr) 34px;
+  display: grid; grid-template-columns: minmax(140px,1.35fr) minmax(110px,1fr) minmax(110px,1fr);
   gap: 10px; align-items: end; padding: 14px; border: 1px solid var(--inp-border);
   border-radius: 13px; background: var(--bg);
 }
@@ -774,12 +798,17 @@ body {
   .direct-title-row { align-items: center; margin-bottom: 16px; gap: 8px; }
   .direct-title-row h2 { font-size: 19px; }
   .direct-title-row p { max-width: 210px; font-size: 12px; }
+  .direct-counts { gap: 8px; margin-bottom: 14px; }
+  .direct-count-control { display: block; padding: 11px; }
+  .direct-count-control label { display: block; margin-bottom: 8px; font-size: 13px; text-align: center; }
+  .direct-count-stepper { grid-template-columns: 1fr 42px 1fr; width: 100%; height: 42px; }
+  .direct-count-stepper input { width: 42px; }
   .direct-add { min-height: 40px; padding: 0 10px; white-space: nowrap; }
   .direct-row {
     position: relative; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 11px 8px;
     padding: 13px; padding-top: 14px;
   }
-  .direct-name { grid-column: 1 / -1; padding-right: 34px; }
+  .direct-name { grid-column: 1 / -1; }
   .direct-field input { height: 47px; font-size: 16px; }
   .direct-delete { position: absolute; top: 29px; right: 10px; width: 34px; height: 40px; }
   .direct-weight { margin: 12px 0; }
