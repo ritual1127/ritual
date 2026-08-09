@@ -764,11 +764,29 @@ input[type="number"]::-webkit-outer-spin-button { margin: 0; -webkit-appearance:
   font-weight: 700; cursor: pointer;
 }
 .direct-add:hover { background: rgba(79,70,229,.08); }
+.direct-evaluation-groups { display: grid; gap: 16px; }
+.direct-evaluation-group {
+  overflow: hidden; border: 1px solid var(--inp-border); border-radius: 14px; background: var(--inp-bg);
+}
+.performance-group { border-left: 4px solid var(--primary); }
+.exam-group { border-left: 4px solid var(--success); }
+.direct-group-title {
+  display: flex; align-items: center; justify-content: space-between; padding: 11px 14px;
+  border-bottom: 1px solid var(--inp-border); background: rgba(79,70,229,.06);
+}
+.exam-group .direct-group-title { background: rgba(16,185,129,.07); }
+.direct-group-title h3 { font-size: 15px; }
+.direct-group-title span { color: var(--muted); font-size: 11px; font-weight: 700; }
+.direct-group-empty { padding: 17px; color: var(--muted); font-size: 12px; text-align: center; }
 .direct-rows { display: grid; gap: 10px; }
+.direct-evaluation-group .direct-rows { padding: 12px; }
 .direct-row {
-  display: grid; grid-template-columns: minmax(90px,.65fr) minmax(150px,1.2fr) minmax(150px,1.2fr);
-  gap: 10px; align-items: end; padding: 14px; border: 1px solid var(--inp-border);
+  display: grid; grid-template-columns: 44px minmax(150px,1fr) minmax(150px,1fr);
+  gap: 10px; align-items: end; padding: 12px; border: 1px solid var(--inp-border);
   border-radius: 13px; background: var(--bg);
+}
+.direct-evaluation-name {
+  align-self: center; color: var(--muted); font-size: 11px; font-weight: 800; text-align: center; white-space: nowrap;
 }
 .direct-field { display: block; min-width: 0; }
 .direct-field > span:first-child {
@@ -779,7 +797,6 @@ input[type="number"]::-webkit-outer-spin-button { margin: 0; -webkit-appearance:
   border-radius: 10px; outline: none; background: var(--inp-bg); color: var(--fg); font-size: 16px;
 }
 .direct-field input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,.12); }
-.direct-name input { font-size: 13px; }
 .direct-input-suffix { position: relative; display: block; }
 .direct-input-suffix input { padding-right: 32px; }
 .direct-input-suffix b {
@@ -838,12 +855,14 @@ input[type="number"]::-webkit-outer-spin-button { margin: 0; -webkit-appearance:
   .direct-count-stepper { grid-template-columns: 1fr 42px 1fr; width: 100%; height: 42px; }
   .direct-count-stepper input { width: 42px; }
   .direct-add { min-height: 40px; padding: 0 10px; white-space: nowrap; }
+  .direct-evaluation-groups { gap: 12px; }
+  .direct-group-title { padding: 10px 12px; }
+  .direct-evaluation-group .direct-rows { padding: 9px; gap: 8px; }
   .direct-row {
     position: relative; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 11px 8px;
-    padding: 13px; padding-top: 14px;
+    padding: 11px; padding-top: 30px;
   }
-  .direct-name { grid-column: 1 / -1; width: 60%; }
-  .direct-name input { height: 40px; }
+  .direct-evaluation-name { position: absolute; top: 9px; left: 12px; font-size: 10px; text-align: left; }
   .direct-field input { height: 47px; font-size: 16px; }
   .direct-delete { position: absolute; top: 29px; right: 10px; width: 34px; height: 40px; }
   .direct-weight { margin: 12px 0; }
