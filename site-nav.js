@@ -20,6 +20,107 @@
     ['시간표', '/todayclass/'],
   ];
 
+  function setupNumberSteppers() {
+    function isPercentageInput(input) {
+      const hint = [
+        input.className,
+        input.id,
+        input.getAttribute('aria-label') || '',
+        input.closest('.percent-suffix') ? 'percent' : ''
+      ].join(' ').toLowerCase();
+      return /weight|percent|비율|퍼센트/.test(hint);
+    }
+
+    function stepFor(input, percentage) {
+      if (percentage) return 5;
+      const scoreInput = input.matches('.evaluation-score, .completed-score, #target') || input.closest('.score-suffix');
+      if (scoreInput) return 1;
+      const declared = Number(input.getAttribute('step'));
+      return Number.isFinite(declared) && declared > 0 ? declared : 1;
+    }
+
+    function precisionOf(step) {
+      const text = String(step);
+      return text.includes('.') ? text.split('.')[1].length : 0;
+    }
+
+    function enhance(input) {
+      if (input.dataset.customStepper || input.closest('.direct-count-stepper, .stepper, .number-stepper')) return;
+      input.dataset.customStepper = 'true';
+
+      const percentage = isPercentageInput(input);
+      const step = stepFor(input, percentage);
+      const oldParent = input.parentElement;
+      const oldUnit = [...oldParent.children].find(element =>
+        element !== input && /^(SPAN|B)$/.test(element.tagName) && ['%', '점'].includes(element.textContent.trim())
+      );
+      const inferredUnit = percentage ? '%' : ((input.matches('.evaluation-score, .completed-score, #target') || input.closest('.score-suffix')) ? '점' : '');
+      const unit = oldUnit?.textContent.trim() || inferredUnit;
+      if (oldUnit) oldUnit.classList.add('native-unit-hidden');
+
+      const control = document.createElement('span');
+      control.className = `number-stepper${percentage ? ' percentage-stepper' : ''}`;
+      const down = document.createElement('button');
+      const up = document.createElement('button');
+      const valueWrap = document.createElement('span');
+      const fieldName = input.getAttribute('aria-label') || input.id || '숫자';
+      down.type = up.type = 'button';
+      down.className = 'number-step-button number-step-down';
+      up.className = 'number-step-button number-step-up';
+      down.textContent = '−';
+      up.textContent = '+';
+      down.setAttribute('aria-label', `${fieldName} 줄이기`);
+      up.setAttribute('aria-label', `${fieldName} 늘리기`);
+      valueWrap.className = 'number-step-value';
+      oldParent.insertBefore(control, input);
+      valueWrap.appendChild(input);
+      if (unit) {
+        const unitElement = document.createElement('span');
+        unitElement.className = 'number-step-unit';
+        unitElement.textContent = unit;
+        valueWrap.appendChild(unitElement);
+      }
+      control.append(down, valueWrap, up);
+      input.setAttribute('step', String(step));
+
+      function adjust(direction) {
+        const min = input.min === '' ? -Infinity : Number(input.min);
+        const max = input.max === '' ? Infinity : Number(input.max);
+        let current = Number(input.value);
+        if (input.value === '' || !Number.isFinite(current)) {
+          current = Number.isFinite(min) ? (direction > 0 ? min - step : min) : 0;
+        }
+        const next = Math.min(max, Math.max(min, current + direction * step));
+        input.value = next.toFixed(precisionOf(step));
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+
+      down.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        adjust(-1);
+      });
+      up.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        adjust(1);
+      });
+    }
+
+    function enhanceWithin(root) {
+      if (root.matches?.('input[type="number"]')) enhance(root);
+      root.querySelectorAll?.('input[type="number"]').forEach(enhance);
+    }
+
+    enhanceWithin(document.body);
+    new MutationObserver(records => {
+      records.forEach(record => record.addedNodes.forEach(node => {
+        if (node.nodeType === Node.ELEMENT_NODE) enhanceWithin(node);
+      }));
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+
   function render() {
     const here = CURRENT_PATH;
     const tagline = document.querySelector('body > .tagline');
@@ -68,6 +169,8 @@
     // 글은 계산기와 분리된 읽기 전용 레이아웃으로 구성합니다.
     if (here === '/blog/') buildBlogHub();
     else if (here.startsWith('/blog/') && here !== '/blog/') buildArticlePage();
+
+    setupNumberSteppers();
   }
 
   function buildBlogHub() {

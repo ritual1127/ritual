@@ -63,7 +63,7 @@
       <div class="target-row remaining-row">
         <input id="remainingName" type="text" value="기말고사" aria-label="앞으로 볼 시험 이름">
         <span class="target-empty">아직 모름</span>
-        <div class="percent-suffix"><input id="remainingWeight" type="number" min="0" max="100" step="0.01" value="40" aria-label="앞으로 볼 시험의 성적 반영 비율"><span>%</span></div>
+        <div class="percent-suffix"><input id="remainingWeight" type="number" min="0" max="100" step="5" value="40" aria-label="앞으로 볼 시험의 성적 반영 비율"><span>%</span></div>
         <span></span>
       </div>
 
@@ -103,7 +103,7 @@
       row.innerHTML = `
         <input class="completed-name" type="text" placeholder="예: 수행평가" aria-label="평가 이름">
         <div class="score-suffix"><input class="completed-score" type="number" min="0" max="100" step="0.01" placeholder="0" aria-label="받은 점수"><span>점</span></div>
-        <div class="percent-suffix"><input class="completed-weight" type="number" min="0" max="100" step="0.01" placeholder="0" aria-label="최종 성적에서 차지하는 비율"><span>%</span></div>
+        <div class="percent-suffix"><input class="completed-weight" type="number" min="0" max="100" step="5" placeholder="0" aria-label="최종 성적에서 차지하는 비율"><span>%</span></div>
         <button type="button" class="target-delete" aria-label="이 평가 삭제">×</button>`;
       row.querySelector('.completed-name').value = data.name || '';
       row.querySelector('.completed-score').value = data.score ?? '';
