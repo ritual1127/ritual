@@ -22,6 +22,19 @@
 
   function render() {
     const here = CURRENT_PATH;
+    const tagline = document.querySelector('body > .tagline');
+    if (tagline) {
+      tagline.setAttribute('role', 'region');
+      tagline.setAttribute('aria-label', '페이지 소개');
+    }
+    document.querySelectorAll('.footer-links').forEach(links => {
+      links.setAttribute('role', 'navigation');
+      links.setAttribute('aria-label', '하단 링크');
+    });
+    document.querySelectorAll('.feedback-widget').forEach(widget => {
+      widget.setAttribute('role', 'region');
+      widget.setAttribute('aria-label', '페이지 평가');
+    });
     const nav = document.createElement('nav');
     nav.className = 'site-nav';
     nav.innerHTML = LINKS.map(

@@ -60,14 +60,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
 
-  <div class="top-bar">
+  <header class="top-bar">
     <h1 onclick="location.reload()"><span>성적</span>계산기</h1>
     <div class="top-controls">
       <button id="themeToggle">다크 모드</button>
     </div>
-  </div>
+  </header>
   <p class="tagline">수행평가·지필고사 비율만 입력하면 최종 원점수와 등급을 바로 계산해드려요</p>
 
+  <main>
   <div class="nav-tabs">
     <button class="nav-tab active" data-view="calc">계산기</button>
     <button class="nav-tab" data-view="graph">원점수 그래프</button>
@@ -101,7 +102,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <thead>
                 <tr>
                   <th>일시</th><th>과목</th><th>원점수</th><th>등급</th>
-                  <th></th><th></th>
+                  <th><span class="sr-only">삭제</span></th><th><span class="sr-only">상세 정보</span></th>
                 </tr>
               </thead>
               <tbody id="historyBody"></tbody>
@@ -1143,6 +1144,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <details><summary>계산값과 성적표가 다를 수 있나요?</summary><p>학교의 소수점 처리, 결시, 가산점 규정에 따라 달라질 수 있어 계산 결과는 참고용입니다.</p></details>
   </section>
   <nav class="related-tools" aria-label="관련 도구"><h2>관련 도구</h2><a href="/target-score/">목표점수 계산기</a><a href="/rank/">내신등급 계산기</a><a href="/gpa/">학점 계산기</a><a href="/blog/performance-exam-weight/">반영비율 설명</a><a href="/faq/">FAQ</a></nav>
+  </main>
 
   <footer class="site-footer">
     성적 계산기 · 수행평가와 지필고사 반영 비율을 입력해 최종 원점수와 등급을 무료로 계산하는 온라인 도구입니다.<br>
