@@ -67,12 +67,30 @@
       <div class="direct-title-row">
         <div>
           <h2 id="calculatorTitle">내 성적 계산하기</h2>
-          <p>점수는 100점 만점, 반영비율 합계는 100%로 입력하세요.</p>
+          <p>먼저 평가 개수를 정하면 아래에 점수 입력 칸이 생겨요.</p>
         </div>
-        <button type="button" class="direct-add" id="addEvaluation">+ 평가 추가</button>
       </div>
 
       <form id="gradeForm" novalidate>
+        <div class="direct-counts" aria-label="평가 개수 설정">
+          <div class="direct-count-control">
+            <label for="performanceCount">수행평가 개수</label>
+            <div class="direct-count-stepper">
+              <button type="button" data-count-target="performanceCount" data-count-delta="-1" aria-label="수행평가 개수 줄이기">−</button>
+              <input id="performanceCount" type="number" min="0" max="10" step="1" value="2" inputmode="numeric">
+              <button type="button" data-count-target="performanceCount" data-count-delta="1" aria-label="수행평가 개수 늘리기">+</button>
+            </div>
+          </div>
+          <div class="direct-count-control">
+            <label for="examCount">정기고사 개수</label>
+            <div class="direct-count-stepper">
+              <button type="button" data-count-target="examCount" data-count-delta="-1" aria-label="정기고사 개수 줄이기">−</button>
+              <input id="examCount" type="number" min="0" max="10" step="1" value="2" inputmode="numeric">
+              <button type="button" data-count-target="examCount" data-count-delta="1" aria-label="정기고사 개수 늘리기">+</button>
+            </div>
+          </div>
+        </div>
+
         <div id="evaluationRows" class="direct-rows"></div>
 
         <div class="direct-weight" id="weightStatus" aria-live="polite">
@@ -125,22 +143,30 @@
         <span>반영비율</span>
         <span class="direct-input-suffix"><input type="number" class="evaluation-weight" min="0" max="100" step="0.01" inputmode="decimal" placeholder="예: 30" aria-label="반영비율"><b>%</b></span>
       </label>
-      <button type="button" class="direct-delete" aria-label="평가 삭제">×</button>
     </div>
   </template>
 
   <script>
     (() => {
-      const initialRows = [
-        { name: '수행평가', weight: 40 },
-        { name: '중간고사', weight: 30 },
-        { name: '기말고사', weight: 30 }
-      ];
+      const initialRows = {
+        performance: [
+          { name: '수행평가 1', score: '', weight: 20 },
+          { name: '수행평가 2', score: '', weight: 20 }
+        ],
+        exam: [
+          { name: '정기고사 1', score: '', weight: 30 },
+          { name: '정기고사 2', score: '', weight: 30 }
+        ]
+      };
       const rows = document.getElementById('evaluationRows');
       const template = document.getElementById('evaluationTemplate');
       const form = document.getElementById('gradeForm');
       const result = document.getElementById('calculationResult');
       const weightStatus = document.getElementById('weightStatus');
+      const countInputs = {
+        performance: document.getElementById('performanceCount'),
+        exam: document.getElementById('examCount')
+      };
 
       function formatNumber(value) {
         return value.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
@@ -169,18 +195,53 @@
         return { total, valid };
       }
 
-      function addRow(data = { name: '', weight: '' }) {
+      function addRow(kind, data) {
         const row = template.content.firstElementChild.cloneNode(true);
+        row.dataset.kind = kind;
         row.querySelector('.evaluation-name').value = data.name;
+        row.querySelector('.evaluation-score').value = data.score ?? '';
         row.querySelector('.evaluation-weight').value = data.weight;
         row.querySelector('.evaluation-weight').addEventListener('input', updateWeight);
-        row.querySelector('.direct-delete').addEventListener('click', () => {
-          if (currentRows().length === 1) return;
-          row.remove();
-          updateWeight();
-          result.hidden = true;
-        });
         rows.appendChild(row);
+      }
+
+      function normalizeCount(input) {
+        const value = Math.round(Number(input.value));
+        const safeValue = Number.isFinite(value) ? Math.min(10, Math.max(0, value)) : 0;
+        input.value = safeValue;
+        return safeValue;
+      }
+
+      function currentValues() {
+        const values = { performance: [], exam: [] };
+        currentRows().forEach(row => {
+          values[row.dataset.kind].push({
+            name: row.querySelector('.evaluation-name').value,
+            score: row.querySelector('.evaluation-score').value,
+            weight: row.querySelector('.evaluation-weight').value
+          });
+        });
+        return values;
+      }
+
+      function rebuildRows() {
+        const previous = currentValues();
+        rows.replaceChildren();
+
+        Object.entries(countInputs).forEach(([kind, input]) => {
+          const count = normalizeCount(input);
+          for (let index = 0; index < count; index += 1) {
+            const fallback = initialRows[kind][index] || {
+              name: `${kind === 'performance' ? '수행평가' : '정기고사'} ${index + 1}`,
+              score: '',
+              weight: ''
+            };
+            addRow(kind, previous[kind][index] || fallback);
+          }
+        });
+
+        updateWeight();
+        result.hidden = true;
       }
 
       function showMessage(type, html) {
@@ -190,14 +251,18 @@
         result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
 
-      initialRows.forEach(addRow);
-      updateWeight();
+      rebuildRows();
 
-      document.getElementById('addEvaluation').addEventListener('click', () => {
-        addRow();
-        updateWeight();
-        const row = currentRows().at(-1);
-        row.querySelector('.evaluation-name').focus();
+      Object.values(countInputs).forEach(input => {
+        input.addEventListener('change', rebuildRows);
+      });
+
+      document.querySelectorAll('[data-count-target]').forEach(button => {
+        button.addEventListener('click', () => {
+          const input = document.getElementById(button.dataset.countTarget);
+          input.value = normalizeCount(input) + Number(button.dataset.countDelta);
+          rebuildRows();
+        });
       });
 
       form.addEventListener('submit', event => {
@@ -210,6 +275,10 @@
           weight: Number(row.querySelector('.evaluation-weight').value)
         }));
 
+        if (entries.length === 0) {
+          showMessage('error', '<strong>수행평가나 정기고사를 1개 이상 선택해 주세요.</strong>');
+          return;
+        }
         if (entries.some(item => item.scoreText === '' || item.weightText === '')) {
           showMessage('error', '<strong>빈칸을 확인해 주세요.</strong><p>각 평가의 받은 점수와 반영비율을 모두 입력해야 해요.</p>');
           return;
