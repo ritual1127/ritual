@@ -72,39 +72,42 @@
       </div>
 
       <form id="gradeForm" novalidate>
-        <div class="direct-counts" aria-label="평가 개수 설정">
-          <div class="direct-count-control">
-            <label for="performanceCount">수행평가 개수</label>
-            <div class="direct-count-stepper">
-              <button type="button" data-count-target="performanceCount" data-count-delta="-1" aria-label="수행평가 개수 줄이기">−</button>
-              <input id="performanceCount" type="number" min="0" max="10" step="1" value="2" inputmode="numeric">
-              <button type="button" data-count-target="performanceCount" data-count-delta="1" aria-label="수행평가 개수 늘리기">+</button>
-            </div>
-          </div>
-          <div class="direct-count-control">
-            <label for="examCount">정기고사 개수</label>
-            <div class="direct-count-stepper">
-              <button type="button" data-count-target="examCount" data-count-delta="-1" aria-label="정기고사 개수 줄이기">−</button>
-              <input id="examCount" type="number" min="0" max="10" step="1" value="2" inputmode="numeric">
-              <button type="button" data-count-target="examCount" data-count-delta="1" aria-label="정기고사 개수 늘리기">+</button>
-            </div>
-          </div>
-        </div>
-
         <div id="evaluationRows" class="direct-evaluation-groups">
           <section class="direct-evaluation-group performance-group" aria-labelledby="performanceTitle">
             <div class="direct-group-title">
-              <h3 id="performanceTitle">수행평가</h3>
-              <span>점수 · 반영비율</span>
+              <div class="direct-group-name">
+                <i aria-hidden="true"></i>
+                <div><h3 id="performanceTitle">수행평가</h3><p>평가별 받은 점수</p></div>
+              </div>
+              <div class="direct-inline-count">
+                <span>개수</span>
+                <div class="direct-count-stepper">
+                  <button type="button" data-count-target="performanceCount" data-count-delta="-1" aria-label="수행평가 개수 줄이기">−</button>
+                  <input id="performanceCount" type="number" min="0" max="10" step="1" value="2" inputmode="numeric" aria-label="수행평가 개수">
+                  <button type="button" data-count-target="performanceCount" data-count-delta="1" aria-label="수행평가 개수 늘리기">+</button>
+                </div>
+              </div>
             </div>
+            <div class="direct-column-head" aria-hidden="true"><span>번호</span><span>점수</span><span>반영</span></div>
             <div id="performanceRows" class="direct-rows"></div>
             <p id="performanceEmpty" class="direct-group-empty" hidden>수행평가 없음</p>
           </section>
           <section class="direct-evaluation-group exam-group" aria-labelledby="examTitle">
             <div class="direct-group-title">
-              <h3 id="examTitle">정기고사</h3>
-              <span>점수 · 반영비율</span>
+              <div class="direct-group-name">
+                <i aria-hidden="true"></i>
+                <div><h3 id="examTitle">정기고사</h3><p>중간·기말고사 점수</p></div>
+              </div>
+              <div class="direct-inline-count">
+                <span>개수</span>
+                <div class="direct-count-stepper">
+                  <button type="button" data-count-target="examCount" data-count-delta="-1" aria-label="정기고사 개수 줄이기">−</button>
+                  <input id="examCount" type="number" min="0" max="10" step="1" value="2" inputmode="numeric" aria-label="정기고사 개수">
+                  <button type="button" data-count-target="examCount" data-count-delta="1" aria-label="정기고사 개수 늘리기">+</button>
+                </div>
+              </div>
             </div>
+            <div class="direct-column-head" aria-hidden="true"><span>번호</span><span>점수</span><span>반영</span></div>
             <div id="examRows" class="direct-rows"></div>
             <p id="examEmpty" class="direct-group-empty" hidden>정기고사 없음</p>
           </section>
@@ -149,14 +152,12 @@
   <template id="evaluationTemplate">
     <div class="direct-row">
       <span class="direct-evaluation-name"></span>
-      <label class="direct-field">
-        <span>받은 점수</span>
+      <div class="direct-field">
         <span class="direct-input-suffix"><input type="number" class="evaluation-score" min="0" max="100" step="0.01" inputmode="decimal" placeholder="예: 85" aria-label="받은 점수"><b>점</b></span>
-      </label>
-      <label class="direct-field">
-        <span>반영비율</span>
+      </div>
+      <div class="direct-field">
         <span class="direct-input-suffix"><input type="number" class="evaluation-weight" min="0" max="100" step="5" inputmode="decimal" placeholder="예: 30" aria-label="반영비율"><b>%</b></span>
-      </label>
+      </div>
     </div>
   </template>
 
