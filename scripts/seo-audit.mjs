@@ -49,6 +49,8 @@ const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
 const articleTokens = [];
 const commonWords = new Set(['계산기', '계산법', '성적', '점수', '결과', '확인', '공식', '예시', '관련', '자주', '묻는', '질문', '학교', '대학', '사용', '경우', '입니다', '합니다', '있습니다', '하세요']);
 
+if (!fs.existsSync(path.join(root, 'favicon.png'))) errors.push('/: favicon.png 누락');
+
 for (const file of htmlFiles) {
   const html = fs.readFileSync(file, 'utf8');
   const route = routeOf(file);
@@ -67,6 +69,9 @@ for (const file of htmlFiles) {
   if (h1s !== 1) errors.push(`${route}: H1 ${h1s}개`);
   if (canonical !== expectedCanonical) errors.push(`${route}: canonical 불일치 (${canonical || '없음'})`);
   if (/noindex/.test(robots)) errors.push(`${route}: noindex 설정됨`);
+  if (route === '/' && !/<link\s+[^>]*rel=["']icon["'][^>]*href=["']\/favicon\.png["']/i.test(html)) {
+    errors.push('/: 루트 favicon 링크 누락');
+  }
   if (/user-scalable\s*=\s*no|maximum-scale\s*=\s*1/i.test(viewport)) warnings.push(`${route}: 화면 확대 제한`);
   addUnique(titles, title, route, 'title');
   addUnique(descriptions, description, route, 'description');
