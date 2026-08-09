@@ -30,9 +30,24 @@
 
   <main>
     <section class="box target-calculator">
-      <div class="target-goal">
+      <div class="goal-mode" role="group" aria-label="목표 선택 방법">
+        <button type="button" class="active" data-goal-mode="score" aria-pressed="true">점수로 정하기</button>
+        <button type="button" data-goal-mode="grade" aria-pressed="false">등급으로 정하기</button>
+      </div>
+      <div class="target-goal" id="scoreGoal">
         <label for="target">이번 학기 최종 성적 목표</label>
         <div class="score-suffix"><input id="target" type="number" min="0" max="100" step="0.01" value="90"><span>점</span></div>
+      </div>
+      <div class="grade-goal" id="gradeGoal" hidden>
+        <div class="grade-goal-top"><strong>받고 싶은 등급</strong><span id="gradeStandard">A등급 이상 · 최종 90점 이상</span></div>
+        <div class="grade-choice" role="group" aria-label="목표 등급">
+          <button type="button" class="active" data-grade="A" aria-pressed="true">A</button>
+          <button type="button" data-grade="B" aria-pressed="false">B</button>
+          <button type="button" data-grade="C" aria-pressed="false">C</button>
+          <button type="button" data-grade="D" aria-pressed="false">D</button>
+          <button type="button" data-grade="E" aria-pressed="false">E</button>
+        </div>
+        <p>A 90점 이상 · B 80점 이상 · C 70점 이상 · D 60점 이상 · E 60점 미만 기준</p>
       </div>
 
       <div class="target-section-head">
@@ -70,6 +85,9 @@
   <script>
     const rowsEl = document.getElementById('completedRows');
     const totalEl = document.getElementById('weightTotal');
+    const gradeMinimum = { A: 90, B: 80, C: 70, D: 60, E: 0 };
+    let goalMode = 'score';
+    let selectedGrade = 'A';
 
     function requiredScore(target, completedScore, remainingPercent) {
       if (remainingPercent <= 0) return { status: 'no-remaining-weight' };
@@ -119,17 +137,47 @@
       result.innerHTML = `<strong>${title}</strong><p>${detail}</p>`;
     }
 
+    function setGoalMode(mode) {
+      goalMode = mode;
+      document.getElementById('scoreGoal').hidden = mode !== 'score';
+      document.getElementById('gradeGoal').hidden = mode !== 'grade';
+      document.querySelectorAll('[data-goal-mode]').forEach(button => {
+        const active = button.dataset.goalMode === mode;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', active);
+      });
+      document.getElementById('result').className = 'target-result';
+    }
+
+    document.querySelectorAll('[data-goal-mode]').forEach(button => {
+      button.onclick = () => setGoalMode(button.dataset.goalMode);
+    });
+    document.querySelectorAll('[data-grade]').forEach(button => {
+      button.onclick = () => {
+        selectedGrade = button.dataset.grade;
+        document.querySelectorAll('[data-grade]').forEach(item => {
+          const active = item.dataset.grade === selectedGrade;
+          item.classList.toggle('active', active);
+          item.setAttribute('aria-pressed', active);
+        });
+        const standard = `${selectedGrade}등급 이상 · 최종 ${gradeMinimum[selectedGrade]}점 이상`;
+        document.getElementById('gradeStandard').textContent = standard;
+        document.getElementById('result').className = 'target-result';
+      };
+    });
+
     document.getElementById('addCompleted').onclick = () => addCompletedRow();
     document.getElementById('remainingWeight').addEventListener('input', updateWeightTotal);
     document.getElementById('calc').onclick = () => {
-      const target = Number(document.getElementById('target').value);
+      const targetInput = document.getElementById('target').value;
+      const target = goalMode === 'grade' ? gradeMinimum[selectedGrade] : Number(targetInput);
       const remaining = Number(document.getElementById('remainingWeight').value);
       const rows = readCompletedRows();
       const hasBlank = rows.some(row => row.scoreRaw === '' || row.weightRaw === '');
       const outOfRange = rows.some(row => row.score < 0 || row.score > 100 || row.weight < 0 || row.weight > 100);
       const completedWeight = rows.reduce((sum, row) => sum + row.weight, 0);
 
-      if (!Number.isFinite(target) || target < 0 || target > 100 || !Number.isFinite(remaining) || remaining < 0 || remaining > 100 || hasBlank || outOfRange) {
+      if ((goalMode === 'score' && (targetInput === '' || !Number.isFinite(target) || target < 0 || target > 100)) || !Number.isFinite(remaining) || remaining < 0 || remaining > 100 || hasBlank || outOfRange) {
         showResult('error', '입력값을 다시 확인해 주세요.', '모든 점수와 반영 비율을 0부터 100 사이로 적어 주세요.');
         return;
       }
@@ -140,10 +188,12 @@
 
       const completedScore = rows.reduce((sum, row) => sum + row.score * row.weight / 100, 0);
       const answer = requiredScore(target, completedScore, remaining);
+      const goalReachedText = goalMode === 'grade' ? `${selectedGrade}등급 이상 기준에 이미 도달했어요.` : '입력한 목표 점수에 이미 도달했어요.';
+      const possibleText = goalMode === 'grade' ? `받으면 최종 ${selectedGrade}등급 이상을 받을 수 있어요.` : `받으면 최종 성적 ${target}점을 만들 수 있어요.`;
       if (answer.status === 'already-reached') {
-        showResult('success', '목표를 이미 달성했어요.', '남은 시험에서 0점을 받아도 입력한 목표 성적을 넘습니다.');
+        showResult('success', '목표를 이미 달성했어요.', goalReachedText);
       } else if (answer.status === 'possible') {
-        showResult('success', `남은 시험에서 ${answer.score.toFixed(2)}점 이상`, `받으면 최종 성적 ${target}점을 만들 수 있어요.`);
+        showResult('success', `남은 시험에서 ${answer.score.toFixed(2)}점 이상`, possibleText);
       } else if (answer.status === 'impossible') {
         showResult('warning', `필요한 점수는 ${answer.score.toFixed(2)}점이에요.`, '100점을 넘어 현재 입력한 조건으로는 목표 달성이 어려워요.');
       } else {
