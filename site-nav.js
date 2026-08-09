@@ -24,6 +24,22 @@
         `<a href="${href}"${here === href ? ' class="active"' : ''}>${label}</a>`
     ).join('');
     document.body.prepend(nav);
+
+    // 계산기 페이지는 입력 화면이 주인공입니다. 긴 검색 도움말은 필요할 때만 펼칩니다.
+    const calculatorPaths = ['/', '/target-score/', '/rank/', '/gpa/', '/gpa-converter/'];
+    if (calculatorPaths.includes(here)) {
+      const content = document.querySelector('.content-section:not(.article)');
+      if (content) {
+        const drawer = document.createElement('details');
+        drawer.className = 'seo-drawer';
+        const summary = document.createElement('summary');
+        summary.innerHTML = '<span>계산법·예시·자주 묻는 질문</span><small>필요할 때 펼쳐보기</small>';
+        content.parentNode.insertBefore(drawer, content);
+        drawer.append(summary, content);
+        const related = document.querySelector('.related-tools');
+        if (related) drawer.appendChild(related);
+      }
+    }
   }
 
   if (document.body) render();
