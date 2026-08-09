@@ -151,11 +151,47 @@
     });
     const nav = document.createElement('nav');
     nav.className = 'site-nav';
+    nav.setAttribute('aria-label', '계산기 메뉴');
     nav.innerHTML = LINKS.map(
       ([label, href]) =>
         `<a href="${href}"${here === href ? ' class="active"' : ''}>${label}</a>`
     ).join('');
-    document.body.prepend(nav);
+    const navShell = document.createElement('div');
+    const navPrev = document.createElement('button');
+    const navNext = document.createElement('button');
+    navShell.className = 'site-nav-shell';
+    navPrev.type = navNext.type = 'button';
+    navPrev.className = 'site-nav-arrow site-nav-prev';
+    navNext.className = 'site-nav-arrow site-nav-next';
+    navPrev.textContent = '‹';
+    navNext.textContent = '›';
+    navPrev.setAttribute('aria-label', '이전 메뉴 보기');
+    navNext.setAttribute('aria-label', '다음 메뉴 보기');
+    navShell.append(navPrev, nav, navNext);
+    document.body.prepend(navShell);
+
+    function updateNavArrows() {
+      const edge = 3;
+      navPrev.disabled = nav.scrollLeft <= edge;
+      navNext.disabled = nav.scrollLeft + nav.clientWidth >= nav.scrollWidth - edge;
+    }
+
+    function moveNav(direction) {
+      nav.scrollBy({ left: direction * Math.max(160, nav.clientWidth * 0.72), behavior: 'smooth' });
+    }
+
+    navPrev.addEventListener('click', () => moveNav(-1));
+    navNext.addEventListener('click', () => moveNav(1));
+    nav.addEventListener('scroll', updateNavArrows, { passive: true });
+    window.addEventListener('resize', updateNavArrows, { passive: true });
+    requestAnimationFrame(() => {
+      const active = nav.querySelector('.active');
+      if (active) {
+        const targetLeft = active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2;
+        nav.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
+      }
+      updateNavArrows();
+    });
 
     // 계산기 안에는 설명문을 쌓지 않습니다. 상세 글은 독립된 읽기 화면으로 보냅니다.
     if (CALCULATOR_PATHS.includes(here)) {
