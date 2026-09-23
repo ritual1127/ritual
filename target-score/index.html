@@ -16,199 +16,326 @@
   <meta name="twitter:title" content="목표점수 계산기">
   <meta name="twitter:description" content="남은 시험에서 몇 점을 받아야 하는지 바로 계산합니다.">
   <meta name="twitter:image" content="https://naver1.cloud/og.png">
-  <meta name="theme-color" content="#4f46e5">
+  <meta name="theme-color" content="#FAF7F0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#14161D" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="../icon-192.png">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="../styles.css">
   <script src="../site-nav.js"></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"목표점수 계산기","description":"지금까지 받은 점수로 남은 시험에서 필요한 점수를 계산합니다.","url":"https://naver1.cloud/target-score/","applicationCategory":"EducationalApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
 </head>
 <body>
-  <header class="top-bar">
-    <h1><span>남은 시험에서 몇 점 받아야 할까?</span></h1>
+  <a class="skip-link" href="#main">본문 바로가기</a>
+  <header class="appbar">
+    <div class="appbar-inner">
+      <a class="logo" href="/"><span class="logo-mark">성적</span>계산기</a>
+      <button type="button" class="theme-toggle" aria-pressed="false" aria-label="다크 모드">
+        <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
+        <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+      </button>
+    </div>
   </header>
-  <p class="tagline">이미 받은 점수를 적으면 목표 성적에 필요한 시험 점수를 알려드려요.</p>
+  <nav class="toolnav" aria-label="도구">
+    <div class="toolnav-inner">
+      <a class="tool" href="/">수행·지필</a>
+      <a class="tool" href="/target-score/" aria-current="page">목표점수</a>
+      <a class="tool" href="/rank/">내신등급</a>
+      <a class="tool" href="/gpa/">학점</a>
+      <a class="tool" href="/gpa-converter/">GPA 환산</a>
+      <span class="toolnav-sep" aria-hidden="true"></span>
+      <a class="tool" href="/todayfood/">급식</a>
+      <a class="tool" href="/todayclass/">시간표</a>
+    </div>
+  </nav>
 
-  <main>
-    <section class="box target-calculator">
-      <div class="goal-mode" role="group" aria-label="목표 선택 방법">
-        <button type="button" class="active" data-goal-mode="score" aria-pressed="true">점수로 정하기</button>
-        <button type="button" data-goal-mode="grade" aria-pressed="false">등급으로 정하기</button>
-      </div>
-      <div class="target-goal" id="scoreGoal">
-        <label for="target">이번 학기 최종 성적 목표</label>
-        <div class="score-suffix"><input id="target" type="number" min="0" max="100" step="0.01" value="90"><span>점</span></div>
-      </div>
-      <div class="grade-goal" id="gradeGoal" hidden>
-        <div class="grade-goal-top"><strong>받고 싶은 등급</strong><span id="gradeStandard">A등급 이상 · 최종 90점 이상</span></div>
-        <div class="grade-choice" role="group" aria-label="목표 등급">
-          <button type="button" class="active" data-grade="A" aria-pressed="true">A</button>
-          <button type="button" data-grade="B" aria-pressed="false">B</button>
-          <button type="button" data-grade="C" aria-pressed="false">C</button>
-          <button type="button" data-grade="D" aria-pressed="false">D</button>
-          <button type="button" data-grade="E" aria-pressed="false">E</button>
+  <main id="main" class="page">
+    <header class="page-head">
+      <p class="eyebrow">목표점수 역산</p>
+      <h1>남은 시험에서 몇 점 받아야 할까?</h1>
+      <p class="lede">지금까지 받은 점수와 비율을 적으면, 목표까지 남은 시험에서 필요한 점수가 바로 나와요.</p>
+    </header>
+
+    <div class="calc">
+      <section class="card result-card" id="resultCard" data-state="empty" aria-labelledby="requiredLabel">
+        <p class="result-label" id="requiredLabel">필요한 점수</p>
+        <div class="result-main">
+          <p class="result-number"><span class="result-value"><span class="marker" id="requiredValue">—</span></span><span class="result-unit">점</span></p>
         </div>
-        <p>A 90점 이상 · B 80점 이상 · C 70점 이상 · D 60점 이상 · E 60점 미만 기준</p>
-      </div>
+        <p class="result-note" id="requiredNote">목표, 받은 점수, 비율을 채우면 바로 계산돼요.</p>
+        <p class="result-meta" id="requiredMeta"></p>
+        <div id="gradeTableWrap" hidden>
+          <hr class="result-divider">
+          <div class="table-wrap">
+            <table class="table">
+              <caption class="sr-only">등급별 필요 점수</caption>
+              <thead><tr><th scope="col">등급</th><th scope="col">최종 기준</th><th scope="col" class="num">남은 시험 필요 점수</th></tr></thead>
+              <tbody id="gradeTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
-      <div class="target-section-head">
-        <div><h2>지금까지 본 평가</h2><p>수행평가나 시험에서 받은 점수를 그대로 적으세요.</p></div>
-        <button type="button" class="mini-btn" id="addCompleted">+ 평가 추가</button>
-      </div>
-      <div class="target-row-head" aria-hidden="true"><span>평가 이름</span><span>받은 점수</span><span>최종 성적 중 몇 %</span><span></span></div>
-      <div id="completedRows"></div>
+      <form class="input-stack" id="targetForm" novalidate>
+        <section class="card" aria-labelledby="goalTitle">
+          <div class="card-head"><div><h2 id="goalTitle">목표</h2><p class="card-sub">이번 학기 최종 성적 목표를 정해요.</p></div></div>
+          <div class="seg" role="group" aria-label="목표 정하는 방법">
+            <button type="button" data-mode="score" aria-pressed="true">점수로 정하기</button>
+            <button type="button" data-mode="grade" aria-pressed="false">등급으로 정하기</button>
+          </div>
+          <div class="field mt" id="scoreGoal">
+            <label class="field-label" for="target">최종 목표 점수</label>
+            <span class="input-wrap"><input class="input" id="target" type="number" min="0" max="100" step="any" inputmode="decimal" enterkeyhint="next" placeholder="예: 90"><span class="unit">점</span></span>
+          </div>
+          <div class="mt" id="gradeGoal" hidden>
+            <div class="grade-pick" role="group" aria-label="목표 등급">
+              <button type="button" data-grade="A" aria-pressed="true">A</button>
+              <button type="button" data-grade="B" aria-pressed="false">B</button>
+              <button type="button" data-grade="C" aria-pressed="false">C</button>
+              <button type="button" data-grade="D" aria-pressed="false">D</button>
+              <button type="button" data-grade="E" aria-pressed="false">E</button>
+            </div>
+            <p class="field-hint mt-sm" id="gradeStandard">A등급 · 최종 90점 이상</p>
+          </div>
+        </section>
 
-      <div class="target-section-head remaining-head">
-        <div><h2>앞으로 볼 시험</h2><p>아직 점수가 나오지 않은 시험 하나를 적으세요.</p></div>
-      </div>
-      <div class="target-row remaining-row">
-        <input id="remainingName" type="text" value="기말고사" aria-label="앞으로 볼 시험 이름">
-        <span class="target-empty">아직 모름</span>
-        <div class="percent-suffix"><input id="remainingWeight" type="number" min="0" max="100" step="5" value="40" aria-label="앞으로 볼 시험의 성적 반영 비율"><span>%</span></div>
-        <span></span>
-      </div>
+        <section class="card" aria-labelledby="completedTitle">
+          <div class="card-head"><div><h2 id="completedTitle">지금까지 본 평가</h2><p class="card-sub">수행평가나 시험에서 받은 점수를 그대로 적어요.</p></div></div>
+          <div class="rows-head row-named" aria-hidden="true"><span>평가 이름</span><span>받은 점수</span><span>비율</span><span></span></div>
+          <div class="rows" id="completedRows"></div>
+          <p class="empty-line" id="completedEmpty" hidden>아직 본 평가가 없어요. 없으면 비워 둬도 돼요.</p>
+          <button type="button" class="btn-ghost btn-add" id="addCompleted">+ 평가 추가</button>
+        </section>
 
-      <div class="weight-check"><span>입력한 비율 합계</span><strong id="weightTotal">100%</strong></div>
-      <button class="btn" id="calc">몇 점 받아야 하는지 계산</button>
-      <div id="result" class="target-result" aria-live="polite"></div>
-    </section>
+        <section class="card" aria-labelledby="remainingTitle">
+          <div class="card-head"><div><h2 id="remainingTitle">앞으로 볼 시험</h2><p class="card-sub">아직 점수가 나오지 않은 시험 하나를 적어요.</p></div></div>
+          <div class="fields">
+            <div class="field">
+              <label class="field-label" for="remainingName">시험 이름</label>
+              <input class="input" id="remainingName" type="text" placeholder="예: 기말고사" enterkeyhint="next">
+            </div>
+            <div class="field">
+              <label class="field-label" for="remainingWeight">반영비율</label>
+              <span class="input-wrap"><input class="input" id="remainingWeight" type="number" min="0" max="100" step="any" inputmode="decimal" enterkeyhint="done" placeholder="예: 40"><span class="unit">%</span></span>
+            </div>
+          </div>
+        </section>
 
-    <section class="content-section">
-      <h2>남은 시험 점수 계산법</h2>
+        <section class="card" aria-label="반영비율 합계">
+          <div class="meter" id="weightMeter" data-state="under">
+            <div class="meter-top"><span class="meter-label">본 평가 + 남은 시험 비율</span><span class="meter-text" id="weightText">0%</span></div>
+            <div class="meter-track"><div class="meter-fill" id="weightFill"></div></div>
+          </div>
+          <div class="card-foot">
+            <p class="field-hint">입력한 값은 이 기기에만 저장돼요.</p>
+            <button type="button" class="btn-ghost btn-sm" id="resetBtn">초기화</button>
+          </div>
+        </section>
+      </form>
+    </div>
+
+    <section class="note" aria-labelledby="howTitle">
+      <h2 id="howTitle">남은 시험 점수 계산법</h2>
       <p>이미 본 평가의 점수에 각각 반영 비율을 곱해 더한 뒤, 목표 성적까지 모자란 점수를 남은 시험 비율로 나눕니다.</p>
+      <a class="more-link" href="/blog/target-exam-score/">쉬운 계산법 읽기 →</a>
     </section>
-    <nav class="related-tools"><h2>관련 도구</h2><a href="/blog/target-exam-score/">쉬운 계산법 읽기</a></nav>
   </main>
 
-  <footer class="site-footer">학교의 반올림·결시 처리 규정에 따라 실제 성적은 달라질 수 있습니다.<br>© 2026 성적 계산기.</footer>
-  <div class="footer-links"><a href="/blog/">계산 가이드</a> · <a href="/faq/">자주 묻는 질문</a> · <a href="/privacy/">개인정보처리방침</a></div>
+  <footer class="site-footer">
+    <p>학교의 반올림·결시 처리 규정에 따라 실제 성적은 달라질 수 있어요.</p>
+    <nav class="footer-links" aria-label="사이트 정보"><a href="/blog/">계산 가이드</a><a href="/faq/">자주 묻는 질문</a><a href="/guide/">사용법</a><a href="/privacy/">개인정보처리방침</a></nav>
+    <p class="copyright">© 2026 성적 계산기</p>
+  </footer>
 
+  <template id="completedTemplate">
+    <div class="row row-named">
+      <input class="input" data-field="name" type="text" placeholder="예: 수행평가" enterkeyhint="next">
+      <span class="input-wrap"><input class="input" data-field="score" type="number" min="0" max="100" step="any" inputmode="decimal" enterkeyhint="next" placeholder="점수"><span class="unit">점</span></span>
+      <span class="input-wrap"><input class="input" data-field="weight" type="number" min="0" max="100" step="any" inputmode="decimal" enterkeyhint="next" placeholder="비율"><span class="unit">%</span></span>
+      <button type="button" class="icon-btn" data-remove><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+  </template>
+
+  <script src="../calc-core.js"></script>
   <script>
-    const rowsEl = document.getElementById('completedRows');
-    const totalEl = document.getElementById('weightTotal');
-    const gradeMinimum = { A: 90, B: 80, C: 70, D: 60, E: 0 };
-    let goalMode = 'score';
-    let selectedGrade = 'A';
-
-    function requiredScore(target, completedScore, remainingPercent) {
-      if (remainingPercent <= 0) return { status: 'no-remaining-weight' };
-      const score = (target - completedScore) / (remainingPercent / 100);
-      if (score <= 0) return { status: 'already-reached', score: 0 };
-      if (score > 100) return { status: 'impossible', score };
-      return { status: 'possible', score };
-    }
-
-    function addCompletedRow(data = {}) {
-      const row = document.createElement('div');
-      row.className = 'target-row';
-      row.innerHTML = `
-        <input class="completed-name" type="text" placeholder="예: 수행평가" aria-label="평가 이름">
-        <div class="score-suffix"><input class="completed-score" type="number" min="0" max="100" step="0.01" placeholder="0" aria-label="받은 점수"><span>점</span></div>
-        <div class="percent-suffix"><input class="completed-weight" type="number" min="0" max="100" step="5" placeholder="0" aria-label="최종 성적에서 차지하는 비율"><span>%</span></div>
-        <button type="button" class="target-delete" aria-label="이 평가 삭제">×</button>`;
-      row.querySelector('.completed-name').value = data.name || '';
-      row.querySelector('.completed-score').value = data.score ?? '';
-      row.querySelector('.completed-weight').value = data.weight ?? '';
-      row.querySelectorAll('input').forEach(input => input.addEventListener('input', updateWeightTotal));
-      row.querySelector('.target-delete').onclick = () => { row.remove(); updateWeightTotal(); };
-      rowsEl.appendChild(row);
-      updateWeightTotal();
-    }
-
-    function readCompletedRows() {
-      return [...rowsEl.querySelectorAll('.target-row')].map(row => ({
-        score: Number(row.querySelector('.completed-score').value),
-        weight: Number(row.querySelector('.completed-weight').value),
-        scoreRaw: row.querySelector('.completed-score').value,
-        weightRaw: row.querySelector('.completed-weight').value
-      }));
-    }
-
-    function updateWeightTotal() {
-      const completed = readCompletedRows().reduce((sum, row) => sum + (Number.isFinite(row.weight) ? row.weight : 0), 0);
-      const remaining = Number(document.getElementById('remainingWeight').value) || 0;
-      const total = completed + remaining;
-      totalEl.textContent = `${Number(total.toFixed(2))}%`;
-      totalEl.classList.toggle('ok', Math.abs(total - 100) <= 0.01);
-    }
-
-    function showResult(kind, title, detail) {
-      const result = document.getElementById('result');
-      result.className = `target-result ${kind}`;
-      result.innerHTML = `<strong>${title}</strong><p>${detail}</p>`;
-    }
-
-    function setGoalMode(mode) {
-      goalMode = mode;
-      document.getElementById('scoreGoal').hidden = mode !== 'score';
-      document.getElementById('gradeGoal').hidden = mode !== 'grade';
-      document.querySelectorAll('[data-goal-mode]').forEach(button => {
-        const active = button.dataset.goalMode === mode;
-        button.classList.toggle('active', active);
-        button.setAttribute('aria-pressed', active);
+    (() => {
+      const STORE = 'targetCalc';
+      const GRADES = ['A', 'B', 'C', 'D', 'E'];
+      const GOAL = Object.fromEntries(GRADE_CUTS);
+      const DEFAULTS = () => ({
+        mode: 'score', target: '90', grade: 'A',
+        completed: [{ name: '수행평가', score: '90', weight: '30' }, { name: '중간고사', score: '80', weight: '30' }],
+        remaining: { name: '기말고사', weight: '40' }
       });
-      document.getElementById('result').className = 'target-result';
-    }
+      const $ = id => document.getElementById(id);
+      const form = $('targetForm');
+      const card = $('resultCard');
+      const str = value => String(value ?? '');
 
-    document.querySelectorAll('[data-goal-mode]').forEach(button => {
-      button.onclick = () => setGoalMode(button.dataset.goalMode);
-    });
-    document.querySelectorAll('[data-grade]').forEach(button => {
-      button.onclick = () => {
-        selectedGrade = button.dataset.grade;
-        document.querySelectorAll('[data-grade]').forEach(item => {
-          const active = item.dataset.grade === selectedGrade;
-          item.classList.toggle('active', active);
-          item.setAttribute('aria-pressed', active);
-        });
-        const standard = `${selectedGrade}등급 이상 · 최종 ${gradeMinimum[selectedGrade]}점 이상`;
-        document.getElementById('gradeStandard').textContent = standard;
-        document.getElementById('result').className = 'target-result';
-      };
-    });
-
-    document.getElementById('addCompleted').onclick = () => addCompletedRow();
-    document.getElementById('remainingWeight').addEventListener('input', updateWeightTotal);
-    document.getElementById('calc').onclick = () => {
-      const targetInput = document.getElementById('target').value;
-      const target = goalMode === 'grade' ? gradeMinimum[selectedGrade] : Number(targetInput);
-      const remaining = Number(document.getElementById('remainingWeight').value);
-      const rows = readCompletedRows();
-      const hasBlank = rows.some(row => row.scoreRaw === '' || row.weightRaw === '');
-      const outOfRange = rows.some(row => row.score < 0 || row.score > 100 || row.weight < 0 || row.weight > 100);
-      const completedWeight = rows.reduce((sum, row) => sum + row.weight, 0);
-
-      if ((goalMode === 'score' && (targetInput === '' || !Number.isFinite(target) || target < 0 || target > 100)) || !Number.isFinite(remaining) || remaining < 0 || remaining > 100 || hasBlank || outOfRange) {
-        showResult('error', '입력값을 다시 확인해 주세요.', '모든 점수와 반영 비율을 0부터 100 사이로 적어 주세요.');
-        return;
+      function load() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORE));
+          if (saved && Array.isArray(saved.completed) && saved.remaining && typeof saved.remaining === 'object') {
+            return {
+              mode: saved.mode === 'grade' ? 'grade' : 'score',
+              target: str(saved.target),
+              grade: GRADES.includes(saved.grade) ? saved.grade : 'A',
+              completed: saved.completed.filter(row => row && typeof row === 'object').slice(0, 20)
+                .map(row => ({ name: str(row.name), score: str(row.score), weight: str(row.weight) })),
+              remaining: { name: str(saved.remaining.name), weight: str(saved.remaining.weight) }
+            };
+          }
+        } catch {}
+        return DEFAULTS();
       }
-      if (Math.abs(completedWeight + remaining - 100) > 0.01) {
-        showResult('error', '입력한 비율을 모두 더하면 100%가 되어야 해요.', `현재 합계는 ${Number((completedWeight + remaining).toFixed(2))}%입니다.`);
-        return;
+      let state = load();
+      const save = () => { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch {} };
+      const num = text => (text === '' ? null : Number(text));
+      const inRange = value => value === null || (Number.isFinite(value) && value >= 0 && value <= 100);
+
+      function evaluate() {
+        const rows = state.completed
+          .map(row => ({ score: num(row.score), weight: num(row.weight) }))
+          .filter(row => row.score !== null || row.weight !== null);
+        const remaining = num(state.remaining.weight);
+        const target = state.mode === 'grade' ? GOAL[state.grade] : num(state.target);
+        const values = [target, remaining, ...rows.flatMap(row => [row.score, row.weight])];
+        if (!values.every(inRange)) return { kind: 'range' };
+        if (target === null || remaining === null || rows.some(row => row.score === null || row.weight === null)) return { kind: 'blank' };
+        const total = rows.reduce((sum, row) => sum + row.weight, 0) + remaining;
+        if (Math.abs(total - 100) > 0.01) return { kind: 'weight', total };
+        const completed = weightedSum(rows);
+        return { kind: 'ok', completed, remaining, target, answer: requiredScore(target, completed, remaining) };
       }
 
-      const completedScore = rows.reduce((sum, row) => sum + row.score * row.weight / 100, 0);
-      const answer = requiredScore(target, completedScore, remaining);
-      const goalReachedText = goalMode === 'grade' ? `${selectedGrade}등급 이상 기준에 이미 도달했어요.` : '입력한 목표 점수에 이미 도달했어요.';
-      const possibleText = goalMode === 'grade' ? `받으면 최종 ${selectedGrade}등급 이상을 받을 수 있어요.` : `받으면 최종 성적 ${target}점을 만들 수 있어요.`;
-      if (answer.status === 'already-reached') {
-        showResult('success', '목표를 이미 달성했어요.', goalReachedText);
-      } else if (answer.status === 'possible') {
-        showResult('success', `남은 시험에서 ${answer.score.toFixed(2)}점 이상`, possibleText);
-      } else if (answer.status === 'impossible') {
-        showResult('warning', `필요한 점수는 ${answer.score.toFixed(2)}점이에요.`, '100점을 넘어 현재 입력한 조건으로는 목표 달성이 어려워요.');
-      } else {
-        showResult('error', '남은 시험의 반영 비율이 0%예요.', '앞으로 점수가 반영될 시험이 없어 필요한 점수를 계산할 수 없습니다.');
+      function renderRows() {
+        $('completedRows').replaceChildren(...state.completed.map((item, index) => {
+          const row = $('completedTemplate').content.firstElementChild.cloneNode(true);
+          const label = item.name.trim() || `${index + 1}번째 평가`;
+          row.dataset.index = index;
+          row.querySelectorAll('input').forEach(input => {
+            input.value = item[input.dataset.field];
+            input.dataset.index = index;
+            input.setAttribute('aria-label', `${index + 1}번째 평가 ${{ name: '이름', score: '받은 점수', weight: '반영비율' }[input.dataset.field]}`);
+          });
+          row.querySelector('[data-remove]').setAttribute('aria-label', `${label} 삭제`);
+          return row;
+        }));
+        $('completedEmpty').hidden = state.completed.length > 0;
+        $('completedRows').previousElementSibling.hidden = state.completed.length === 0;
       }
-    };
 
-    addCompletedRow({ name: '수행평가', score: 90, weight: 30 });
-    addCompletedRow({ name: '중간고사', score: 80, weight: 30 });
-    updateWeightTotal();
+      function renderGoal() {
+        form.querySelectorAll('[data-mode]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.mode === state.mode)));
+        form.querySelectorAll('.grade-pick button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.grade === state.grade)));
+        $('scoreGoal').hidden = state.mode !== 'score';
+        $('gradeGoal').hidden = state.mode !== 'grade';
+        $('gradeStandard').textContent = state.grade === 'E' ? 'E등급 · 최종 60점 미만' : `${state.grade}등급 · 최종 ${GOAL[state.grade]}점 이상`;
+      }
 
-    console.assert(requiredScore(90, 54, 40).score === 90, '가능한 목표');
-    console.assert(requiredScore(80, 85, 20).status === 'already-reached', '이미 달성');
-    console.assert(requiredScore(95, 50, 40).status === 'impossible', '100점 초과');
-    console.assert(requiredScore(90, 90, 0).status === 'no-remaining-weight', '남은 비중 없음');
+      function renderMeter() {
+        const weights = [...state.completed.map(row => num(row.weight)), num(state.remaining.weight)];
+        const total = weights.reduce((sum, value) => sum + (Number.isFinite(value) ? value : 0), 0);
+        const ok = Math.abs(total - 100) <= 0.01;
+        $('weightMeter').dataset.state = ok ? 'ok' : total > 100 ? 'over' : 'under';
+        $('weightFill').style.transform = `scaleX(${Math.min(total, 100) / 100})`;
+        $('weightText').textContent = ok ? '100% 맞음'
+          : total > 100 ? `${formatNumber(total)}% · ${formatNumber(total - 100)}% 초과`
+          : `${formatNumber(total)}% · ${formatNumber(100 - total)}% 더 필요`;
+      }
+
+      function renderGradeTable(completed, remaining) {
+        $('gradeTable').replaceChildren(...['A', 'B', 'C', 'D'].map(grade => {
+          const answer = requiredScore(GOAL[grade], completed, remaining);
+          const row = document.createElement('tr');
+          row.classList.toggle('is-hit', state.mode === 'grade' && state.grade === grade);
+          const chip = Object.assign(document.createElement('span'), { className: 'chip', textContent: grade });
+          chip.dataset.grade = grade;
+          const need = document.createElement('td');
+          need.className = 'num ' + ({ reached: 'good', impossible: 'bad' }[answer.status] || '');
+          need.textContent = answer.status === 'reached' ? '이미 달성' : answer.status === 'impossible' ? `불가 (${formatNumber(ceil2(answer.score))}점)` : `${formatNumber(ceil2(answer.score))}점`;
+          const cells = [document.createElement('td'), document.createElement('td'), need];
+          cells[0].append(chip);
+          cells[1].textContent = `${GOAL[grade]}점 이상`;
+          row.append(...cells);
+          return row;
+        }));
+      }
+
+      function show(stateName, { value = null, note = '', meta = '', mini = '' }) {
+        const wasDone = card.dataset.state === 'done';
+        card.dataset.state = stateName;
+        $('requiredValue').textContent = value === null ? '—' : formatNumber(value);
+        $('requiredNote').textContent = note;
+        $('requiredMeta').textContent = meta;
+        if (stateName === 'done' && !wasDone) {
+          card.classList.remove('is-fresh');
+          void card.offsetWidth;
+          card.classList.add('is-fresh');
+        }
+        setMiniResult(mini);
+      }
+
+      function update() {
+        save();
+        form.querySelectorAll('input[type="number"]').forEach(input => input.setAttribute('aria-invalid', String(!inRange(num(input.value)))));
+        renderGoal();
+        renderMeter();
+        const result = evaluate();
+        $('gradeTableWrap').hidden = result.kind !== 'ok' || result.answer.status === 'no-remaining';
+        if (result.kind === 'range') return show('warn', { note: '점수와 비율은 0~100 사이로 입력해 주세요.' });
+        if (result.kind === 'blank') return show('empty', { note: '목표, 받은 점수, 비율을 채우면 바로 계산돼요.' });
+        if (result.kind === 'weight') return show('warn', { note: `본 평가와 남은 시험 비율을 더하면 100%가 되어야 해요. (현재 ${formatNumber(result.total)}%)` });
+
+        const { completed, remaining, target, answer } = result;
+        const exam = state.remaining.name.trim() || '남은 시험';
+        const goal = state.mode === 'grade' ? `${state.grade}등급` : `최종 ${formatNumber(target)}점`;
+        const meta = `지금까지 반영 ${formatNumber(completed)}점 · ${exam} 비율 ${formatNumber(remaining)}%`;
+        if (answer.status === 'no-remaining') return show('warn', { note: '남은 시험 비율이 0%라 계산할 수 없어요.', meta });
+        renderGradeTable(completed, remaining);
+        if (answer.status === 'reached') return show('done', { value: 0, note: `이미 ${goal} 달성! 0점을 받아도 최종 ${formatNumber(completed)}점이에요.`, meta, mini: '목표 달성' });
+        const need = ceil2(answer.score);
+        if (answer.status === 'impossible') return show('bad', { value: need, note: `100점을 받아도 최종 ${formatNumber(completed + remaining)}점이에요. 목표를 조금 낮춰 보세요.`, meta, mini: `필요 ${formatNumber(need)}점` });
+        show('done', { value: need, note: `${exam}에서 ${formatNumber(need)}점 이상 받으면 ${goal} 달성!`, meta, mini: `필요 ${formatNumber(need)}점` });
+      }
+
+      form.addEventListener('submit', event => event.preventDefault());
+      form.addEventListener('input', event => {
+        const input = event.target;
+        if (input.dataset.index !== undefined) state.completed[input.dataset.index][input.dataset.field] = input.value;
+        else if (input.id === 'target') state.target = input.value;
+        else if (input.id === 'remainingName') state.remaining.name = input.value;
+        else if (input.id === 'remainingWeight') state.remaining.weight = input.value;
+        else return;
+        update();
+      });
+      form.addEventListener('click', event => {
+        const mode = event.target.closest('[data-mode]');
+        const grade = event.target.closest('.grade-pick button');
+        const remove = event.target.closest('[data-remove]');
+        if (mode) state.mode = mode.dataset.mode;
+        else if (grade) state.grade = grade.dataset.grade;
+        else if (remove) { state.completed.splice(Number(remove.closest('.row').dataset.index), 1); renderRows(); }
+        else return;
+        update();
+      });
+      $('addCompleted').addEventListener('click', () => {
+        state.completed.push({ name: '', score: '', weight: '' });
+        renderRows();
+        update();
+        $('completedRows').lastElementChild.querySelector('input').focus();
+      });
+      armReset($('resetBtn'), () => { state = DEFAULTS(); fill(); });
+
+      function fill() {
+        $('target').value = state.target;
+        $('remainingName').value = state.remaining.name;
+        $('remainingWeight').value = state.remaining.weight;
+        renderRows();
+        update();
+      }
+      fill();
+    })();
   </script>
 </body>
 </html>

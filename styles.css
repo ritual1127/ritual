@@ -338,6 +338,11 @@ select.input {
   .rows-head.row-named { display: none; }
 }
 
+.row-named .input-wrap .input { padding: 10px 26px 10px 10px; }
+.row-named .unit { right: 9px; }
+.mt { margin-top: 14px; }
+.mt-sm { margin-top: 8px; }
+
 /* 과목 카드 (내신·학점) */
 .subject { display: grid; gap: 10px; padding: 14px 0; border-bottom: 1px dashed var(--line); }
 .subject:first-child { padding-top: 2px; }
@@ -384,7 +389,7 @@ select.input {
   transform: skewX(-10deg) rotate(-1.4deg) scaleX(0); transform-origin: left center;
 }
 .result-card[data-state="done"] .marker::before { transform: skewX(-10deg) rotate(-1.4deg) scaleX(1); }
-.result-card.is-fresh .marker::before { animation: swipe .5s var(--ease) both; }
+.result-card[data-state="done"].is-fresh .marker::before { animation: swipe .5s var(--ease) both; }
 .result-card:not([data-state="done"]) .result-value { color: var(--ink-3); }
 .result-card[data-state="bad"] .result-value { color: var(--bad); }
 .grade {
