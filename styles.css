@@ -15,6 +15,7 @@
   --primary-press: #2440BD;
   --on-primary: #FFFFFF;
   --hl: #DDF55A;
+  --hl-mark: #DDF55A;
   --on-hl: #1B2340;
   --hl-soft: #EEF8B8;
   --dot: rgba(27, 35, 64, .08);
@@ -49,6 +50,7 @@
     --primary-press: #A9BAFF;
     --on-primary: #10131A;
     --hl: #D4EE4A;
+    --hl-mark: rgba(212, 238, 74, .4);
     --on-hl: #14161D;
     --hl-soft: #2E3418;
     --dot: rgba(237, 234, 226, .06);
@@ -76,6 +78,7 @@
   --primary-press: #A9BAFF;
   --on-primary: #10131A;
   --hl: #D4EE4A;
+  --hl-mark: rgba(212, 238, 74, .4);
   --on-hl: #14161D;
   --hl-soft: #2E3418;
   --dot: rgba(237, 234, 226, .06);
@@ -155,7 +158,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .logo-mark::before {
   content: ""; position: absolute; z-index: -1;
   left: -3px; right: -2px; bottom: 2px; height: 52%;
-  background: var(--hl); border-radius: 4px 9px 5px 10px;
+  background: var(--hl-mark); border-radius: 4px 9px 5px 10px;
   transform: skewX(-10deg) rotate(-2deg);
 }
 .mini-result {
@@ -377,7 +380,7 @@ select.input {
 .marker::before {
   content: ""; position: absolute; z-index: -1;
   left: -.1em; right: -.1em; bottom: .08em; height: .44em;
-  background: var(--hl); border-radius: .12em .32em .16em .36em;
+  background: var(--hl-mark); border-radius: .12em .32em .16em .36em;
   transform: skewX(-10deg) rotate(-1.4deg) scaleX(0); transform-origin: left center;
 }
 .result-card[data-state="done"] .marker::before { transform: skewX(-10deg) rotate(-1.4deg) scaleX(1); }

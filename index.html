@@ -45,289 +45,265 @@
   </script>
 
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#4f46e5">
+  <meta name="theme-color" content="#FAF7F0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#14161D" media="(prefers-color-scheme: dark)">
   <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
   <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="styles.css">
   <script src="site-nav.js"></script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6088412169158396" crossorigin="anonymous"></script>
 </head>
-<body class="direct-calculator-page">
+<body>
   <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W6QMCF2B" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
 
-  <header class="top-bar direct-header">
-    <h1><span>성적</span>계산기</h1>
+  <a class="skip-link" href="#main">본문 바로가기</a>
+  <header class="appbar">
+    <div class="appbar-inner">
+      <a class="logo" href="/"><span class="logo-mark">성적</span>계산기</a>
+      <button type="button" class="theme-toggle" aria-pressed="false" aria-label="다크 모드">
+        <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
+        <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+      </button>
+    </div>
   </header>
-  <p class="tagline direct-tagline">받은 점수와 반영비율을 넣으면 최종점수를 바로 계산해요.</p>
+  <nav class="toolnav" aria-label="도구">
+    <div class="toolnav-inner">
+      <a class="tool" href="/" aria-current="page">수행·지필</a>
+      <a class="tool" href="/target-score/">목표점수</a>
+      <a class="tool" href="/rank/">내신등급</a>
+      <a class="tool" href="/gpa/">학점</a>
+      <a class="tool" href="/gpa-converter/">GPA 환산</a>
+      <span class="toolnav-sep" aria-hidden="true"></span>
+      <a class="tool" href="/todayfood/">급식</a>
+      <a class="tool" href="/todayclass/">시간표</a>
+    </div>
+  </nav>
 
-  <main class="direct-main">
-    <section class="box direct-calculator" aria-labelledby="calculatorTitle">
-      <div class="direct-title-row">
-        <div>
-          <h2 id="calculatorTitle">내 성적 계산하기</h2>
-          <p>먼저 평가 개수를 정하면 아래에 점수 입력 칸이 생겨요.</p>
+  <main id="main" class="page">
+    <header class="page-head">
+      <p class="eyebrow">수행평가 + 지필고사</p>
+      <h1>성적 계산기</h1>
+      <p class="lede">받은 점수와 반영비율을 넣으면 최종점수와 A~E 등급이 바로 나와요. 계산 버튼은 없어요.</p>
+    </header>
+
+    <div class="calc">
+      <section class="card result-card" id="resultCard" data-state="empty" aria-labelledby="resultLabel">
+        <p class="result-label" id="resultLabel">내 최종점수</p>
+        <div class="result-main">
+          <p class="result-number"><span class="result-value"><span class="marker" id="finalValue">—</span></span><span class="result-unit">점</span></p>
+          <span class="grade" id="finalGrade" hidden></span>
         </div>
-      </div>
+        <div class="scorebar" aria-hidden="true">
+          <div class="scorebar-track"><span class="scorebar-fill" id="scoreFill"></span></div>
+          <div class="scorebar-zones"><span data-grade="E">E</span><span data-grade="D">D</span><span data-grade="C">C</span><span data-grade="B">B</span><span data-grade="A">A</span></div>
+        </div>
+        <p class="result-note" id="resultNote">점수를 입력하면 바로 계산돼요.</p>
+        <p class="result-meta" id="resultMeta"></p>
+        <details class="formula" id="formulaBox" hidden><summary>계산식</summary><p id="formulaText"></p></details>
+      </section>
 
-      <form id="gradeForm" novalidate>
-        <div id="evaluationRows" class="direct-evaluation-groups">
-          <section class="direct-evaluation-group performance-group" aria-labelledby="performanceTitle">
-            <div class="direct-group-title">
-              <div class="direct-group-name">
-                <i aria-hidden="true"></i>
-                <div><h3 id="performanceTitle">수행평가</h3><p>평가별 받은 점수</p></div>
-              </div>
-              <div class="direct-inline-count">
-                <span>개수</span>
-                <div class="direct-count-stepper">
-                  <button type="button" data-count-target="performanceCount" data-count-delta="-1" aria-label="수행평가 개수 줄이기">−</button>
-                  <input id="performanceCount" type="number" min="0" max="10" step="1" value="2" inputmode="numeric" aria-label="수행평가 개수">
-                  <button type="button" data-count-target="performanceCount" data-count-delta="1" aria-label="수행평가 개수 늘리기">+</button>
-                </div>
-              </div>
+      <form class="input-stack" id="gradeForm" novalidate>
+        <section class="card" aria-labelledby="performanceTitle">
+          <div class="card-head">
+            <div><h2 id="performanceTitle">수행평가</h2><p class="card-sub">평가마다 받은 점수와 반영비율</p></div>
+            <div class="stepper" role="group" aria-label="수행평가 개수">
+              <button type="button" data-count="performance" data-delta="-1" aria-label="수행평가 개수 줄이기">−</button>
+              <output id="performanceCount" aria-live="polite">2</output>
+              <button type="button" data-count="performance" data-delta="1" aria-label="수행평가 개수 늘리기">+</button>
             </div>
-            <div class="direct-column-head" aria-hidden="true"><span>번호</span><span>점수</span><span>반영</span></div>
-            <div id="performanceRows" class="direct-rows"></div>
-            <p id="performanceEmpty" class="direct-group-empty" hidden>수행평가 없음</p>
-          </section>
-          <section class="direct-evaluation-group exam-group" aria-labelledby="examTitle">
-            <div class="direct-group-title">
-              <div class="direct-group-name">
-                <i aria-hidden="true"></i>
-                <div><h3 id="examTitle">정기고사</h3><p>중간·기말고사 점수</p></div>
-              </div>
-              <div class="direct-inline-count">
-                <span>개수</span>
-                <div class="direct-count-stepper">
-                  <button type="button" data-count-target="examCount" data-count-delta="-1" aria-label="정기고사 개수 줄이기">−</button>
-                  <input id="examCount" type="number" min="0" max="10" step="1" value="2" inputmode="numeric" aria-label="정기고사 개수">
-                  <button type="button" data-count-target="examCount" data-count-delta="1" aria-label="정기고사 개수 늘리기">+</button>
-                </div>
-              </div>
+          </div>
+          <div class="rows-head" aria-hidden="true"><span>번호</span><span>받은 점수</span><span>반영비율</span></div>
+          <div class="rows" id="performanceRows"></div>
+          <p class="empty-line" id="performanceEmpty" hidden>수행평가가 없어요. + 버튼으로 추가할 수 있어요.</p>
+        </section>
+
+        <section class="card" aria-labelledby="examTitle">
+          <div class="card-head">
+            <div><h2 id="examTitle">정기고사</h2><p class="card-sub">중간·기말고사 점수와 반영비율</p></div>
+            <div class="stepper" role="group" aria-label="정기고사 개수">
+              <button type="button" data-count="exam" data-delta="-1" aria-label="정기고사 개수 줄이기">−</button>
+              <output id="examCount" aria-live="polite">2</output>
+              <button type="button" data-count="exam" data-delta="1" aria-label="정기고사 개수 늘리기">+</button>
             </div>
-            <div class="direct-column-head" aria-hidden="true"><span>번호</span><span>점수</span><span>반영</span></div>
-            <div id="examRows" class="direct-rows"></div>
-            <p id="examEmpty" class="direct-group-empty" hidden>정기고사 없음</p>
-          </section>
-        </div>
+          </div>
+          <div class="rows-head" aria-hidden="true"><span>번호</span><span>받은 점수</span><span>반영비율</span></div>
+          <div class="rows" id="examRows"></div>
+          <p class="empty-line" id="examEmpty" hidden>정기고사가 없어요. + 버튼으로 추가할 수 있어요.</p>
+        </section>
 
-        <div class="direct-weight" id="weightStatus" aria-live="polite">
-          <span>반영비율 합계</span>
-          <strong>100%</strong>
-        </div>
-
-        <button type="submit" class="direct-submit">최종점수 계산하기</button>
+        <section class="card" aria-label="반영비율 합계">
+          <div class="meter" id="weightMeter" data-state="under">
+            <div class="meter-top"><span class="meter-label">반영비율 합계</span><span class="meter-text" id="weightText">0%</span></div>
+            <div class="meter-track"><div class="meter-fill" id="weightFill"></div></div>
+          </div>
+          <div class="card-foot">
+            <p class="field-hint">입력한 값은 이 기기에만 저장돼요.</p>
+            <button type="button" class="btn-ghost btn-sm" id="resetBtn">초기화</button>
+          </div>
+        </section>
       </form>
+    </div>
 
-      <div class="direct-result" id="calculationResult" role="status" aria-live="polite" hidden></div>
+    <section class="note" aria-labelledby="howTitle">
+      <h2 id="howTitle">수행평가·지필고사 최종점수 계산법</h2>
+      <p>각 평가 점수에 반영비율을 곱한 값을 모두 더하면 최종 원점수가 됩니다. 예를 들어 수행평가 90점(40%), 중간고사 80점(30%), 기말고사 70점(30%)이면 최종점수는 81점입니다.</p>
+      <h2>A~E 등급 기준</h2>
+      <p>이 계산기는 참고용으로 90점 이상 A, 80점 이상 B, 70점 이상 C, 60점 이상 D, 60점 미만 E를 표시합니다. 실제 성취도 기준은 학교와 과목의 평가계획을 확인하세요.</p>
+      <a class="more-link" href="/blog/performance-exam-weight/">반영비율 계산법 자세히 보기 →</a>
     </section>
   </main>
 
-  <section class="content-section">
-    <h2>수행평가·지필고사 최종점수 계산법</h2>
-    <p>각 평가 점수에 반영비율을 곱한 값을 모두 더하면 최종 원점수가 됩니다. 예를 들어 수행평가 90점(40%), 중간고사 80점(30%), 기말고사 70점(30%)이면 최종점수는 81점입니다.</p>
-    <h2>A~E 등급 기준</h2>
-    <p>이 계산기는 참고용으로 90점 이상 A, 80점 이상 B, 70점 이상 C, 60점 이상 D, 60점 미만 E를 표시합니다. 실제 성취도 기준은 학교와 과목의 평가계획을 확인하세요.</p>
-  </section>
-
-  <nav class="related-tools" aria-label="관련 도구">
-    <h2>관련 도구</h2>
-    <a href="/target-score/">목표점수 계산기</a>
-    <a href="/rank/">내신등급 계산기</a>
-    <a href="/gpa/">학점 계산기</a>
-    <a href="/faq/">자주 묻는 질문</a>
-  </nav>
-
   <footer class="site-footer">
-    <p>계산 결과는 참고용이며 실제 성적은 학교의 평가계획을 확인하세요.</p>
-    <div class="footer-links">
-      <a href="/blog/">계산 가이드</a>
-      <a href="/faq/">FAQ</a>
-      <a href="/privacy/">개인정보처리방침</a>
-    </div>
+    <p>계산 결과는 참고용이에요. 실제 성적은 학교·대학의 평가 규정을 따라요.</p>
+    <nav class="footer-links" aria-label="사이트 정보"><a href="/blog/">계산 가이드</a><a href="/faq/">자주 묻는 질문</a><a href="/guide/">사용법</a><a href="/privacy/">개인정보처리방침</a></nav>
+    <p class="copyright">© 2026 성적 계산기</p>
   </footer>
 
-  <template id="evaluationTemplate">
-    <div class="direct-row">
-      <span class="direct-evaluation-name"></span>
-      <div class="direct-field">
-        <span class="direct-input-suffix"><input type="number" class="evaluation-score" min="0" max="100" step="0.01" inputmode="decimal" placeholder="예: 85" aria-label="받은 점수"><b>점</b></span>
-      </div>
-      <div class="direct-field">
-        <span class="direct-input-suffix"><input type="number" class="evaluation-weight" min="0" max="100" step="5" inputmode="decimal" placeholder="예: 30" aria-label="반영비율"><b>%</b></span>
-      </div>
+  <template id="rowTemplate">
+    <div class="row">
+      <span class="row-name"></span>
+      <span class="input-wrap"><input class="input" data-field="score" type="number" min="0" max="100" step="any" inputmode="decimal" enterkeyhint="next" placeholder="점수"><span class="unit">점</span></span>
+      <span class="input-wrap"><input class="input" data-field="weight" type="number" min="0" max="100" step="any" inputmode="decimal" enterkeyhint="next" placeholder="비율"><span class="unit">%</span></span>
     </div>
   </template>
 
+  <script src="calc-core.js"></script>
   <script>
     (() => {
-      const initialRows = {
-        performance: [
-          { score: '', weight: 20 },
-          { score: '', weight: 20 }
-        ],
-        exam: [
-          { score: '', weight: 30 },
-          { score: '', weight: 30 }
-        ]
-      };
-      const rows = document.getElementById('evaluationRows');
-      const rowContainers = {
-        performance: document.getElementById('performanceRows'),
-        exam: document.getElementById('examRows')
-      };
-      const emptyStates = {
-        performance: document.getElementById('performanceEmpty'),
-        exam: document.getElementById('examEmpty')
-      };
-      const template = document.getElementById('evaluationTemplate');
-      const form = document.getElementById('gradeForm');
-      const result = document.getElementById('calculationResult');
-      const weightStatus = document.getElementById('weightStatus');
-      const countInputs = {
-        performance: document.getElementById('performanceCount'),
-        exam: document.getElementById('examCount')
-      };
+      const STORE = 'scoreCalc';
+      const KINDS = { performance: '수행평가', exam: '정기고사' };
+      const DEFAULTS = () => ({
+        performance: [{ score: '', weight: '20' }, { score: '', weight: '20' }],
+        exam: [{ score: '', weight: '30' }, { score: '', weight: '30' }]
+      });
+      const $ = id => document.getElementById(id);
+      const form = $('gradeForm');
+      const card = $('resultCard');
+      const isRow = item => item && typeof item === 'object';
 
-      function formatNumber(value) {
-        return value.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
-      }
-
-      function gradeFor(score) {
-        if (score >= 90) return 'A';
-        if (score >= 80) return 'B';
-        if (score >= 70) return 'C';
-        if (score >= 60) return 'D';
-        return 'E';
-      }
-
-      function currentRows() {
-        return [...rows.querySelectorAll('.direct-row')];
-      }
-
-      function updateWeight() {
-        const total = currentRows().reduce((sum, row) => {
-          const value = Number(row.querySelector('.evaluation-weight').value);
-          return sum + (Number.isFinite(value) ? value : 0);
-        }, 0);
-        const valid = Math.abs(total - 100) <= 0.01;
-        weightStatus.querySelector('strong').textContent = `${formatNumber(total)}%`;
-        weightStatus.classList.toggle('ok', valid);
-        return { total, valid };
-      }
-
-      function addRow(kind, index, data) {
-        const row = template.content.firstElementChild.cloneNode(true);
-        const kindLabel = kind === 'performance' ? '수행평가' : '정기고사';
-        row.dataset.kind = kind;
-        row.querySelector('.direct-evaluation-name').textContent = `${index + 1}번`;
-        const scoreInput = row.querySelector('.evaluation-score');
-        const weightInput = row.querySelector('.evaluation-weight');
-        scoreInput.value = data.score ?? '';
-        weightInput.value = data.weight;
-        scoreInput.setAttribute('aria-label', `${kindLabel} ${index + 1}번 받은 점수`);
-        weightInput.setAttribute('aria-label', `${kindLabel} ${index + 1}번 반영비율`);
-        row.querySelector('.evaluation-weight').addEventListener('input', updateWeight);
-        rowContainers[kind].appendChild(row);
-      }
-
-      function normalizeCount(input) {
-        const value = Math.round(Number(input.value));
-        const safeValue = Number.isFinite(value) ? Math.min(10, Math.max(0, value)) : 0;
-        input.value = safeValue;
-        return safeValue;
-      }
-
-      function currentValues() {
-        const values = { performance: [], exam: [] };
-        currentRows().forEach(row => {
-          values[row.dataset.kind].push({
-            score: row.querySelector('.evaluation-score').value,
-            weight: row.querySelector('.evaluation-weight').value
-          });
-        });
-        return values;
-      }
-
-      function rebuildRows() {
-        const previous = currentValues();
-        Object.values(rowContainers).forEach(container => container.replaceChildren());
-
-        Object.entries(countInputs).forEach(([kind, input]) => {
-          const count = normalizeCount(input);
-          emptyStates[kind].hidden = count !== 0;
-          for (let index = 0; index < count; index += 1) {
-            const fallback = initialRows[kind][index] || {
-              score: '',
-              weight: ''
-            };
-            addRow(kind, index, previous[kind][index] || fallback);
+      function load() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORE));
+          if (Array.isArray(saved?.performance) && Array.isArray(saved?.exam)) {
+            const tidy = list => list.filter(isRow).slice(0, 10).map(({ score, weight }) => ({ score: String(score ?? ''), weight: String(weight ?? '') }));
+            return { performance: tidy(saved.performance), exam: tidy(saved.exam) };
           }
-        });
-
-        updateWeight();
-        result.hidden = true;
+        } catch {}
+        return DEFAULTS();
       }
+      let state = load();
+      const save = () => { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch {} };
 
-      function showMessage(type, html) {
-        result.className = `direct-result ${type}`;
-        result.innerHTML = html;
-        result.hidden = false;
-        result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
-
-      rebuildRows();
-
-      Object.values(countInputs).forEach(input => {
-        input.addEventListener('change', rebuildRows);
-      });
-
-      document.querySelectorAll('[data-count-target]').forEach(button => {
-        button.addEventListener('click', () => {
-          const input = document.getElementById(button.dataset.countTarget);
-          input.value = normalizeCount(input) + Number(button.dataset.countDelta);
-          rebuildRows();
-        });
-      });
-
-      form.addEventListener('submit', event => {
-        event.preventDefault();
-        const entries = currentRows().map(row => ({
-          scoreText: row.querySelector('.evaluation-score').value,
-          weightText: row.querySelector('.evaluation-weight').value,
-          score: Number(row.querySelector('.evaluation-score').value),
-          weight: Number(row.querySelector('.evaluation-weight').value)
+      function renderRows(kind) {
+        $(kind + 'Rows').replaceChildren(...state[kind].map((item, index) => {
+          const row = $('rowTemplate').content.firstElementChild.cloneNode(true);
+          row.querySelector('.row-name').textContent = `${index + 1}번`;
+          row.querySelectorAll('input').forEach(input => {
+            const field = input.dataset.field;
+            input.value = item[field];
+            input.dataset.kind = kind;
+            input.dataset.index = index;
+            input.setAttribute('aria-label', `${KINDS[kind]} ${index + 1}번 ${field === 'score' ? '점수' : '반영비율'}`);
+          });
+          return row;
         }));
+        $(kind + 'Count').value = state[kind].length;
+        $(kind + 'Empty').hidden = state[kind].length > 0;
+        $(kind + 'Rows').previousElementSibling.hidden = state[kind].length === 0;
+      }
 
-        if (entries.length === 0) {
-          showMessage('error', '<strong>수행평가나 정기고사를 1개 이상 선택해 주세요.</strong>');
-          return;
-        }
-        if (entries.some(item => item.scoreText === '' || item.weightText === '')) {
-          showMessage('error', '<strong>빈칸을 확인해 주세요.</strong><p>각 평가의 받은 점수와 반영비율을 모두 입력해야 해요.</p>');
-          return;
-        }
-        if (entries.some(item => !Number.isFinite(item.score) || item.score < 0 || item.score > 100)) {
-          showMessage('error', '<strong>점수는 0~100 사이로 입력해 주세요.</strong>');
-          return;
-        }
-        if (entries.some(item => !Number.isFinite(item.weight) || item.weight < 0 || item.weight > 100)) {
-          showMessage('error', '<strong>반영비율은 0~100 사이로 입력해 주세요.</strong>');
-          return;
-        }
+      const num = text => (text === '' ? null : Number(text));
+      const inRange = value => value === null || (Number.isFinite(value) && value >= 0 && value <= 100);
 
-        const weight = updateWeight();
-        if (!weight.valid) {
-          showMessage('error', `<strong>반영비율 합계를 100%로 맞춰 주세요.</strong><p>현재 합계는 ${formatNumber(weight.total)}%예요.</p>`);
-          return;
+      function show(stateName, { label = '내 최종점수', value = null, grade = '', note = '', meta = '', mini = '', formula = '' }) {
+        const wasDone = card.dataset.state === 'done';
+        card.dataset.state = stateName;
+        card.dataset.grade = grade;
+        $('resultLabel').textContent = label;
+        $('finalValue').textContent = value === null ? '—' : formatNumber(value);
+        const badge = $('finalGrade');
+        badge.hidden = !grade;
+        badge.dataset.grade = grade;
+        badge.replaceChildren(grade, Object.assign(document.createElement('small'), { textContent: '등급' }));
+        $('scoreFill').style.transform = `scaleX(${value === null ? 0 : Math.min(value, 100) / 100})`;
+        $('resultNote').textContent = note;
+        $('resultMeta').textContent = meta;
+        $('formulaBox').hidden = !formula;
+        $('formulaText').textContent = formula;
+        if (stateName === 'done' && !wasDone) {
+          card.classList.remove('is-fresh');
+          void card.offsetWidth;
+          card.classList.add('is-fresh');
         }
+        setMiniResult(mini);
+      }
 
-        const finalScore = entries.reduce((sum, item) => sum + item.score * item.weight / 100, 0);
-        const grade = gradeFor(finalScore);
-        showMessage('success', `<span>내 최종점수</span><strong>${formatNumber(finalScore)}점 <em>${grade}등급</em></strong><p>입력한 점수와 반영비율로 계산한 결과예요.</p>`);
+      function renderMeter(total) {
+        const ok = Math.abs(total - 100) <= 0.01;
+        $('weightMeter').dataset.state = ok ? 'ok' : total > 100 ? 'over' : 'under';
+        $('weightFill').style.transform = `scaleX(${Math.min(total, 100) / 100})`;
+        $('weightText').textContent = ok ? '100% 맞음'
+          : total > 100 ? `${formatNumber(total)}% · ${formatNumber(total - 100)}% 초과`
+          : `${formatNumber(total)}% · ${formatNumber(100 - total)}% 더 필요`;
+      }
+
+      function update() {
+        save();
+        const rows = [...state.performance, ...state.exam].map(({ score, weight }) => ({ score: num(score), weight: num(weight) }));
+        form.querySelectorAll('input[data-field]').forEach(input => input.setAttribute('aria-invalid', String(!inRange(num(input.value)))));
+        const weightTotal = rows.reduce((sum, row) => sum + (Number.isFinite(row.weight) ? row.weight : 0), 0);
+        renderMeter(weightTotal);
+        const filled = rows.filter(row => row.score !== null);
+        const blanks = rows.length - filled.length;
+        const weightText = `반영비율 ${formatNumber(weightTotal)}% · 입력 ${filled.length}/${rows.length}`;
+
+        if (!rows.length) return show('empty', { note: '수행평가나 정기고사를 1개 이상 추가해 주세요.' });
+        if (!rows.every(row => inRange(row.score) && inRange(row.weight))) return show('warn', { note: '점수와 반영비율은 0~100 사이로 입력해 주세요.', meta: weightText });
+        if (!filled.length) return show('empty', { note: '점수를 입력하면 바로 계산돼요.', meta: weightText });
+
+        const sum = weightedSum(filled.map(row => ({ score: row.score, weight: row.weight ?? 0 })));
+        if (blanks) return show('partial', { label: '지금까지 반영된 점수', value: sum, note: `빈칸 ${blanks}개 남음 · 다 채우면 최종점수가 나와요.`, meta: weightText, mini: `반영 ${formatNumber(sum)}점` });
+        if (Math.abs(weightTotal - 100) > 0.01) return show('warn', { note: `반영비율 합계를 100%로 맞춰 주세요. (현재 ${formatNumber(weightTotal)}%)`, meta: weightText });
+
+        const grade = gradeFor(sum);
+        const next = nextGradeGap(sum);
+        show('done', {
+          value: sum,
+          grade,
+          note: next ? `${next.grade}까지 ${formatNumber(next.gap)}점 남았어요` : 'A등급 구간이에요',
+          meta: weightText,
+          mini: `${formatNumber(sum)}점 · ${grade}`,
+          formula: `${rows.map(row => `${formatNumber(row.score)}×${formatNumber(row.weight)}%`).join(' + ')} = ${formatNumber(sum)}점`
+        });
+      }
+
+      form.addEventListener('submit', event => event.preventDefault());
+      form.addEventListener('input', event => {
+        const { kind, index, field } = event.target.dataset;
+        if (!kind || !field) return;
+        state[kind][index][field] = event.target.value;
+        update();
       });
+      form.addEventListener('click', event => {
+        const button = event.target.closest('[data-count]');
+        if (!button) return;
+        const kind = button.dataset.count;
+        const next = Math.min(10, Math.max(0, state[kind].length + Number(button.dataset.delta)));
+        const defaults = DEFAULTS()[kind];
+        while (state[kind].length < next) state[kind].push(defaults[state[kind].length] || { score: '', weight: '' });
+        state[kind].length = next;
+        renderRows(kind);
+        update();
+      });
+      armReset($('resetBtn'), () => { state = DEFAULTS(); renderRows('performance'); renderRows('exam'); update(); });
+
+      renderRows('performance');
+      renderRows('exam');
+      update();
     })();
   </script>
 </body>
