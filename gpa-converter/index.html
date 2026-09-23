@@ -1,1 +1,171 @@
-<!doctype html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GPA 환산기 - 4.5·4.3·4.0 만점 비례 변환</title><meta name="description" content="숫자 GPA를 4.5, 4.3, 4.0 등 다른 만점 기준으로 단순 비례 환산하는 참고용 계산기입니다."><meta name="robots" content="index, follow"><link rel="canonical" href="https://naver1.cloud/gpa-converter/"><meta property="og:type" content="website"><meta property="og:title" content="GPA 만점 환산기"><meta property="og:description" content="숫자 GPA를 4.5, 4.3, 4.0 등 다른 만점 기준으로 단순 비례 환산하는 참고용 계산기입니다."><meta property="og:url" content="https://naver1.cloud/gpa-converter/"><meta property="og:image" content="https://naver1.cloud/og.png"><meta property="og:locale" content="ko_KR"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="GPA 만점 환산기"><meta name="twitter:description" content="숫자 GPA를 4.5, 4.3, 4.0 등 다른 만점 기준으로 단순 비례 환산하는 참고용 계산기입니다."><meta name="twitter:image" content="https://naver1.cloud/og.png"><meta name="theme-color" content="#4f46e5"><link rel="icon" href="../icon-192.png"><link rel="stylesheet" href="../styles.css"><script src="../site-nav.js"></script><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"GPA 만점 환산기","description":"숫자 GPA를 4.5, 4.3, 4.0 등 다른 만점 기준으로 단순 비례 환산하는 참고용 계산기입니다.","url":"https://naver1.cloud/gpa-converter/","applicationCategory":"EducationalApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script></head><body><header class="top-bar"><h1><span>GPA 만점 환산기</span></h1></header><p class="tagline">숫자 GPA를 다른 만점 기준으로 단순 비례 환산합니다.</p><main><section class="box"><div class="field-grid"><div class="field"><label for="value">현재 GPA</label><input id="value" type="number" min="0" step="0.01" value="3.8"></div><div class="field"><label for="from">현재 만점</label><input id="from" type="number" min="0.01" step="0.1" value="4.5" list="scales"></div><div class="field"><label for="to">변환할 만점</label><input id="to" type="number" min="0.01" step="0.1" value="4.3" list="scales"></div></div><datalist id="scales"><option value="4.5"><option value="4.3"><option value="4.0"></datalist><button class="btn" id="convert">GPA 환산</button><div id="result" class="big-result" aria-live="polite"></div><p class="notice"><strong>주의:</strong> 단순 비례 참고값이며 대학·기관의 공식 환산표가 아닙니다.</p></section><section class="content-section"><h2>GPA 만점 환산 공식</h2><p><strong>현재 GPA ÷ 현재 만점 × 변환할 만점</strong>입니다. 예를 들어 4.5 만점의 3.6은 4.3 만점에서 3.44입니다.</p><div class="example-grid"><article><h3>4.5 → 4.3</h3><p>3.8 ÷ 4.5 × 4.3 = 3.63입니다.</p></article><article><h3>4.0 → 4.5</h3><p>3.2 ÷ 4.0 × 4.5 = 3.60입니다.</p></article></div><h2>공식표와 다른 이유</h2><p>기관별 환산은 등급 구간, 과목 난이도, 백분율 표 등 별도 기준을 사용할 수 있습니다. 지원 기관이 표를 제공하면 그 표가 우선입니다.</p><details><summary>백분위 환산인가요?</summary><p>아닙니다. 만점 대비 단순 비율을 옮긴 값입니다.</p></details><details><summary>직접 입력한 만점도 되나요?</summary><p>0보다 큰 만점을 입력할 수 있으며 GPA는 현재 만점을 넘을 수 없습니다.</p></details></section><nav class="related-tools"><h2>관련 도구</h2><a href="/gpa/">GPA 평균 계산기</a><a href="/blog/gpa-scale-conversion/">GPA 환산 설명</a><a href="/faq/">FAQ</a></nav></main><script>function convertGpa(value,fromScale,toScale){if(!Number.isFinite(value)||!Number.isFinite(fromScale)||!Number.isFinite(toScale)||fromScale<=0||toScale<=0||value<0||value>fromScale)return null;return value/fromScale*toScale;}document.getElementById('convert').onclick=()=>{const v=Number(value.value),f=Number(from.value),t=Number(to.value),x=convertGpa(v,f,t);result.innerHTML=x===null?'<p class="error">GPA와 만점 범위를 확인하세요.</p>':'<div class="num">'+x.toFixed(2)+' / '+t+'</div><div class="sub">단순 비례 참고값 · 기관 공식 환산표 아님</div>';};console.assert(convertGpa(4.5,4.5,4.3)===4.3);console.assert(convertGpa(-1,4.5,4.3)===null);console.assert(convertGpa(5,4.5,4.3)===null);console.assert(convertGpa(1,0,4.3)===null);</script><footer class="site-footer">계산 결과는 참고용이며 학교·대학의 공식 성적 처리 규정을 우선 확인하세요.<br>© 2026 성적 계산기.</footer><div class="footer-links"><a href="/blog/">블로그</a> · <a href="/faq/">FAQ</a> · <a href="/privacy/">개인정보처리방침</a></div></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GPA 환산기 - 4.5·4.3·4.0 만점 비례 변환</title>
+  <meta name="description" content="숫자 GPA를 4.5, 4.3, 4.0 등 다른 만점 기준으로 단순 비례 환산하는 참고용 계산기입니다.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://naver1.cloud/gpa-converter/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="GPA 만점 환산기">
+  <meta property="og:description" content="숫자 GPA를 4.5, 4.3, 4.0 등 다른 만점 기준으로 단순 비례 환산하는 참고용 계산기입니다.">
+  <meta property="og:url" content="https://naver1.cloud/gpa-converter/">
+  <meta property="og:image" content="https://naver1.cloud/og.png">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="GPA 만점 환산기">
+  <meta name="twitter:description" content="숫자 GPA를 4.5, 4.3, 4.0 등 다른 만점 기준으로 단순 비례 환산하는 참고용 계산기입니다.">
+  <meta name="twitter:image" content="https://naver1.cloud/og.png">
+  <meta name="theme-color" content="#FAF7F0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#14161D" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="../icon-192.png">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../site-nav.js"></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"GPA 만점 환산기","description":"숫자 GPA를 4.5, 4.3, 4.0 등 다른 만점 기준으로 단순 비례 환산하는 참고용 계산기입니다.","url":"https://naver1.cloud/gpa-converter/","applicationCategory":"EducationalApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
+</head>
+<body>
+  <a class="skip-link" href="#main">본문 바로가기</a>
+  <header class="appbar">
+    <div class="appbar-inner">
+      <a class="logo" href="/"><span class="logo-mark">성적</span>계산기</a>
+      <button type="button" class="theme-toggle" aria-pressed="false" aria-label="다크 모드">
+        <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
+        <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+      </button>
+    </div>
+  </header>
+  <nav class="toolnav" aria-label="도구">
+    <div class="toolnav-inner">
+      <a class="tool" href="/">수행·지필</a>
+      <a class="tool" href="/target-score/">목표점수</a>
+      <a class="tool" href="/rank/">내신등급</a>
+      <a class="tool" href="/gpa/">학점</a>
+      <a class="tool" href="/gpa-converter/" aria-current="page">GPA 환산</a>
+      <span class="toolnav-sep" aria-hidden="true"></span>
+      <a class="tool" href="/todayfood/">급식</a>
+      <a class="tool" href="/todayclass/">시간표</a>
+    </div>
+  </nav>
+
+  <main id="main" class="page">
+    <header class="page-head">
+      <p class="eyebrow">GPA 만점 환산</p>
+      <h1>GPA 만점 환산기</h1>
+      <p class="lede">숫자 GPA를 다른 만점 기준으로 단순 비례 환산해요. 만점 대비 비율은 그대로 유지돼요.</p>
+    </header>
+
+    <div class="calc">
+      <section class="card result-card" id="resultCard" data-state="empty" aria-labelledby="convertedLabel">
+        <p class="result-label" id="convertedLabel">환산한 GPA</p>
+        <div class="result-main">
+          <p class="result-number"><span class="result-value"><span class="marker" id="convertedValue">—</span></span><span class="result-unit" id="convertedUnit">/ 4.3</span></p>
+        </div>
+        <div class="ratio" aria-hidden="true">
+          <div class="ratio-row"><span>현재</span><div class="ratio-track"><div class="ratio-fill" id="fromFill"></div></div><span class="num" id="fromText"></span></div>
+          <div class="ratio-row is-target"><span>환산</span><div class="ratio-track"><div class="ratio-fill" id="toFill"></div></div><span class="num" id="toText"></span></div>
+        </div>
+        <p class="result-note" id="convertedNote">GPA와 만점을 넣으면 바로 환산돼요.</p>
+        <p class="result-meta">단순 비례 참고값이에요. 대학·기관의 공식 환산표가 아니에요.</p>
+      </section>
+
+      <form class="input-stack" id="convertForm" novalidate>
+        <section class="card" aria-labelledby="inputTitle">
+          <div class="card-head"><div><h2 id="inputTitle">환산할 값</h2><p class="card-sub">만점은 아래 버튼으로 빠르게 고를 수 있어요.</p></div></div>
+          <div class="field">
+            <label class="field-label" for="value">현재 GPA</label>
+            <input class="input" id="value" value="3.8" type="number" min="0" step="any" inputmode="decimal" enterkeyhint="next" placeholder="예: 3.8">
+          </div>
+          <div class="field mt">
+            <label class="field-label" for="from">현재 만점</label>
+            <input class="input" id="from" value="4.5" type="number" min="0.01" step="any" inputmode="decimal" enterkeyhint="next" placeholder="예: 4.5">
+            <div class="chip-grid" role="group" aria-label="현재 만점 빠른 선택">
+              <button type="button" class="chip chip-btn" data-set="from" data-value="4.5" aria-pressed="false">4.5</button>
+              <button type="button" class="chip chip-btn" data-set="from" data-value="4.3" aria-pressed="false">4.3</button>
+              <button type="button" class="chip chip-btn" data-set="from" data-value="4.0" aria-pressed="false">4.0</button>
+            </div>
+          </div>
+          <div class="field mt">
+            <label class="field-label" for="to">바꿀 만점</label>
+            <input class="input" id="to" value="4.3" type="number" min="0.01" step="any" inputmode="decimal" enterkeyhint="done" placeholder="예: 4.3">
+            <div class="chip-grid" role="group" aria-label="바꿀 만점 빠른 선택">
+              <button type="button" class="chip chip-btn" data-set="to" data-value="4.5" aria-pressed="false">4.5</button>
+              <button type="button" class="chip chip-btn" data-set="to" data-value="4.3" aria-pressed="false">4.3</button>
+              <button type="button" class="chip chip-btn" data-set="to" data-value="4.0" aria-pressed="false">4.0</button>
+            </div>
+          </div>
+        </section>
+      </form>
+    </div>
+
+    <section class="note" aria-labelledby="howTitle">
+      <h2 id="howTitle">GPA 만점 환산 공식</h2>
+      <p><strong>현재 GPA ÷ 현재 만점 × 변환할 만점</strong>입니다. 예를 들어 4.5 만점의 3.6은 4.3 만점에서 3.44입니다.</p>
+      <div class="examples"><article><h3>4.5 → 4.3</h3><p>3.8 ÷ 4.5 × 4.3 = 3.63입니다.</p></article><article><h3>4.0 → 4.5</h3><p>3.2 ÷ 4.0 × 4.5 = 3.60입니다.</p></article></div>
+      <h2>공식표와 다른 이유</h2>
+      <p>기관별 환산은 등급 구간, 과목 난이도, 백분율 표 등 별도 기준을 사용할 수 있습니다. 지원 기관이 표를 제공하면 그 표가 우선입니다.</p>
+      <details class="faq"><summary>백분위 환산인가요?</summary><p>아닙니다. 만점 대비 단순 비율을 옮긴 값입니다.</p></details>
+      <details class="faq"><summary>직접 입력한 만점도 되나요?</summary><p>0보다 큰 만점을 입력할 수 있으며 GPA는 현재 만점을 넘을 수 없습니다.</p></details>
+      <a class="more-link" href="/blog/gpa-scale-conversion/">GPA 환산 설명 자세히 보기 →</a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>계산 결과는 참고용이며 학교·대학의 공식 성적 처리 규정을 우선 확인하세요.</p>
+    <nav class="footer-links" aria-label="사이트 정보"><a href="/blog/">계산 가이드</a><a href="/faq/">자주 묻는 질문</a><a href="/guide/">사용법</a><a href="/privacy/">개인정보처리방침</a></nav>
+    <p class="copyright">© 2026 성적 계산기</p>
+  </footer>
+
+  <script src="../calc-core.js"></script>
+  <script>
+    (() => {
+      const $ = id => document.getElementById(id);
+      const form = $('convertForm');
+      const card = $('resultCard');
+      const inputs = { value: $('value'), from: $('from'), to: $('to') };
+      const num = input => (input.value === '' ? null : Number(input.value));
+
+      function update() {
+        const value = num(inputs.value), from = num(inputs.from), to = num(inputs.to);
+        form.querySelectorAll('[data-set]').forEach(chip => chip.setAttribute('aria-pressed', String(Number(chip.dataset.value) === num(inputs[chip.dataset.set]))));
+        inputs.from.setAttribute('aria-invalid', String(from !== null && !(from > 0)));
+        inputs.to.setAttribute('aria-invalid', String(to !== null && !(to > 0)));
+        inputs.value.setAttribute('aria-invalid', String(value !== null && from > 0 && !(value >= 0 && value <= from)));
+        $('convertedUnit').textContent = to > 0 ? `/ ${formatNumber(to)}` : '';
+        const blank = value === null || from === null || to === null;
+        const result = blank ? null : convertGpa(value, from, to);
+        const valid = result !== null;
+        const ratio = valid ? value / from : 0;
+        const wasDone = card.dataset.state === 'done';
+        card.dataset.state = valid ? 'done' : blank ? 'empty' : 'warn';
+        $('convertedValue').textContent = valid ? fixedNumber(result) : '—';
+        $('fromFill').style.setProperty('--ratio', ratio);
+        $('toFill').style.setProperty('--ratio', ratio);
+        $('fromText').textContent = valid ? `${formatNumber(value)} / ${formatNumber(from)}` : '';
+        $('toText').textContent = valid ? `${fixedNumber(result)} / ${formatNumber(to)}` : '';
+        $('convertedNote').textContent = blank ? 'GPA와 만점을 넣으면 바로 환산돼요.'
+          : !valid ? (from > 0 && to > 0 ? 'GPA는 0 이상, 현재 만점 이하로 입력해 주세요.' : '만점은 0보다 커야 해요.')
+          : `만점 대비 ${formatNumber(ratio * 100, 1)}% · 두 기준에서 같은 비율이에요.`;
+        if (card.dataset.state === 'done' && !wasDone) {
+          card.classList.remove('is-fresh');
+          void card.offsetWidth;
+          card.classList.add('is-fresh');
+        }
+        setMiniResult(valid ? `${fixedNumber(result)} / ${formatNumber(to)}` : '');
+      }
+
+      form.addEventListener('submit', event => event.preventDefault());
+      form.addEventListener('input', update);
+      form.addEventListener('click', event => {
+        const chip = event.target.closest('[data-set]');
+        if (!chip) return;
+        inputs[chip.dataset.set].value = chip.dataset.value;
+        update();
+      });
+      update();
+    })();
+  </script>
+</body>
+</html>

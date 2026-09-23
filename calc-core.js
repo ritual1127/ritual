@@ -11,10 +11,13 @@ const GPA_SCALES = {
 // 0.1 + 0.2 같은 이진 소수 오차를 등급 경계 비교 전에 걷어낸다.
 function roundFloat(value) { return Math.round(value * 1e9) / 1e9; }
 
-function formatNumber(value, digits = 2) {
-  const fixed = Number(value.toFixed(digits));
-  return String(Object.is(fixed, -0) ? 0 : fixed);
+// toFixed는 4.085(실제 4.08499…)를 4.08로 내린다. 표시용 반올림은 아주 작은 값을 더해 사람 기대에 맞춘다.
+function fixedNumber(value, digits = 2) {
+  const fixed = (value + Math.sign(value) * 1e-9).toFixed(digits);
+  return Number(fixed) === 0 ? (0).toFixed(digits) : fixed;
 }
+
+function formatNumber(value, digits = 2) { return String(Number(fixedNumber(value, digits))); }
 
 function gradeFor(score) { return GRADE_CUTS.find(([, min]) => score >= min)[0]; }
 

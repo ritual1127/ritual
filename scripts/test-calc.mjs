@@ -6,7 +6,7 @@ const context = vm.createContext({});
 vm.runInContext(fs.readFileSync(new URL('../calc-core.js', import.meta.url), 'utf8'), context);
 // vm 안에서 만든 객체는 프로토타입이 달라 deepEqual 전에 현재 realm 객체로 옮긴다.
 const plain = value => JSON.parse(JSON.stringify(value));
-const c = vm.runInContext('({ formatNumber, gradeFor, nextGradeGap, weightedSum, ceil2, requiredScore, rankPercentile, rankGrade, rankTier, rankRowStatus, mapGrade, gpaSummary, convertGpa })', context);
+const c = vm.runInContext('({ formatNumber, fixedNumber, gradeFor, nextGradeGap, weightedSum, ceil2, requiredScore, rankPercentile, rankGrade, rankTier, rankRowStatus, mapGrade, gpaSummary, convertGpa })', context);
 
 // 수행·지필
 assert.equal(c.weightedSum([{ score: 90, weight: 40 }, { score: 80, weight: 30 }, { score: 70, weight: 30 }]), 81);
@@ -20,6 +20,12 @@ assert.equal(c.nextGradeGap(95), null);
 assert.equal(c.formatNumber(86.5), '86.5');
 assert.equal(c.formatNumber(90 - 86.66), '3.34');
 assert.equal(c.formatNumber(-0.001), '0');
+// toFixed는 4.085를 4.08로 내린다(이진 표현). 사람 기대대로 반올림해야 한다.
+assert.equal(c.fixedNumber(3.8 / 4 * 4.3), '4.09');
+assert.equal(c.fixedNumber(1.005), '1.01');
+assert.equal(c.fixedNumber(3.6), '3.60');
+assert.equal(c.fixedNumber(-0.001), '0.00');
+assert.equal(c.formatNumber(86.125), '86.13');
 
 // 목표점수
 assert.equal(c.requiredScore(90, 54, 40).score, 90);

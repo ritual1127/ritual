@@ -353,7 +353,16 @@ select.input {
 .subject-fields .field-label { font-size: 12.5px; white-space: nowrap; }
 .subject-fields .input { padding: 10px 8px; text-align: center; }
 @media (max-width: 360px) { .subject-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.course { display: grid; grid-template-columns: minmax(0, 1fr) 76px 96px 44px; gap: 6px; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+.course { display: grid; grid-template-columns: minmax(0, 1fr) 92px 96px 44px; gap: 6px; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+.course .input-wrap .input { padding-right: 40px; }
+@media (max-width: 400px) {
+  .course { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 44px; grid-template-areas: "name name del" "credit grade grade"; }
+  .course > :nth-child(1) { grid-area: name; }
+  .course > :nth-child(2) { grid-area: credit; }
+  .course > :nth-child(3) { grid-area: grade; }
+  .course > :nth-child(4) { grid-area: del; }
+  .course-head { display: none; }
+}
 .course:last-child { border-bottom: 0; }
 .course-head { padding: 0 0 8px; border-bottom: 1px solid var(--line); font-size: 12.5px; font-weight: 700; color: var(--ink-3); }
 .row-status { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-height: 28px; }
@@ -471,8 +480,8 @@ details.formula p { margin-top: 6px; font-size: 14px; color: var(--ink-2); font-
 
 /* ── 비율 막대 (GPA 환산) ─────────────────────── */
 .ratio { display: grid; gap: 10px; margin-top: 16px; }
-.ratio-row { display: grid; grid-template-columns: 64px minmax(0, 1fr) 64px; gap: 10px; align-items: center; font-size: 14px; font-weight: 700; color: var(--ink-2); font-variant-numeric: tabular-nums; }
-.ratio-row .num { text-align: right; color: var(--ink); }
+.ratio-row { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 14px; font-weight: 700; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.ratio-row .num { min-width: 76px; text-align: right; white-space: nowrap; color: var(--ink); }
 .ratio-track { height: 10px; border-radius: 999px; background: var(--sunk); box-shadow: inset 0 0 0 1px var(--line); overflow: hidden; }
 .ratio-fill { height: 100%; background: var(--primary); transform-origin: left; transform: scaleX(var(--ratio, 0)); transition: transform .3s var(--ease); }
 .ratio-row.is-target .ratio-fill { background: var(--ok); }
