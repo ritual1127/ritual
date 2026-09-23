@@ -66,7 +66,11 @@
 
   // 결과 카드가 화면 밖일 때만 상단바에 결과를 띄운다. 스크린리더에는 입력이 멈춘 뒤 한 번만 읽힌다.
   let mini = null, live = null, liveTimer = 0, miniText = '', cardVisible = true;
-  function paintMini() { mini.textContent = miniText; mini.hidden = !miniText || cardVisible; }
+  function paintMini() {
+    mini.textContent = miniText;
+    mini.setAttribute('aria-label', `결과 보기: ${miniText}`);
+    mini.hidden = !miniText || cardVisible;
+  }
   window.setMiniResult = text => {
     if (!mini) {
       const card = document.querySelector('.result-card');
