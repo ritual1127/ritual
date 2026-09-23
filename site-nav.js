@@ -1,290 +1,113 @@
-// 모든 페이지 최상단 서비스 이동 버튼 + 저장된 테마 적용
+// 모든 페이지 공통: 테마, 도구 칩, 서비스워커, 계산기 입력 보조, 미니 결과, 초기화 확인
 (function () {
-  const CURRENT_PATH = location.pathname.replace(/index\.html$/, '');
-  const CALCULATOR_PATHS = ['/', '/target-score/', '/rank/', '/gpa/', '/gpa-converter/'];
-  if (CALCULATOR_PATHS.includes(CURRENT_PATH)) document.documentElement.classList.add('calculator-page');
-  if (CALCULATOR_PATHS.includes(CURRENT_PATH) && CURRENT_PATH !== '/') document.documentElement.classList.add('tool-page');
+  const root = document.documentElement;
+  const PAPER = { light: '#FAF7F0', dark: '#14161D' };
+  const media = matchMedia('(prefers-color-scheme: dark)');
 
-  document.documentElement.setAttribute(
-    'data-theme',
-    localStorage.getItem('theme') ||
-      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-  );
+  function savedTheme() { try { return localStorage.getItem('theme'); } catch { return null; } }
+  function currentTheme() { return root.dataset.theme || (media.matches ? 'dark' : 'light'); }
+  function applyTheme(theme) {
+    if (theme === 'light' || theme === 'dark') root.dataset.theme = theme;
+    document.querySelectorAll('meta[name="theme-color"]').forEach(meta => meta.setAttribute('content', PAPER[currentTheme()]));
+    document.querySelector('.theme-toggle')?.setAttribute('aria-pressed', String(currentTheme() === 'dark'));
+  }
+  applyTheme(savedTheme());
 
-  const LINKS = [
-    ['수행·지필', '/'],
-    ['목표점수', '/target-score/'],
-    ['내신등급', '/rank/'],
-    ['학점', '/gpa/'],
-    ['급식', '/todayfood/'],
-    ['시간표', '/todayclass/'],
-  ];
-
-  function setupNumberSteppers() {
-    function isPercentageInput(input) {
-      const hint = [
-        input.className,
-        input.id,
-        input.getAttribute('aria-label') || '',
-        input.closest('.percent-suffix') ? 'percent' : ''
-      ].join(' ').toLowerCase();
-      return /weight|percent|비율|퍼센트/.test(hint);
-    }
-
-    function stepFor(input, percentage) {
-      if (percentage) return 5;
-      const scoreInput = input.matches('.evaluation-score, .completed-score, #target') || input.closest('.score-suffix');
-      if (scoreInput) return 1;
-      const declared = Number(input.getAttribute('step'));
-      return Number.isFinite(declared) && declared > 0 ? declared : 1;
-    }
-
-    function precisionOf(step) {
-      const text = String(step);
-      return text.includes('.') ? text.split('.')[1].length : 0;
-    }
-
-    function enhance(input) {
-      if (input.dataset.customStepper || input.closest('.direct-count-stepper, .stepper, .number-stepper')) return;
-      input.dataset.customStepper = 'true';
-
-      const percentage = isPercentageInput(input);
-      const step = stepFor(input, percentage);
-      const oldParent = input.parentElement;
-      const oldUnit = [...oldParent.children].find(element =>
-        element !== input && /^(SPAN|B)$/.test(element.tagName) && ['%', '점'].includes(element.textContent.trim())
-      );
-      const inferredUnit = percentage ? '%' : ((input.matches('.evaluation-score, .completed-score, #target') || input.closest('.score-suffix')) ? '점' : '');
-      const unit = oldUnit?.textContent.trim() || inferredUnit;
-      if (oldUnit) oldUnit.classList.add('native-unit-hidden');
-
-      const control = document.createElement('span');
-      control.className = `number-stepper${percentage ? ' percentage-stepper' : ''}`;
-      const down = document.createElement('button');
-      const up = document.createElement('button');
-      const valueWrap = document.createElement('span');
-      const fieldName = input.getAttribute('aria-label') || input.id || '숫자';
-      down.type = up.type = 'button';
-      down.className = 'number-step-button number-step-down';
-      up.className = 'number-step-button number-step-up';
-      down.textContent = '−';
-      up.textContent = '+';
-      down.setAttribute('aria-label', `${fieldName} 줄이기`);
-      up.setAttribute('aria-label', `${fieldName} 늘리기`);
-      valueWrap.className = 'number-step-value';
-      oldParent.insertBefore(control, input);
-      valueWrap.appendChild(input);
-      if (unit) {
-        const unitElement = document.createElement('span');
-        unitElement.className = 'number-step-unit';
-        unitElement.textContent = unit;
-        valueWrap.appendChild(unitElement);
-      }
-      control.append(down, valueWrap, up);
-      input.setAttribute('step', String(step));
-
-      function clampTypedValue() {
-        if (input.value === '') return;
-        const value = input.valueAsNumber;
-        if (!Number.isFinite(value)) return;
-        const min = input.min === '' ? -Infinity : Number(input.min);
-        const max = input.max === '' ? Infinity : Number(input.max);
-        const clamped = Math.min(max, Math.max(min, value));
-        if (clamped !== value) input.value = String(clamped);
-      }
-
-      input.addEventListener('input', clampTypedValue, true);
-      input.addEventListener('blur', clampTypedValue);
-
-      function adjust(direction) {
-        const min = input.min === '' ? -Infinity : Number(input.min);
-        const max = input.max === '' ? Infinity : Number(input.max);
-        let current = Number(input.value);
-        if (input.value === '' || !Number.isFinite(current)) {
-          current = Number.isFinite(min) ? (direction > 0 ? min - step : min) : 0;
-        }
-        const next = Math.min(max, Math.max(min, current + direction * step));
-        input.value = next.toFixed(precisionOf(step));
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-        input.dispatchEvent(new Event('change', { bubbles: true }));
-      }
-
-      down.addEventListener('click', event => {
-        event.preventDefault();
-        event.stopPropagation();
-        adjust(-1);
-      });
-      up.addEventListener('click', event => {
-        event.preventDefault();
-        event.stopPropagation();
-        adjust(1);
-      });
-    }
-
-    function enhanceWithin(root) {
-      if (root.matches?.('input[type="number"]')) enhance(root);
-      root.querySelectorAll?.('input[type="number"]').forEach(enhance);
-    }
-
-    enhanceWithin(document.body);
-    new MutationObserver(records => {
-      records.forEach(record => record.addedNodes.forEach(node => {
-        if (node.nodeType === Node.ELEMENT_NODE) enhanceWithin(node);
-      }));
-    }).observe(document.body, { childList: true, subtree: true });
+  function setupThemeToggle() {
+    const button = document.querySelector('.theme-toggle');
+    if (!button) return;
+    applyTheme(savedTheme());
+    button.addEventListener('click', () => {
+      const next = currentTheme() === 'dark' ? 'light' : 'dark';
+      try { localStorage.setItem('theme', next); } catch {}
+      applyTheme(next);
+    });
+    media.addEventListener('change', () => applyTheme(savedTheme()));
   }
 
-  function render() {
-    const here = CURRENT_PATH;
-    const tagline = document.querySelector('body > .tagline');
-    if (tagline) {
-      tagline.setAttribute('role', 'region');
-      tagline.setAttribute('aria-label', '페이지 소개');
-    }
-    document.querySelectorAll('.footer-links').forEach(links => {
-      links.setAttribute('role', 'navigation');
-      links.setAttribute('aria-label', '하단 링크');
-    });
-    document.querySelectorAll('.feedback-widget').forEach(widget => {
-      widget.setAttribute('role', 'region');
-      widget.setAttribute('aria-label', '페이지 평가');
-    });
-    const nav = document.createElement('nav');
-    nav.className = 'site-nav';
-    nav.setAttribute('aria-label', '계산기 메뉴');
-    nav.innerHTML = LINKS.map(
-      ([label, href]) =>
-        `<a href="${href}"${here === href ? ' class="active"' : ''}>${label}</a>`
-    ).join('');
-    const navShell = document.createElement('div');
-    const navPrev = document.createElement('button');
-    const navNext = document.createElement('button');
-    navShell.className = 'site-nav-shell';
-    navPrev.type = navNext.type = 'button';
-    navPrev.className = 'site-nav-arrow site-nav-prev';
-    navNext.className = 'site-nav-arrow site-nav-next';
-    navPrev.textContent = '‹';
-    navNext.textContent = '›';
-    navPrev.setAttribute('aria-label', '이전 메뉴 보기');
-    navNext.setAttribute('aria-label', '다음 메뉴 보기');
-    navShell.append(navPrev, nav, navNext);
-    document.body.prepend(navShell);
+  function setupToolnav() {
+    const nav = document.querySelector('.toolnav-inner');
+    if (!nav) return;
+    const active = nav.querySelector('[aria-current="page"]');
+    if (active) nav.scrollLeft = active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2;
+    const edges = () => {
+      nav.dataset.start = String(nav.scrollLeft <= 2);
+      nav.dataset.end = String(nav.scrollLeft + nav.clientWidth >= nav.scrollWidth - 2);
+    };
+    nav.addEventListener('scroll', edges, { passive: true });
+    addEventListener('resize', edges, { passive: true });
+    edges();
+  }
 
-    function updateNavArrows() {
-      const edge = 3;
-      navPrev.disabled = nav.scrollLeft <= edge;
-      navNext.disabled = nav.scrollLeft + nav.clientWidth >= nav.scrollWidth - edge;
-    }
+  // 계산기 입력 보조: 포커스 시 전체 선택, Enter로 다음 칸, blur 시 범위 보정
+  document.addEventListener('focusin', event => {
+    const input = event.target;
+    if (input.matches?.('.calc input[type="number"]')) setTimeout(() => input.select(), 0);
+  });
+  document.addEventListener('keydown', event => {
+    const input = event.target;
+    // 한글 조합을 확정하는 Enter는 칸 이동으로 쓰지 않는다.
+    if (event.key !== 'Enter' || event.isComposing || event.keyCode === 229 || !input.matches?.('.calc input')) return;
+    event.preventDefault();
+    const fields = [...input.closest('.calc').querySelectorAll('input, select')].filter(field => !field.disabled && field.offsetParent !== null);
+    const next = fields[fields.indexOf(input) + 1];
+    if (next) next.focus(); else input.blur();
+  });
+  document.addEventListener('focusout', event => {
+    const input = event.target;
+    if (!input.matches?.('input[type="number"]') || input.value === '' || !Number.isFinite(input.valueAsNumber)) return;
+    const min = input.min === '' ? -Infinity : Number(input.min);
+    const max = input.max === '' ? Infinity : Number(input.max);
+    const clamped = Math.min(max, Math.max(min, input.valueAsNumber));
+    if (clamped === input.valueAsNumber) return;
+    input.value = String(clamped);
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  });
 
-    function moveNav(direction) {
-      nav.scrollBy({ left: direction * Math.max(160, nav.clientWidth * 0.72), behavior: 'smooth' });
-    }
-
-    navPrev.addEventListener('click', () => moveNav(-1));
-    navNext.addEventListener('click', () => moveNav(1));
-    nav.addEventListener('scroll', updateNavArrows, { passive: true });
-    window.addEventListener('resize', updateNavArrows, { passive: true });
-    requestAnimationFrame(() => {
-      const active = nav.querySelector('.active');
-      if (active) {
-        const targetLeft = active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2;
-        nav.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
-      }
-      updateNavArrows();
-    });
-
-    // 계산기 안에는 설명문을 쌓지 않습니다. 상세 글은 독립된 읽기 화면으로 보냅니다.
-    if (CALCULATOR_PATHS.includes(here)) {
-      const content = document.querySelector('.content-section:not(.article)');
-      if (content) {
-        const guides = {
-          '/': ['/blog/performance-exam-weight/', '수행·지필 반영비율 계산법'],
-          '/target-score/': ['/blog/target-exam-score/', '남은 시험 점수 계산법'],
-          '/rank/': ['/blog/rank-percentile/', '석차백분율과 등급 계산법'],
-          '/gpa/': ['/blog/gpa-average/', 'GPA 평점평균 계산법'],
-          '/gpa-converter/': ['/blog/gpa-scale-conversion/', 'GPA 만점 환산 방법']
-        };
-        const [href, label] = guides[here];
-        const support = document.createElement('aside');
-        support.className = 'calc-support';
-        support.innerHTML = `<span>공식이 궁금한가요?</span><a href="${href}">${label} 읽기 →</a>`;
-        content.replaceWith(support);
-        document.querySelector('.related-tools')?.remove();
-        const footer = document.querySelector('.site-footer');
-        if (footer) footer.parentNode.insertBefore(support, footer);
+  // 결과 카드가 화면 밖일 때만 상단바에 결과를 띄운다. 스크린리더에는 입력이 멈춘 뒤 한 번만 읽힌다.
+  let mini = null, live = null, liveTimer = 0, miniText = '', cardVisible = true;
+  function paintMini() { mini.textContent = miniText; mini.hidden = !miniText || cardVisible; }
+  window.setMiniResult = text => {
+    if (!mini) {
+      const card = document.querySelector('.result-card');
+      mini = document.createElement('button');
+      mini.type = 'button';
+      mini.className = 'mini-result';
+      mini.hidden = true;
+      mini.addEventListener('click', () => card?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' }));
+      document.querySelector('.appbar-inner')?.insertBefore(mini, document.querySelector('.theme-toggle'));
+      live = document.createElement('p');
+      live.className = 'sr-only';
+      live.setAttribute('aria-live', 'polite');
+      document.body.append(live);
+      if (card && 'IntersectionObserver' in window) {
+        new IntersectionObserver(([entry]) => { cardVisible = entry.isIntersecting; paintMini(); }, { rootMargin: '-64px 0px 0px 0px' }).observe(card);
       }
     }
+    miniText = text;
+    paintMini();
+    clearTimeout(liveTimer);
+    liveTimer = setTimeout(() => { live.textContent = text; }, 600);
+  };
 
-    // 글은 계산기와 분리된 읽기 전용 레이아웃으로 구성합니다.
-    if (here === '/blog/') buildBlogHub();
-    else if (here.startsWith('/blog/') && here !== '/blog/') buildArticlePage();
-
-    setupNumberSteppers();
-  }
-
-  function buildBlogHub() {
-    document.body.classList.add('blog-hub');
-    const grid = document.querySelector('.article-card-grid');
-    if (!grid) return;
-    const groups = [
-      ['점수 계산', '반영비율과 목표점수를 계산할 때', ['performance-exam-weight','target-exam-score','raw-score-and-grade','grade-calculation']],
-      ['내신등급', '석차와 5·9등급제가 궁금할 때', ['five-grade-system','nine-grade-system','rank-percentile','tied-rank']],
-      ['대학 학점', 'GPA 평균과 만점 환산이 필요할 때', ['gpa-average','gpa-scale-conversion']]
-    ];
-    const cards = [...grid.querySelectorAll('.article-card')];
-    const targetCard = cards.find(card => card.getAttribute('href').includes('target-exam-score'));
-    if (targetCard) {
-      targetCard.querySelector('h2').textContent = '남은 시험에서 몇 점 받아야 할까?';
-      targetCard.querySelector('p').textContent = '이미 받은 점수와 반영 비율을 적으면 필요한 시험 점수를 알 수 있어요.';
-    }
-    grid.className = 'blog-library';
-    for (const [title, desc, slugs] of groups) {
-      const section = document.createElement('section');
-      section.className = 'topic-group';
-      section.innerHTML = `<div class="topic-heading"><h2>${title}</h2><p>${desc}</p></div><div class="topic-cards"></div>`;
-      const target = section.querySelector('.topic-cards');
-      cards.filter(card => slugs.some(slug => card.getAttribute('href').includes(slug))).forEach(card => target.appendChild(card));
-      grid.appendChild(section);
-    }
-  }
-
-  function buildArticlePage() {
-    const article = document.querySelector('main.article');
-    const header = document.querySelector('header.top-bar');
-    const dek = document.querySelector('body > .tagline');
-    if (!article || !header) return;
-    document.body.classList.add('article-page');
-    const breadcrumb = document.createElement('nav');
-    breadcrumb.className = 'breadcrumb';
-    breadcrumb.setAttribute('aria-label', '현재 위치');
-    breadcrumb.innerHTML = '<a href="/">계산기</a><span>›</span><a href="/blog/">계산 가이드</a>';
-    header.parentNode.insertBefore(breadcrumb, header);
-    const lead = article.querySelector(':scope > p:not(.updated)');
-    if (lead) lead.classList.add('article-answer');
-    [...article.querySelectorAll(':scope > h2')].forEach(heading => {
-      const section = document.createElement('section');
-      section.className = 'article-section';
-      if (heading.textContent.includes('예시')) section.classList.add('article-example');
-      if (heading.textContent.includes('공식')) section.classList.add('article-formula');
-      if (heading.textContent === '관련 글' || heading.textContent === '이어서 확인하기') section.classList.add('article-related');
-      heading.parentNode.insertBefore(section, heading);
-      section.appendChild(heading);
-      while (section.nextSibling && section.nextSibling.tagName !== 'H2') section.appendChild(section.nextSibling);
+  // 초기화처럼 되돌릴 수 없는 버튼: 3초 안에 두 번 눌러야 실행한다.
+  window.armReset = (button, action) => {
+    const label = button.textContent;
+    let timer = 0;
+    const disarm = () => { clearTimeout(timer); timer = 0; button.textContent = label; button.classList.remove('is-armed'); };
+    button.addEventListener('click', () => {
+      if (timer) { disarm(); action(); return; }
+      button.textContent = '한 번 더 누르면 초기화';
+      button.classList.add('is-armed');
+      timer = setTimeout(disarm, 3000);
     });
-    const layout = document.createElement('div');
-    layout.className = 'article-layout';
-    article.parentNode.insertBefore(layout, article);
-    const rail = document.createElement('aside');
-    rail.className = 'article-toc';
-    const headings = [...article.querySelectorAll('.article-section > h2')];
-    rail.innerHTML = '<strong>이 글에서 확인할 내용</strong>' + headings.map((h, i) => {
-      h.id = `section-${i + 1}`;
-      return `<a href="#${h.id}">${h.textContent}</a>`;
-    }).join('');
-    layout.append(article, rail);
-    if (dek) header.appendChild(dek);
+  };
+
+  if ('serviceWorker' in navigator) {
+    addEventListener('load', () => navigator.serviceWorker.register('/app-sw.js').catch(() => {}));
   }
 
-  if (document.body) render();
-  else document.addEventListener('DOMContentLoaded', render);
+  function init() { setupThemeToggle(); setupToolnav(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 })();
