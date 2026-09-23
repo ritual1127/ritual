@@ -23,8 +23,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <meta property="og:image" content="https://naver1.cloud/og.png">
   <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="내신 석차등급 계산기 - 9등급제·5등급제"><meta name="twitter:description" content="동석차와 단위수까지 반영해 내신등급을 계산합니다."><meta name="twitter:image" content="https://naver1.cloud/og.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"내신 석차등급 계산기","url":"https://naver1.cloud/rank/","applicationCategory":"EducationalApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
-  <meta name="theme-color" content="#4f46e5">
+  <meta name="theme-color" content="#FAF7F0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#14161D" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="../icon-192.png">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="../styles.css">
   <script src="../site-nav.js"></script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6088412169158396"
@@ -36,206 +39,260 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
-
-  <header class="top-bar">
-    <h1><span>내신</span> 석차등급</h1>
-    <div class="top-controls">
-      <button id="themeToggle">다크 모드</button>
+  <a class="skip-link" href="#main">본문 바로가기</a>
+  <header class="appbar">
+    <div class="appbar-inner">
+      <a class="logo" href="/"><span class="logo-mark">성적</span>계산기</a>
+      <button type="button" class="theme-toggle" aria-pressed="false" aria-label="다크 모드">
+        <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
+        <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+      </button>
     </div>
   </header>
-  <p class="tagline">수강자 수와 석차만 입력하면 등급이 바로 나와요</p>
+  <nav class="toolnav" aria-label="도구">
+    <div class="toolnav-inner">
+      <a class="tool" href="/">수행·지필</a>
+      <a class="tool" href="/target-score/">목표점수</a>
+      <a class="tool" href="/rank/" aria-current="page">내신등급</a>
+      <a class="tool" href="/gpa/">학점</a>
+      <a class="tool" href="/gpa-converter/">GPA 환산</a>
+      <span class="toolnav-sep" aria-hidden="true"></span>
+      <a class="tool" href="/todayfood/">급식</a>
+      <a class="tool" href="/todayclass/">시간표</a>
+    </div>
+  </nav>
 
-  <main>
-  <div class="mode-tabs">
-    <button type="button" id="mode9" class="active">9등급제</button>
-    <button type="button" id="mode5">5등급제</button>
-  </div>
+  <main id="main" class="page">
+    <header class="page-head">
+      <p class="eyebrow">석차 → 등급</p>
+      <h1>내신 석차등급 계산기</h1>
+      <p class="lede">수강자 수와 석차만 넣으면 과목별 등급과 단위수를 반영한 평균 등급이 바로 나와요.</p>
+    </header>
 
-  <div class="box">
-    <div class="section-head">
-      <h2 style="font-size:16px;">과목별 입력</h2>
-      <button type="button" class="mini-btn" id="addRowBtn">+ 과목 추가</button>
+    <div class="calc">
+      <section class="card result-card" id="resultCard" data-state="empty" aria-labelledby="avgLabel">
+        <p class="result-label" id="avgLabel">평균 등급</p>
+        <div class="result-main">
+          <p class="result-number"><span class="result-value"><span class="marker" id="avgValue">—</span></span><span class="result-unit">등급</span></p>
+        </div>
+        <p class="result-note" id="avgNote">수강자 수와 석차를 넣으면 바로 계산돼요.</p>
+        <p class="result-meta" id="avgMeta"></p>
+        <div id="resultTableWrap" hidden>
+          <hr class="result-divider">
+          <div class="table-wrap">
+            <table class="table">
+              <caption class="sr-only">과목별 등급</caption>
+              <thead><tr><th scope="col">과목</th><th scope="col" class="num">단위</th><th scope="col" class="num">백분율</th><th scope="col" class="num">등급</th></tr></thead>
+              <tbody id="resultBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <form class="input-stack" id="rankForm" novalidate>
+        <section class="card" aria-labelledby="systemTitle">
+          <div class="card-head"><div><h2 id="systemTitle">등급제</h2><p class="card-sub">본인에게 적용되는 등급제를 골라요.</p></div></div>
+          <div class="seg" role="group" aria-label="등급제">
+            <button type="button" data-system="9" aria-pressed="true">9등급제</button>
+            <button type="button" data-system="5" aria-pressed="false">5등급제</button>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="subjectTitle">
+          <div class="card-head"><div><h2 id="subjectTitle">과목별 입력</h2><p class="card-sub">동점자가 없으면 동점자 수는 1로 둬요.</p></div></div>
+          <div id="rows"></div>
+          <button type="button" class="btn-ghost btn-add" id="addRowBtn">+ 과목 추가</button>
+          <div class="card-foot">
+            <p class="field-hint">입력한 값은 이 기기에만 저장돼요.</p>
+            <button type="button" class="btn-ghost btn-sm" id="resetBtn">초기화</button>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="cutTitle">
+          <div class="card-head"><div><h2 id="cutTitle">9등급제 등급 구간</h2><p class="card-sub">석차백분율이 이 값 이하이면 해당 등급이에요.</p></div></div>
+          <div class="chip-grid" id="cutGrid"></div>
+          <p class="field-hint mt">석차백분율 = (석차 + (동점자 수 − 1) ÷ 2) ÷ 수강자 수 × 100</p>
+        </section>
+      </form>
     </div>
 
-    <div class="calc-scroll">
-      <div class="calc-head">
-        <span>과목명</span><span>단위수</span><span>수강자수</span><span>석차</span><span>동점자</span><span></span>
-      </div>
-      <div id="rows"></div>
-    </div>
-
-    <button type="button" class="btn" id="calcBtn">등급 계산하기</button>
-  </div>
-
-  <section class="content-section">
-    <h2>석차백분율과 내신등급 계산법</h2>
-    <p>동점자가 있으면 중간석차를 사용합니다. 중간석차는 <strong>석차 + (동점자 수 − 1) ÷ 2</strong>, 석차백분율은 중간석차 ÷ 수강자 수 × 100입니다. 과목 평균은 단순 평균이 아니라 각 등급에 단위수를 곱한 가중평균으로 계산합니다.</p>
-    <div class="example-grid"><article><h3>9등급제 예시</h3><p>200명 중 8등, 동점자 1명이면 4.00%로 1등급입니다.</p></article><article><h3>동석차 예시</h3><p>100명 중 10등에 3명이 동점이면 중간석차는 11등, 백분율은 11%입니다.</p></article></div>
-    <h2>5등급제와 9등급제</h2><p>이 계산기는 선택한 구간표에 따라 참고 결과를 보여 줍니다. 교육과정·입학전형 적용 시점과 학교 성적 처리 규정은 반드시 공식 안내를 확인하세요.</p>
-    <details><summary>석차와 동점자 입력에는 어떤 제한이 있나요?</summary><p>석차 + 동점자 수 − 1이 수강자 수를 넘을 수 없습니다.</p></details>
-    <details><summary>단위수를 비우면 어떻게 되나요?</summary><p>계산 편의를 위해 1로 처리합니다. 정확한 가중평균에는 실제 단위수를 입력하세요.</p></details>
-  </section>
-  <nav class="related-tools" aria-label="관련 도구"><h2>관련 도구</h2><a href="/target-score/">목표점수 계산기</a><a href="/gpa/">학점 계산기</a><a href="/blog/rank-percentile/">석차백분율 설명</a><a href="/faq/">자주 묻는 질문</a></nav>
-
-  <div class="box" id="resultBox" style="display:none;">
-    <div class="big-result">
-      <div class="num" id="avgGrade">-</div>
-      <div class="sub" id="avgSub">전 과목 평균 등급</div>
-    </div>
-    <div class="table-container">
-      <table class="record-table compact" id="resultTable">
-        <thead>
-          <tr><th>과목</th><th>단위</th><th>백분율</th><th>등급</th></tr>
-        </thead>
-        <tbody id="resultBody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="box">
-    <h2 style="font-size:16px;margin-bottom:12px;" id="cutTitle">9등급제 등급 구간</h2>
-    <table class="cut-table">
-      <thead><tr><th>등급</th><th>누적 백분율</th><th>비율</th></tr></thead>
-      <tbody id="cutBody"></tbody>
-    </table>
-    <p style="font-size:12px;color:var(--muted);margin-top:12px;line-height:1.7;">
-      석차 백분율 = (석차 + (동점자 수 − 1) ÷ 2) ÷ 수강자 수 × 100<br>
-      동점자가 없으면 동점자 수는 1로 두면 됩니다.
-    </p>
-  </div>
+    <section class="note" aria-labelledby="howTitle">
+      <h2 id="howTitle">석차백분율과 내신등급 계산법</h2>
+      <p>동점자가 있으면 중간석차를 사용합니다. 중간석차는 <strong>석차 + (동점자 수 − 1) ÷ 2</strong>, 석차백분율은 중간석차 ÷ 수강자 수 × 100입니다. 과목 평균은 단순 평균이 아니라 각 등급에 단위수를 곱한 가중평균으로 계산합니다.</p>
+      <div class="examples"><article><h3>9등급제 예시</h3><p>200명 중 8등, 동점자 1명이면 4.00%로 1등급입니다.</p></article><article><h3>동석차 예시</h3><p>100명 중 10등에 3명이 동점이면 중간석차는 11등, 백분율은 11%입니다.</p></article></div>
+      <h2>5등급제와 9등급제</h2>
+      <p>이 계산기는 선택한 구간표에 따라 참고 결과를 보여 줍니다. 교육과정·입학전형 적용 시점과 학교 성적 처리 규정은 반드시 공식 안내를 확인하세요.</p>
+      <details class="faq"><summary>석차와 동점자 입력에는 어떤 제한이 있나요?</summary><p>석차 + 동점자 수 − 1이 수강자 수를 넘을 수 없습니다.</p></details>
+      <details class="faq"><summary>단위수를 비우면 어떻게 되나요?</summary><p>계산 편의를 위해 1로 처리합니다. 정확한 가중평균에는 실제 단위수를 입력하세요.</p></details>
+      <a class="more-link" href="/blog/rank-percentile/">석차백분율 계산 순서 자세히 보기 →</a>
+    </section>
   </main>
 
   <footer class="site-footer">
-    내신 석차등급 계산기 · 2028 대입 개편(5등급제)과 기존 9등급제를 모두 지원합니다.<br>
-    © 2026 성적 계산기. All rights reserved.
+    <p>2028 대입 개편(5등급제)과 기존 9등급제를 모두 지원해요. 계산 결과는 참고용이에요.</p>
+    <nav class="footer-links" aria-label="사이트 정보"><a href="/blog/">계산 가이드</a><a href="/faq/">자주 묻는 질문</a><a href="/guide/">사용법</a><a href="/privacy/">개인정보처리방침</a></nav>
+    <p class="copyright">© 2026 성적 계산기</p>
   </footer>
-  <div class="footer-links">
-    <a href="../guide/">사용법 안내</a>·
-    <a href="../blog/">블로그</a>·
-    <a href="../privacy/">개인정보처리방침</a>
-  </div>
 
+  <template id="subjectTemplate">
+    <div class="subject" role="group">
+      <div class="subject-top">
+        <input class="input" data-field="name" type="text" placeholder="과목명 (예: 수학)" enterkeyhint="next">
+        <button type="button" class="icon-btn" data-remove><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="subject-fields">
+        <label class="field"><span class="field-label">단위수</span><input class="input" data-field="unit" type="number" min="1" step="any" inputmode="decimal" enterkeyhint="next" placeholder="4"></label>
+        <label class="field"><span class="field-label">수강자 수</span><input class="input" data-field="total" type="number" min="1" step="1" inputmode="numeric" enterkeyhint="next" placeholder="200"></label>
+        <label class="field"><span class="field-label">내 석차</span><input class="input" data-field="rank" type="number" min="1" step="1" inputmode="numeric" enterkeyhint="next" placeholder="15"></label>
+        <label class="field"><span class="field-label">동점자 수</span><input class="input" data-field="tie" type="number" min="1" step="1" inputmode="numeric" enterkeyhint="next" placeholder="1"></label>
+      </div>
+      <div class="row-status"><span class="chip" data-chip hidden></span><span class="row-error" data-error hidden>석차 + 동점자 수 − 1이 수강자 수보다 클 수 없어요.</span></div>
+    </div>
+  </template>
+
+  <script src="../calc-core.js"></script>
   <script>
-    // 등급 커트라인: [최대 누적 백분율, 해당 구간 비율(%)]
-    const CUTS = {
-      9: [[4,4],[11,7],[23,12],[40,17],[60,20],[77,17],[89,12],[96,7],[100,4]],
-      5: [[10,10],[34,24],[66,32],[90,24],[100,10]],
-    };
-    let system = 9;
+    (() => {
+      const $ = id => document.getElementById(id);
+      const form = $('rankForm');
+      const card = $('resultCard');
+      const blankRow = () => ({ name: '', unit: '', total: '', rank: '', tie: '1' });
+      const defaultRows = () => (matchMedia('(max-width: 600px)').matches ? [blankRow()] : [blankRow(), blankRow(), blankRow()]);
+      const text = value => (value === null || value === undefined || Number.isNaN(value) ? '' : String(value));
+      const num = value => (value === '' ? null : Number(value));
 
-    const $ = id => document.getElementById(id);
-    const rowsEl = $('rows');
+      function load() {
+        let saved = [];
+        try { saved = JSON.parse(localStorage.getItem('rankRows') || '[]'); } catch {}
+        const rows = Array.isArray(saved) ? saved.filter(row => row && typeof row === 'object').slice(0, 30)
+          .map(row => ({ name: text(row.name), unit: text(row.unit), total: text(row.total), rank: text(row.rank), tie: text(row.tie) || '1' })) : [];
+        let system = 9;
+        try { system = localStorage.getItem('rankSystem') === '5' ? 5 : 9; } catch {}
+        return { rows: rows.length ? rows : defaultRows(), system };
+      }
+      let { rows, system } = load();
 
-    function gradeOf(pct, sys) {
-      const cuts = CUTS[sys];
-      for (let i = 0; i < cuts.length; i++) if (pct <= cuts[i][0]) return i + 1;
-      return cuts.length;
-    }
-
-    function addRow(d = {}) {
-      const div = document.createElement('div');
-      div.className = 'calc-row';
-      div.innerHTML = `
-        <label class="calc-cell name"><span class="mobile-label">과목명</span><input type="text" class="c-name" placeholder="예: 수학" value="${d.name || ''}"></label>
-        <label class="calc-cell"><span class="mobile-label">단위수</span><input type="number" class="c-unit" min="1" placeholder="4" value="${d.unit || ''}"></label>
-        <label class="calc-cell"><span class="mobile-label">수강자 수</span><input type="number" class="c-total" min="1" placeholder="200" value="${d.total || ''}"></label>
-        <label class="calc-cell"><span class="mobile-label">내 석차</span><input type="number" class="c-rank" min="1" placeholder="15" value="${d.rank || ''}"></label>
-        <label class="calc-cell"><span class="mobile-label">동점자 수</span><input type="number" class="c-tie" min="1" value="${d.tie || 1}"></label>
-        <button type="button" class="del" title="삭제">✕</button>`;
-      div.querySelector('.del').onclick = () => { div.remove(); save(); };
-      div.querySelectorAll('input').forEach(i => i.addEventListener('change', save));
-      rowsEl.appendChild(div);
-    }
-
-    function readRows() {
-      return [...rowsEl.children].map(r => ({
-        name: r.querySelector('.c-name').value.trim(),
-        unit: parseFloat(r.querySelector('.c-unit').value),
-        total: parseFloat(r.querySelector('.c-total').value),
-        rank: parseFloat(r.querySelector('.c-rank').value),
-        tie: parseFloat(r.querySelector('.c-tie').value) || 1,
-      }));
-    }
-
-    function save() {
-      localStorage.setItem('rankRows', JSON.stringify(readRows()));
-      localStorage.setItem('rankSystem', system);
-    }
-
-    function renderCuts() {
-      $('cutTitle').textContent = system + '등급제 등급 구간';
-      $('cutBody').innerHTML = CUTS[system]
-        .map((c, i) => `<tr data-g="${i + 1}"><td>${i + 1}등급</td><td>~ ${c[0]}%</td><td>${c[1]}%</td></tr>`)
-        .join('');
-    }
-
-    function calc() {
-      const inputRows = readRows();
-      const invalid = inputRows.some(r => r.total > 0 && r.rank > 0 && (r.rank > r.total || r.tie < 1 || r.rank + r.tie - 1 > r.total));
-      if (invalid) { alert('석차 + 동점자 수 − 1은 수강자 수를 넘을 수 없어요.'); return; }
-      const rows = inputRows.filter(r => r.total > 0 && r.rank > 0 && r.rank <= r.total);
-      if (!rows.length) {
-        alert('수강자 수와 석차를 정확히 입력해주세요. (석차는 수강자 수보다 클 수 없어요)');
-        return;
+      // 저장 형식은 이전 버전과 같다: 숫자 칸은 숫자(없으면 null), 동점자는 기본 1
+      function save() {
+        const out = rows.map(row => ({ name: row.name.trim(), unit: num(row.unit), total: num(row.total), rank: num(row.rank), tie: num(row.tie) || 1 }));
+        try { localStorage.setItem('rankRows', JSON.stringify(out)); localStorage.setItem('rankSystem', String(system)); } catch {}
       }
 
-      let sumU = 0, sumGU = 0;
-      $('resultBody').innerHTML = rows.map(r => {
-        const pct = (r.rank + (r.tie - 1) / 2) / r.total * 100;
-        const g = gradeOf(pct, system);
-        const unit = r.unit > 0 ? r.unit : 1;
-        sumU += unit; sumGU += g * unit;
-        return `<tr><td class="subject">${r.name || '(과목)'}</td><td>${unit}</td>
-                <td>${pct.toFixed(2)}%</td><td>${g}등급</td></tr>`;
-      }).join('');
+      function renderRows() {
+        $('rows').replaceChildren(...rows.map((item, index) => {
+          const node = $('subjectTemplate').content.firstElementChild.cloneNode(true);
+          node.dataset.index = index;
+          node.setAttribute('aria-label', `${index + 1}번째 과목`);
+          node.querySelectorAll('input').forEach(input => {
+            input.value = item[input.dataset.field];
+            input.dataset.index = index;
+            const label = input.closest('.field')?.querySelector('.field-label').textContent || '과목명';
+            input.setAttribute('aria-label', `${index + 1}번째 과목 ${label}`);
+          });
+          node.querySelector('[data-remove]').setAttribute('aria-label', `${index + 1}번째 과목 삭제`);
+          return node;
+        }));
+      }
 
-      const avg = sumGU / sumU;
-      $('avgGrade').textContent = avg.toFixed(2);
-      $('avgSub').textContent = `전 과목 평균 등급 (단위수 ${sumU} 반영, ${system}등급제)`;
-      $('resultBox').style.display = 'block';
+      function renderCuts(hit) {
+        const cuts = RANK_CUTS[system];
+        $('cutTitle').textContent = `${system}등급제 등급 구간`;
+        $('cutGrid').replaceChildren(...cuts.map((max, i) => {
+          const chip = document.createElement('span');
+          chip.className = 'chip' + (hit === i + 1 ? ' is-hit' : '');
+          chip.append(Object.assign(document.createElement('b'), { textContent: `${i + 1}등급` }), ` ~${max}%`);
+          return chip;
+        }));
+      }
 
-      // 커트라인 표에서 평균 등급 구간 강조
-      document.querySelectorAll('.cut-table tr.hit').forEach(t => t.classList.remove('hit'));
-      const hit = document.querySelector(`.cut-table tr[data-g="${Math.round(avg)}"]`);
-      if (hit) hit.classList.add('hit');
-      save();
-    }
+      function show(stateName, { value = '—', note = '', meta = '', mini = '' }) {
+        const wasDone = card.dataset.state === 'done';
+        card.dataset.state = stateName;
+        $('avgValue').textContent = value;
+        $('avgNote').textContent = note;
+        $('avgMeta').textContent = meta;
+        if (stateName === 'done' && !wasDone) {
+          card.classList.remove('is-fresh');
+          void card.offsetWidth;
+          card.classList.add('is-fresh');
+        }
+        setMiniResult(mini);
+      }
 
-    function setSystem(s) {
-      system = s;
-      $('mode9').classList.toggle('active', s === 9);
-      $('mode5').classList.toggle('active', s === 5);
-      renderCuts();
-      if ($('resultBox').style.display === 'block') calc();
-      save();
-    }
+      function update() {
+        save();
+        form.querySelectorAll('[data-system]').forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.system) === system)));
+        const results = [];
+        let invalid = 0;
+        rows.forEach((row, index) => {
+          const node = $('rows').children[index];
+          const parsed = { total: num(row.total), rank: num(row.rank), tie: row.tie === '' ? 1 : num(row.tie), unit: num(row.unit) };
+          const status = rankRowStatus(parsed);
+          const chip = node.querySelector('[data-chip]');
+          node.querySelector('[data-error]').hidden = status !== 'invalid';
+          ['rank', 'tie', 'total'].forEach(field => node.querySelector(`[data-field="${field}"]`).setAttribute('aria-invalid', String(status === 'invalid')));
+          chip.hidden = status !== 'ok';
+          if (status === 'invalid') invalid++;
+          if (status !== 'ok') return;
+          const pct = rankPercentile(parsed.rank, parsed.tie, parsed.total);
+          const grade = rankGrade(pct, system);
+          chip.dataset.grade = rankTier(grade, system);
+          chip.textContent = `${formatNumber(pct)}% · ${grade}등급`;
+          results.push({ name: row.name.trim() || `과목 ${index + 1}`, unit: parsed.unit > 0 ? parsed.unit : 1, pct, grade });
+        });
 
-    $('mode9').onclick = () => setSystem(9);
-    $('mode5').onclick = () => setSystem(5);
-    $('addRowBtn').onclick = () => addRow();
-    $('calcBtn').onclick = calc;
+        $('resultTableWrap').hidden = !results.length;
+        if (!results.length) {
+          renderCuts(0);
+          return show(invalid ? 'warn' : 'empty', { note: invalid ? '석차 입력을 확인해 주세요.' : '수강자 수와 석차를 넣으면 바로 계산돼요.' });
+        }
+        const units = results.reduce((sum, r) => sum + r.unit, 0);
+        const avg = results.reduce((sum, r) => sum + r.grade * r.unit, 0) / units;
+        renderCuts(Math.round(avg));
+        $('resultBody').replaceChildren(...results.map(r => {
+          const tr = document.createElement('tr');
+          const chip = Object.assign(document.createElement('span'), { className: 'chip', textContent: `${r.grade}등급` });
+          chip.dataset.grade = rankTier(r.grade, system);
+          const cells = [r.name, formatNumber(r.unit), `${formatNumber(r.pct)}%`].map((value, i) => Object.assign(document.createElement('td'), { textContent: value, className: i ? 'num' : '' }));
+          const gradeCell = Object.assign(document.createElement('td'), { className: 'num' });
+          gradeCell.append(chip);
+          tr.append(...cells, gradeCell);
+          return tr;
+        }));
+        show('done', {
+          value: avg.toFixed(2),
+          note: invalid ? `석차 입력이 잘못된 과목 ${invalid}개는 빼고 계산했어요.` : '과목별 등급에 단위수를 곱해 평균을 냈어요.',
+          meta: `단위수 합 ${formatNumber(units)} · 과목 ${results.length}개 · ${system}등급제`,
+          mini: `평균 ${avg.toFixed(2)}등급`
+        });
+      }
 
-    // 테마
-    const themeToggle = $('themeToggle');
-    function applyTheme(t) {
-      document.documentElement.setAttribute('data-theme', t);
-      themeToggle.textContent = t === 'dark' ? '라이트 모드' : '다크 모드';
-      localStorage.setItem('theme', t);
-    }
-    applyTheme(document.documentElement.getAttribute('data-theme') || 'light');
-    themeToggle.onclick = () =>
-      applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+      form.addEventListener('submit', event => event.preventDefault());
+      form.addEventListener('input', event => {
+        const input = event.target;
+        if (input.dataset.index === undefined) return;
+        rows[input.dataset.index][input.dataset.field] = input.value;
+        update();
+      });
+      form.addEventListener('click', event => {
+        const systemButton = event.target.closest('[data-system]');
+        const remove = event.target.closest('[data-remove]');
+        if (systemButton) system = Number(systemButton.dataset.system);
+        else if (remove) { rows.splice(Number(remove.closest('.subject').dataset.index), 1); renderRows(); }
+        else return;
+        update();
+      });
+      $('addRowBtn').addEventListener('click', () => {
+        rows.push(blankRow());
+        renderRows();
+        update();
+        $('rows').lastElementChild.querySelector('input').focus();
+      });
+      armReset($('resetBtn'), () => { rows = defaultRows(); renderRows(); update(); });
 
-    // 초기화
-    const saved = JSON.parse(localStorage.getItem('rankRows') || '[]');
-    (saved.length ? saved : (window.matchMedia('(max-width: 600px)').matches ? [{}] : [{}, {}, {}])).forEach(addRow);
-    setSystem(parseInt(localStorage.getItem('rankSystem')) === 5 ? 5 : 9);
-
-    // 자체 점검 (콘솔)
-    console.assert(gradeOf(4, 9) === 1 && gradeOf(4.01, 9) === 2, '9등급 1등급 컷');
-    console.assert(gradeOf(100, 9) === 9 && gradeOf(96, 9) === 8, '9등급 하위 컷');
-    console.assert(gradeOf(10, 5) === 1 && gradeOf(10.1, 5) === 2, '5등급 1등급 컷');
-    console.assert(gradeOf(100, 5) === 5, '5등급 하위 컷');
+      renderRows();
+      update();
+    })();
   </script>
 </body>
 </html>
