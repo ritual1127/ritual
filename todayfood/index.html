@@ -20,8 +20,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <meta property="og:title" content="오늘의 급식 - 우리학교 급식표 조회">
   <meta property="og:description" content="학교 이름만 검색하면 오늘의 급식 메뉴를 바로 확인할 수 있어요.">
   <meta property="og:url" content="https://naver1.cloud/todayfood/">
-  <meta name="theme-color" content="#4f46e5">
+  <meta name="theme-color" content="#FAF7F0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#14161D" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="../icon-192.png">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="../styles.css">
   <script src="../site-nav.js"></script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6088412169158396"
@@ -33,165 +36,194 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
-
-  <div class="top-bar">
-    <h1><span>오늘의</span> 급식</h1>
-  </div>
-  <p class="tagline">우리 학교 급식 메뉴를 검색 한 번으로 확인하세요</p>
-
-
-  <div class="box" id="schoolPicker"></div>
-
-  <div class="box" id="mealBox" style="display:none;">
-    <div class="date-nav">
-      <button type="button" class="btn-outline" id="prevDayBtn">◀</button>
-      <span class="date-label" id="dateLabel"></span>
-      <button type="button" class="btn-outline" id="nextDayBtn">▶</button>
+  <a class="skip-link" href="#main">본문 바로가기</a>
+  <header class="appbar">
+    <div class="appbar-inner">
+      <a class="logo" href="/"><span class="logo-mark">성적</span>계산기</a>
+      <button type="button" class="theme-toggle" aria-pressed="false" aria-label="다크 모드">
+        <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
+        <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+      </button>
     </div>
-    <div class="meal-tabs" id="mealTabs"></div>
-    <div id="dishList"><div class="empty-hint">학교를 선택하면 급식이 표시돼요.</div></div>
-
-    <div class="notify-row">
-      <button type="button" class="mini-btn" id="notifyToggleBtn">🔔 급식 알림 받기</button>
-      <span class="notify-hint">매일 오전 11시 30분에 오늘 중식을 알려드려요. (iOS는 홈 화면에 추가해야 백그라운드에서도 알림이 와요)</span>
+  </header>
+  <nav class="toolnav" aria-label="도구">
+    <div class="toolnav-inner">
+      <a class="tool" href="/">수행·지필</a>
+      <a class="tool" href="/target-score/">목표점수</a>
+      <a class="tool" href="/rank/">내신등급</a>
+      <a class="tool" href="/gpa/">학점</a>
+      <a class="tool" href="/gpa-converter/">GPA 환산</a>
+      <span class="toolnav-sep" aria-hidden="true"></span>
+      <a class="tool" href="/todayfood/" aria-current="page">급식</a>
+      <a class="tool" href="/todayclass/">시간표</a>
     </div>
-  </div>
+  </nav>
+
+  <main id="main" class="page page-narrow">
+    <header class="page-head">
+      <p class="eyebrow">우리 학교 급식</p>
+      <h1>오늘의 급식</h1>
+      <p class="lede">학교 이름을 한 번만 검색하면 다음부터 바로 오늘 급식이 보여요.</p>
+    </header>
+
+    <section class="card" id="schoolPicker" aria-label="학교 선택"></section>
+
+    <section class="card mt" id="mealBox" aria-labelledby="dateLabel" hidden>
+      <div class="date-nav">
+        <button type="button" class="icon-btn nav-btn" id="prevDayBtn" aria-label="전날 급식"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <h2 class="date-label" id="dateLabel"></h2>
+        <button type="button" class="icon-btn nav-btn" id="nextDayBtn" aria-label="다음날 급식"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+      <div class="today-row"><button type="button" class="btn-ghost btn-sm" id="todayBtn" hidden>오늘로 돌아가기</button></div>
+      <div class="seg mt" id="mealTabs" role="group" aria-label="끼니" hidden></div>
+      <div id="dishList" aria-live="polite"></div>
+      <div class="switch-row" id="notifyRow">
+        <button type="button" class="switch" id="notifyToggleBtn" aria-pressed="false"><span class="switch-track" aria-hidden="true"></span><span id="notifyLabel">급식 알림 받기</span></button>
+        <p class="switch-hint" id="notifyHint" aria-live="polite">매일 오전 11시 30분에 오늘 중식을 알려드려요. iOS는 홈 화면에 추가해야 알림이 와요.</p>
+      </div>
+    </section>
+  </main>
 
   <footer class="site-footer">
-    오늘의 급식 · NEIS 교육정보 개방포털 데이터를 기반으로 제공됩니다.<br>
-    © 2026 성적 계산기. All rights reserved.
+    <p>NEIS 교육정보 개방포털 데이터를 기반으로 제공돼요.</p>
+    <nav class="footer-links" aria-label="사이트 정보"><a href="/blog/">계산 가이드</a><a href="/faq/">자주 묻는 질문</a><a href="/guide/">사용법</a><a href="/privacy/">개인정보처리방침</a></nav>
+    <p class="copyright">© 2026 성적 계산기</p>
   </footer>
-  <div class="footer-links">
-    <a href="../guide/">사용법 안내</a>·
-    <a href="../blog/">블로그</a>·
-    <a href="../privacy/">개인정보처리방침</a>
-  </div>
 
   <script src="../neis-common.js"></script>
   <script>
-    let currentDate = new Date();
-    let currentMealCode = defaultMealCode();
-    let currentSlots = [];
+    (() => {
+      const $ = id => document.getElementById(id);
+      const DEFAULT_HINT = $('notifyHint').textContent;
+      let school = null;
+      let currentDate = new Date();
+      let mealCode = defaultMealCode();
+      let slots = [];
+      let requestId = 0;
 
-    function renderTabsActive() {
-      document.querySelectorAll('#mealTabs button').forEach(b => b.classList.toggle('active', b.dataset.code === currentMealCode));
-    }
-
-    function renderMealSlot() {
-      const listEl = document.getElementById('dishList');
-      const slot = currentSlots.find(s => s.code === currentMealCode);
-      listEl.innerHTML = slot && slot.items.length
-        ? `<ul class="dish-list">${slot.items.map(i => `<li>${i}</li>`).join('')}</ul>`
-        : '<div class="empty-hint">급식 정보가 없습니다.</div>';
-    }
-
-    async function renderMeal(school) {
-      document.getElementById('dateLabel').textContent = neisDateLabel(currentDate);
-      const listEl = document.getElementById('dishList');
-      const tabsEl = document.getElementById('mealTabs');
-      listEl.innerHTML = '<div class="empty-hint">불러오는 중...</div>';
-      tabsEl.innerHTML = '';
-
-      const result = await fetchNeisMeal(school, neisYmd(currentDate)).catch(() => ({ slots: [] }));
-      currentSlots = result.slots;
-      if (!currentSlots.length) {
-        listEl.innerHTML = '<div class="empty-hint">이 날짜엔 급식 정보가 없어요. (주말·방학 등)</div>';
-        return;
+      function status(text) {
+        $('dishList').replaceChildren(Object.assign(document.createElement('p'), { className: 'status', textContent: text }));
       }
-      if (!currentSlots.some(s => s.code === currentMealCode)) currentMealCode = currentSlots[0].code;
-      tabsEl.innerHTML = currentSlots.map(s => `<button type="button" data-code="${s.code}">${s.label}</button>`).join('');
-      tabsEl.querySelectorAll('button').forEach(b => b.onclick = () => { currentMealCode = b.dataset.code; renderTabsActive(); renderMealSlot(); });
-      renderTabsActive();
-      renderMealSlot();
-    }
 
-    document.getElementById('prevDayBtn').onclick = () => {
-      currentDate.setDate(currentDate.getDate() - 1);
-      renderMeal(loadNeisSchool());
-    };
-    document.getElementById('nextDayBtn').onclick = () => {
-      currentDate.setDate(currentDate.getDate() + 1);
-      renderMeal(loadNeisSchool());
-    };
-
-    // --- 급식 알림 (Web Push) ---
-    const PUSH_API = 'https://seongjeok-feedback-api.smilepea.workers.dev';
-    const VAPID_PUBLIC_KEY = 'BMK5uCsTJJQZYXyFmwW-tepqmX-uldSkUa4GWijuK7TB_MXeU8ZYZYS5KLeWYpPsijZ_SVeZhlCcyqwMQBJHNxA';
-
-    function urlBase64ToUint8Array(base64Url) {
-      const padding = '='.repeat((4 - base64Url.length % 4) % 4);
-      const base64 = (base64Url + padding).replace(/-/g, '+').replace(/_/g, '/');
-      const raw = atob(base64);
-      return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
-    }
-
-    function setNotifyBtnState(subscribed) {
-      const btn = document.getElementById('notifyToggleBtn');
-      btn.classList.toggle('active', subscribed);
-      btn.textContent = subscribed ? '🔔 알림 켜짐 (끄려면 클릭)' : '🔔 급식 알림 받기';
-    }
-
-    async function refreshNotifyBtnState() {
-      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        document.getElementById('notifyToggleBtn').style.display = 'none';
-        return;
+      function renderDate() {
+        const dayOf = date => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        const offset = Math.round((dayOf(currentDate) - dayOf(new Date())) / 86400000);
+        const sub = Object.assign(document.createElement('span'), { className: 'date-sub', textContent: { '-1': '어제', 0: '오늘', 1: '내일' }[offset] || '' });
+        $('dateLabel').replaceChildren(neisDateLabel(currentDate), sub);
+        $('todayBtn').hidden = offset === 0;
       }
-      const reg = await navigator.serviceWorker.ready;
-      const sub = await reg.pushManager.getSubscription();
-      setNotifyBtnState(!!sub);
-    }
 
-    async function enableMealNotify(school) {
-      const permission = await Notification.requestPermission();
-      if (permission !== 'granted') { alert('알림을 켜려면 브라우저 설정에서 권한을 허용해주세요.'); return; }
-      const reg = await navigator.serviceWorker.ready;
-      const sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      function renderSlot() {
+        $('mealTabs').querySelectorAll('button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.code === mealCode)));
+        const slot = slots.find(item => item.code === mealCode);
+        if (!slot || !slot.items.length) return status('급식 정보가 없어요.');
+        const list = Object.assign(document.createElement('ul'), { className: 'dish-list' });
+        list.append(...slot.items.map(item => Object.assign(document.createElement('li'), { textContent: item })));
+        $('dishList').replaceChildren(list);
+      }
+
+      async function loadMeal() {
+        renderDate();
+        $('mealTabs').hidden = true;
+        status('불러오는 중…');
+        const id = ++requestId;
+        const result = await fetchNeisMeal(school, neisYmd(currentDate)).catch(() => null);
+        if (id !== requestId) return;
+        if (!result) return status('급식 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.');
+        slots = result.slots;
+        if (!slots.length) return status('이 날은 급식 정보가 없어요. (주말·방학 등)');
+        if (!slots.some(item => item.code === mealCode)) mealCode = slots[0].code;
+        $('mealTabs').replaceChildren(...slots.map(item => {
+          const button = Object.assign(document.createElement('button'), { type: 'button', textContent: item.label });
+          button.dataset.code = item.code;
+          return button;
+        }));
+        $('mealTabs').hidden = false;
+        renderSlot();
+      }
+
+      function moveDay(days) {
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + days);
+        loadMeal();
+      }
+      $('prevDayBtn').onclick = () => moveDay(-1);
+      $('nextDayBtn').onclick = () => moveDay(1);
+      $('todayBtn').onclick = () => { currentDate = new Date(); mealCode = defaultMealCode(); loadMeal(); };
+      $('mealTabs').addEventListener('click', event => {
+        const button = event.target.closest('button');
+        if (!button) return;
+        mealCode = button.dataset.code;
+        renderSlot();
       });
-      await saveNotifySchool(school);
-      await fetch(`${PUSH_API}/subscribe`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subscription: sub.toJSON() })
-      }).catch(() => {});
-      setNotifyBtnState(true);
-    }
 
-    async function disableMealNotify() {
-      const reg = await navigator.serviceWorker.ready;
-      const sub = await reg.pushManager.getSubscription();
-      if (sub) {
-        await fetch(`${PUSH_API}/unsubscribe`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ endpoint: sub.endpoint })
-        }).catch(() => {});
-        await sub.unsubscribe();
+      // --- 급식 알림 (Web Push) ---
+      const PUSH_API = 'https://seongjeok-feedback-api.smilepea.workers.dev';
+      const VAPID_PUBLIC_KEY = 'BMK5uCsTJJQZYXyFmwW-tepqmX-uldSkUa4GWijuK7TB_MXeU8ZYZYS5KLeWYpPsijZ_SVeZhlCcyqwMQBJHNxA';
+      const notifyButton = $('notifyToggleBtn');
+
+      function urlBase64ToUint8Array(base64Url) {
+        const padding = '='.repeat((4 - base64Url.length % 4) % 4);
+        const base64 = (base64Url + padding).replace(/-/g, '+').replace(/_/g, '/');
+        return Uint8Array.from([...atob(base64)].map(c => c.charCodeAt(0)));
       }
-      await clearNotifySchool();
-      setNotifyBtnState(false);
-    }
-
-    document.getElementById('notifyToggleBtn').onclick = async () => {
-      const school = loadNeisSchool();
-      if (!school) { alert('먼저 학교를 선택해주세요.'); return; }
-      const reg = await navigator.serviceWorker.ready;
-      const sub = await reg.pushManager.getSubscription();
-      try {
-        if (sub) await disableMealNotify();
-        else await enableMealNotify(school);
-      } catch {
-        alert('알림 등록에 실패했어요. 잠시 후 다시 시도해주세요.');
+      // 서비스워커가 준비되지 않으면 영원히 기다리지 않고 5초 뒤 포기한다.
+      function workerReady() {
+        return Promise.race([navigator.serviceWorker.ready, new Promise((_, reject) => setTimeout(() => reject(new Error('sw-timeout')), 5000))]);
       }
-    };
+      function setNotify(on) {
+        notifyButton.setAttribute('aria-pressed', String(on));
+        $('notifyLabel').textContent = on ? '급식 알림 켜짐' : '급식 알림 받기';
+      }
 
-    renderSchoolPicker(document.getElementById('schoolPicker'), (school) => {
-      document.title = `오늘의 급식 - ${school.schoolName} 급식표 | 성적 계산기`;
-      document.getElementById('mealBox').style.display = 'block';
-      renderMeal(school);
-    });
-    refreshNotifyBtnState();
+      async function refreshNotify() {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) { $('notifyRow').hidden = true; return; }
+        try { setNotify(!!(await (await workerReady()).pushManager.getSubscription())); } catch { setNotify(false); }
+      }
+
+      async function enableNotify() {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') { $('notifyHint').textContent = '알림을 켜려면 브라우저 설정에서 알림 권한을 허용해 주세요.'; return; }
+        const registration = await workerReady();
+        const subscription = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) });
+        await saveNotifySchool(school);
+        await fetch(`${PUSH_API}/subscribe`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ subscription: subscription.toJSON() }) }).catch(() => {});
+        setNotify(true);
+        $('notifyHint').textContent = DEFAULT_HINT;
+      }
+
+      async function disableNotify() {
+        const registration = await workerReady();
+        const subscription = await registration.pushManager.getSubscription();
+        if (subscription) {
+          await fetch(`${PUSH_API}/unsubscribe`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ endpoint: subscription.endpoint }) }).catch(() => {});
+          await subscription.unsubscribe();
+        }
+        await clearNotifySchool();
+        setNotify(false);
+        $('notifyHint').textContent = DEFAULT_HINT;
+      }
+
+      notifyButton.addEventListener('click', async () => {
+        if (!school) return;
+        notifyButton.disabled = true;
+        try {
+          if (notifyButton.getAttribute('aria-pressed') === 'true') await disableNotify();
+          else await enableNotify();
+        } catch {
+          $('notifyHint').textContent = '알림 설정에 실패했어요. 잠시 후 다시 시도해 주세요.';
+        } finally {
+          notifyButton.disabled = false;
+        }
+      });
+
+      renderSchoolPicker($('schoolPicker'), picked => {
+        school = picked;
+        $('mealBox').hidden = !picked;
+        document.title = picked ? `오늘의 급식 - ${picked.schoolName} 급식표 | 성적 계산기` : '오늘의 급식 - 우리학교 급식표 조회 | 성적 계산기';
+        if (picked) loadMeal();
+      });
+      refreshNotify();
+    })();
   </script>
 </body>
 </html>

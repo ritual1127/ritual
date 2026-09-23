@@ -20,8 +20,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <meta property="og:title" content="오늘의 시간표 - 우리학교 시간표 조회">
   <meta property="og:description" content="학교·학년·반만 입력하면 오늘의 시간표를 바로 확인할 수 있어요.">
   <meta property="og:url" content="https://naver1.cloud/todayclass/">
-  <meta name="theme-color" content="#4f46e5">
+  <meta name="theme-color" content="#FAF7F0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#14161D" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="../icon-192.png">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="../styles.css">
   <script src="../site-nav.js"></script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6088412169158396"
@@ -33,140 +36,188 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
-
-  <div class="top-bar">
-    <h1><span>오늘의</span> 시간표</h1>
-  </div>
-  <p class="tagline">학교·학년·반만 입력하면 오늘 시간표를 바로 볼 수 있어요</p>
-
-
-  <div class="box" id="schoolPicker"></div>
-
-  <div class="box" id="classBox" style="display:none;">
-    <div class="class-inputs" id="classInputs">
-      <div class="half"><label>학년</label><input type="number" id="gradeInput" min="1" max="6" value="1"></div>
-      <div class="half"><label>반</label><input type="number" id="classInput" min="1" max="30" value="1"></div>
-      <div class="half" id="deptField" style="display:none;"><label>학과(선택)</label><input type="text" id="deptInput" placeholder="예: 전자과"></div>
+  <a class="skip-link" href="#main">본문 바로가기</a>
+  <header class="appbar">
+    <div class="appbar-inner">
+      <a class="logo" href="/"><span class="logo-mark">성적</span>계산기</a>
+      <button type="button" class="theme-toggle" aria-pressed="false" aria-label="다크 모드">
+        <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
+        <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+      </button>
     </div>
-    <button type="button" class="btn-outline" id="applyClassBtn" style="margin:0 0 16px;">시간표 조회</button>
+  </header>
+  <nav class="toolnav" aria-label="도구">
+    <div class="toolnav-inner">
+      <a class="tool" href="/">수행·지필</a>
+      <a class="tool" href="/target-score/">목표점수</a>
+      <a class="tool" href="/rank/">내신등급</a>
+      <a class="tool" href="/gpa/">학점</a>
+      <a class="tool" href="/gpa-converter/">GPA 환산</a>
+      <span class="toolnav-sep" aria-hidden="true"></span>
+      <a class="tool" href="/todayfood/">급식</a>
+      <a class="tool" href="/todayclass/" aria-current="page">시간표</a>
+    </div>
+  </nav>
 
-    <div class="mode-tabs">
-      <button type="button" id="dayModeBtn" class="active">일간</button>
-      <button type="button" id="weekModeBtn">주간</button>
-    </div>
-    <div class="date-nav" id="dayNav">
-      <button type="button" class="btn-outline" id="prevDayBtn">◀</button>
-      <span class="date-label" id="dateLabel"></span>
-      <button type="button" class="btn-outline" id="nextDayBtn">▶</button>
-    </div>
-    <div class="date-nav" id="weekNav" style="display:none;">
-      <button type="button" class="btn-outline" id="prevWeekBtn">◀</button>
-      <span class="date-label" id="weekLabel"></span>
-      <button type="button" class="btn-outline" id="nextWeekBtn">▶</button>
-    </div>
-    <div id="periodList"><div class="empty-hint">학교와 학년·반을 입력하면 시간표가 표시돼요.</div></div>
-    <div id="weekGrid" class="week-grid" style="display:none;"></div>
-  </div>
+  <main id="main" class="page page-narrow">
+    <header class="page-head">
+      <p class="eyebrow">우리 반 시간표</p>
+      <h1>오늘의 시간표</h1>
+      <p class="lede">학교와 학년·반을 한 번만 정하면 다음부터 바로 보여요.</p>
+    </header>
+
+    <section class="card" id="schoolPicker" aria-label="학교 선택"></section>
+
+    <section class="card mt" id="classBox" aria-labelledby="rangeLabel" hidden>
+      <div class="class-fields">
+        <div class="field"><label class="field-label" for="gradeInput">학년</label><input class="input" id="gradeInput" type="number" min="1" max="6" step="1" inputmode="numeric" enterkeyhint="next"></div>
+        <div class="field"><label class="field-label" for="classInput">반</label><input class="input" id="classInput" type="number" min="1" max="30" step="1" inputmode="numeric" enterkeyhint="done"></div>
+        <div class="field" id="deptField" hidden><label class="field-label" for="deptInput">학과 (선택)</label><input class="input" id="deptInput" type="text" placeholder="예: 전자과" enterkeyhint="done"></div>
+      </div>
+      <div class="seg mt" role="group" aria-label="보기 방식">
+        <button type="button" data-view="day" aria-pressed="true">하루</button>
+        <button type="button" data-view="week" aria-pressed="false">한 주</button>
+      </div>
+      <div class="date-nav mt">
+        <button type="button" class="icon-btn nav-btn" id="prevBtn" aria-label="이전"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <h2 class="date-label" id="rangeLabel"></h2>
+        <button type="button" class="icon-btn nav-btn" id="nextBtn" aria-label="다음"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+      <div class="today-row"><button type="button" class="btn-ghost btn-sm" id="todayBtn" hidden>오늘로 돌아가기</button></div>
+      <div id="timetable" aria-live="polite"></div>
+    </section>
+  </main>
 
   <footer class="site-footer">
-    오늘의 시간표 · NEIS 교육정보 개방포털 데이터를 기반으로 제공됩니다.<br>
-    © 2026 성적 계산기. All rights reserved.
+    <p>NEIS 교육정보 개방포털 데이터를 기반으로 제공돼요.</p>
+    <nav class="footer-links" aria-label="사이트 정보"><a href="/blog/">계산 가이드</a><a href="/faq/">자주 묻는 질문</a><a href="/guide/">사용법</a><a href="/privacy/">개인정보처리방침</a></nav>
+    <p class="copyright">© 2026 성적 계산기</p>
   </footer>
-  <div class="footer-links">
-    <a href="../guide/">사용법 안내</a>·
-    <a href="../blog/">블로그</a>·
-    <a href="../privacy/">개인정보처리방침</a>
-  </div>
 
   <script src="../neis-common.js"></script>
   <script>
-    let currentDate = new Date();
-    let currentSchool = null;
-    let viewMode = localStorage.getItem('neisTimetableMode') || 'day';
+    (() => {
+      const $ = id => document.getElementById(id);
+      const DAYS = ['월', '화', '수', '목', '금'];
+      const el = (tag, props = {}) => Object.assign(document.createElement(tag), props);
+      const dayOf = date => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const addDays = (date, days) => new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
+      const clampInt = (value, min, max) => Math.min(max, Math.max(min, Math.round(Number(value)) || min));
+      let school = null;
+      let currentDate = dayOf(new Date());
+      let view = 'day';
+      try { view = localStorage.getItem('neisTimetableMode') === 'week' ? 'week' : 'day'; } catch {}
+      let requestId = 0;
 
-    const WEEKDAY_LABELS = ['월', '화', '수', '목', '금'];
+      const status = text => $('timetable').replaceChildren(el('p', { className: 'status', textContent: text }));
 
-    function setViewMode(mode) {
-      viewMode = mode;
-      localStorage.setItem('neisTimetableMode', mode);
-      document.getElementById('dayModeBtn').classList.toggle('active', mode === 'day');
-      document.getElementById('weekModeBtn').classList.toggle('active', mode === 'week');
-      document.getElementById('dayNav').style.display = mode === 'day' ? 'flex' : 'none';
-      document.getElementById('weekNav').style.display = mode === 'week' ? 'flex' : 'none';
-      document.getElementById('periodList').style.display = mode === 'day' ? 'block' : 'none';
-      document.getElementById('weekGrid').style.display = mode === 'week' ? 'flex' : 'none';
-      if (currentSchool) renderTimetable();
-    }
-
-    function renderPeriodList(periods) {
-      const el = document.getElementById('periodList');
-      el.innerHTML = periods.length
-        ? `<ul class="period-list">${periods.map(p => `<li><span class="period-no">${p.period}</span>${p.subject}</li>`).join('')}</ul>`
-        : '<div class="empty-hint">이 날짜엔 시간표 정보가 없어요. (주말·방학 등)</div>';
-    }
-
-    function renderWeekGrid(byDate, mondayDate) {
-      const el = document.getElementById('weekGrid');
-      const todayYmd = neisYmd(new Date());
-      el.innerHTML = WEEKDAY_LABELS.map((label, i) => {
-        const d = new Date(mondayDate);
-        d.setDate(mondayDate.getDate() + i);
-        const ymd = neisYmd(d);
-        const periods = byDate[ymd] || [];
-        const isToday = ymd === todayYmd;
-        const body = periods.length
-          ? `<ul class="week-period-list">${periods.map(p => `<li><span class="period-no">${p.period}</span>${p.subject}</li>`).join('')}</ul>`
-          : '<div class="empty-hint">정보 없음</div>';
-        return `<div class="week-day">
-          <div class="week-day-head${isToday ? ' today' : ''}">${label} ${d.getMonth() + 1}/${d.getDate()}</div>
-          ${body}
-        </div>`;
-      }).join('');
-    }
-
-    async function renderTimetable() {
-      if (!currentSchool) return;
-      const grade = +document.getElementById('gradeInput').value || 1;
-      const classNum = +document.getElementById('classInput').value || 1;
-      const department = document.getElementById('deptInput').value.trim();
-      saveNeisClass({ grade, classNum, department });
-
-      if (viewMode === 'week') {
-        const monday = mondayOf(currentDate);
-        const friday = new Date(monday); friday.setDate(monday.getDate() + 4);
-        document.getElementById('weekLabel').textContent =
-          `${monday.getMonth() + 1}/${monday.getDate()} ~ ${friday.getMonth() + 1}/${friday.getDate()}`;
-        document.getElementById('weekGrid').innerHTML = '<div class="empty-hint">불러오는 중...</div>';
-        const byDate = await fetchNeisWeekTimetable(currentSchool, monday, grade, classNum, department).catch(() => ({}));
-        renderWeekGrid(byDate, monday);
-        return;
+      function renderRange() {
+        const today = dayOf(new Date());
+        document.querySelectorAll('[data-view]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.view === view)));
+        $('prevBtn').setAttribute('aria-label', view === 'week' ? '지난주' : '전날');
+        $('nextBtn').setAttribute('aria-label', view === 'week' ? '다음 주' : '다음날');
+        let main, sub, isCurrent;
+        if (view === 'week') {
+          const monday = mondayOf(currentDate);
+          const friday = addDays(monday, 4);
+          main = `${monday.getMonth() + 1}/${monday.getDate()} ~ ${friday.getMonth() + 1}/${friday.getDate()}`;
+          isCurrent = +mondayOf(today) === +monday;
+          sub = isCurrent ? '이번 주' : '';
+        } else {
+          const offset = Math.round((currentDate - today) / 86400000);
+          main = neisDateLabel(currentDate);
+          isCurrent = offset === 0;
+          sub = { '-1': '어제', 0: '오늘', 1: '내일' }[offset] || '';
+        }
+        $('rangeLabel').replaceChildren(main, el('span', { className: 'date-sub', textContent: sub }));
+        $('todayBtn').hidden = isCurrent;
       }
 
-      document.getElementById('dateLabel').textContent = neisDateLabel(currentDate);
-      document.getElementById('periodList').innerHTML = '<div class="empty-hint">불러오는 중...</div>';
-      const { periods } = await fetchNeisTimetable(currentSchool, neisYmd(currentDate), grade, classNum, department).catch(() => ({ periods: [] }));
-      renderPeriodList(periods);
-    }
+      function renderDay(periods) {
+        if (!periods.length) return status('이 날은 시간표 정보가 없어요. (주말·방학 등)');
+        const list = el('ol', { className: 'period-list' });
+        list.append(...periods.map(({ period, subject }) => {
+          const item = el('li');
+          item.append(el('span', { className: 'period-no', textContent: `${period}교시` }), el('span', { textContent: subject }));
+          return item;
+        }));
+        $('timetable').replaceChildren(list);
+      }
 
-    document.getElementById('applyClassBtn').onclick = renderTimetable;
-    document.getElementById('prevDayBtn').onclick = () => { currentDate.setDate(currentDate.getDate() - 1); renderTimetable(); };
-    document.getElementById('nextDayBtn').onclick = () => { currentDate.setDate(currentDate.getDate() + 1); renderTimetable(); };
-    document.getElementById('prevWeekBtn').onclick = () => { currentDate.setDate(currentDate.getDate() - 7); renderTimetable(); };
-    document.getElementById('nextWeekBtn').onclick = () => { currentDate.setDate(currentDate.getDate() + 7); renderTimetable(); };
-    document.getElementById('dayModeBtn').onclick = () => setViewMode('day');
-    document.getElementById('weekModeBtn').onclick = () => setViewMode('week');
+      function renderWeek(byDate, monday) {
+        const dates = DAYS.map((_, i) => addDays(monday, i));
+        const lists = dates.map(date => byDate[neisYmd(date)] || []);
+        const maxPeriod = Math.max(0, ...lists.flat().map(p => p.period));
+        if (!maxPeriod) return status('이번 주 시간표 정보가 없어요. (방학 등)');
+        const todayYmd = neisYmd(new Date());
+        const table = el('table', { className: 'table week-table' });
+        const head = el('tr');
+        head.append(el('th', { scope: 'col', textContent: '교시' }), ...dates.map((date, i) => el('th', {
+          scope: 'col', className: neisYmd(date) === todayYmd ? 'is-today' : '', textContent: `${DAYS[i]} ${date.getMonth() + 1}/${date.getDate()}`
+        })));
+        table.append(el('caption', { className: 'sr-only', textContent: '주간 시간표' }), el('thead'));
+        table.tHead.append(head);
+        const body = el('tbody');
+        for (let period = 1; period <= maxPeriod; period++) {
+          const row = el('tr');
+          row.append(el('td', { textContent: String(period) }), ...lists.map((list, i) => el('td', {
+            className: neisYmd(dates[i]) === todayYmd ? 'is-today' : '',
+            textContent: list.find(p => p.period === period)?.subject || ''
+          })));
+          body.append(row);
+        }
+        table.append(body);
+        const wrap = el('div', { className: 'table-wrap' });
+        wrap.append(table);
+        $('timetable').replaceChildren(wrap);
+      }
 
-    renderSchoolPicker(document.getElementById('schoolPicker'), (school) => {
-      document.title = `오늘의 시간표 - ${school.schoolName} 시간표 | 성적 계산기`;
-      currentSchool = school;
-      document.getElementById('classBox').style.display = 'block';
-      document.getElementById('deptField').style.display = school.kind === 'HIGH' ? 'block' : 'none';
-      const saved = loadNeisClass();
-      document.getElementById('gradeInput').value = saved.grade || 1;
-      document.getElementById('classInput').value = saved.classNum || 1;
-      document.getElementById('deptInput').value = saved.department || '';
-      setViewMode(viewMode);
-    });
+      async function load() {
+        if (!school) return;
+        const grade = clampInt($('gradeInput').value, 1, 6);
+        const classNum = clampInt($('classInput').value, 1, 30);
+        const department = $('deptInput').value.trim();
+        saveNeisClass({ grade, classNum, department });
+        renderRange();
+        status('불러오는 중…');
+        const id = ++requestId;
+        try {
+          if (view === 'week') {
+            const monday = mondayOf(currentDate);
+            const byDate = await fetchNeisWeekTimetable(school, monday, grade, classNum, department);
+            if (id === requestId) renderWeek(byDate, monday);
+          } else {
+            const { periods } = await fetchNeisTimetable(school, neisYmd(currentDate), grade, classNum, department);
+            if (id === requestId) renderDay(periods);
+          }
+        } catch {
+          if (id === requestId) status('시간표를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.');
+        }
+      }
+
+      ['gradeInput', 'classInput', 'deptInput'].forEach(id => $(id).addEventListener('change', load));
+      document.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click', () => {
+        view = button.dataset.view;
+        try { localStorage.setItem('neisTimetableMode', view); } catch {}
+        load();
+      }));
+      $('prevBtn').onclick = () => { currentDate = addDays(currentDate, view === 'week' ? -7 : -1); load(); };
+      $('nextBtn').onclick = () => { currentDate = addDays(currentDate, view === 'week' ? 7 : 1); load(); };
+      $('todayBtn').onclick = () => { currentDate = dayOf(new Date()); load(); };
+
+      renderSchoolPicker($('schoolPicker'), picked => {
+        school = picked;
+        $('classBox').hidden = !picked;
+        document.title = picked ? `오늘의 시간표 - ${picked.schoolName} 시간표 | 성적 계산기` : '오늘의 시간표 - 우리학교 시간표 조회 | 성적 계산기';
+        if (!picked) return;
+        const saved = loadNeisClass();
+        $('gradeInput').value = saved.grade || 1;
+        $('classInput').value = saved.classNum || 1;
+        $('deptInput').value = saved.department || '';
+        $('deptField').hidden = picked.kind !== 'HIGH';
+        load();
+      });
+    })();
   </script>
 </body>
 </html>

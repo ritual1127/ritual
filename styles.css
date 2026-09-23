@@ -577,6 +577,9 @@ details.faq p { padding: 0 0 14px; margin: 0; color: var(--ink-2); line-height: 
 .school-info { display: grid; min-width: 0; }
 .school-info strong { font-size: 19px; font-weight: 850; letter-spacing: -.02em; }
 .school-actions { display: flex; gap: 8px; }
+.card-title { font-size: 18px; font-weight: 800; letter-spacing: -.02em; line-height: 1.35; }
+.nav-btn { border: 1px solid var(--line); color: var(--ink); background: var(--surface); }
+.nav-btn:hover { background: var(--sunk); color: var(--ink); }
 .status { margin-top: 12px; padding: 20px 16px; border: 1px dashed var(--line-strong); border-radius: 14px; text-align: center; font-size: 15px; color: var(--ink-2); }
 .date-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .date-label { flex: 1; text-align: center; font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }

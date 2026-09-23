@@ -140,64 +140,79 @@ async function copyText(text) {
   try { await navigator.clipboard.writeText(text); return true; } catch { return false; }
 }
 
-// 학교 검색/선택 UI를 컨테이너에 렌더링. 선택된 학교가 있으면 onReady(school)를 호출.
+// 학교 검색/선택 UI를 컨테이너에 렌더링한다. 학교가 정해지면 onReady(school), 검색 화면이면 onReady(null)을 부른다.
+// 외부(API·저장소) 값은 모두 textContent로만 넣는다.
 function renderSchoolPicker(container, onReady) {
   const fromQuery = schoolFromQuery();
   if (fromQuery) saveNeisSchool(fromQuery);
   const school = fromQuery || loadNeisSchool();
+  const el = (tag, className, text) => {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text != null) node.textContent = text;
+    return node;
+  };
+
   if (school) {
-    container.innerHTML = `
-      <div class="school-current">
-        <div><strong>${school.schoolName}</strong><div class="meta">${school.officeName || ''}</div></div>
-        <div class="school-actions">
-          <button type="button" class="mini-btn" id="shareSchoolBtn">링크 공유</button>
-          <button type="button" class="mini-btn" id="changeSchoolBtn">학교 변경</button>
-        </div>
-      </div>`;
-    document.getElementById('changeSchoolBtn').onclick = () => {
+    const card = el('div', 'school-card');
+    const info = el('div', 'school-info');
+    info.append(el('span', 'school-meta', '우리 학교'), el('strong', '', school.schoolName), el('span', 'school-meta', school.officeName || ''));
+    const actions = el('div', 'school-actions');
+    const share = el('button', 'btn-ghost btn-sm', '링크 공유');
+    const change = el('button', 'btn-ghost btn-sm', '학교 변경');
+    share.type = change.type = 'button';
+    share.onclick = async () => {
+      share.textContent = (await copyText(schoolShareUrl(school))) ? '복사됐어요' : '복사 실패';
+      setTimeout(() => { share.textContent = '링크 공유'; }, 1500);
+    };
+    change.onclick = () => {
       clearNeisSchool();
       history.replaceState(null, '', location.pathname);
       renderSchoolPicker(container, onReady);
+      container.querySelector('input')?.focus();
     };
-    document.getElementById('shareSchoolBtn').onclick = async (e) => {
-      const ok = await copyText(schoolShareUrl(school));
-      const btn = e.currentTarget;
-      btn.textContent = ok ? '복사됨!' : '복사 실패';
-      setTimeout(() => { btn.textContent = '링크 공유'; }, 1500);
-    };
+    actions.append(share, change);
+    card.append(info, actions);
+    container.replaceChildren(card);
     onReady(school);
     return;
   }
 
-  container.innerHTML = `
-    <div class="entry" style="grid-template-columns:1fr;">
-      <div class="score-row">
-        <input type="text" id="schoolSearchInput" placeholder="학교 이름 검색 (예: OO고등학교)">
-        <button type="button" class="btn-outline" id="schoolSearchBtn">검색</button>
-      </div>
-    </div>
-    <div id="schoolSearchResults"></div>`;
-
-  const doSearch = async () => {
-    const name = document.getElementById('schoolSearchInput').value.trim();
-    if (!name) return;
-    const box = document.getElementById('schoolSearchResults');
-    box.innerHTML = '<div class="empty-hint">검색 중...</div>';
-    const results = await searchNeisSchool(name).catch(() => []);
-    if (!results.length) { box.innerHTML = '<div class="empty-hint">검색 결과가 없습니다.</div>'; return; }
-    box.innerHTML = results.map((s, i) => `
-      <div class="subj-list-item" data-i="${i}">
-        <div><strong>${s.schoolName}</strong><div class="meta">${s.officeName}</div></div>
-      </div>`).join('');
-    box.querySelectorAll('[data-i]').forEach(el => el.onclick = () => {
-      saveNeisSchool(results[+el.dataset.i]);
-      renderSchoolPicker(container, onReady);
+  const title = el('h2', 'card-title', '학교를 먼저 찾아 주세요');
+  const hint = el('p', 'card-sub', '한 번 고르면 이 기기에 저장돼서 다음부터 바로 보여요.');
+  const form = el('form', 'school-search mt');
+  form.setAttribute('role', 'search');
+  const label = el('label', 'sr-only', '학교 이름');
+  label.htmlFor = 'schoolSearchInput';
+  const input = el('input', 'input');
+  Object.assign(input, { id: 'schoolSearchInput', type: 'search', placeholder: '학교 이름 (예: 한국고)', autocomplete: 'off', enterKeyHint: 'search' });
+  const submit = el('button', 'btn', '검색');
+  submit.type = 'submit';
+  const results = el('div', 'school-results');
+  results.setAttribute('aria-live', 'polite');
+  form.append(label, input, submit);
+  container.replaceChildren(title, hint, form, results);
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    const name = input.value.trim();
+    if (!name) { input.focus(); return; }
+    results.replaceChildren(el('p', 'status', '검색 중…'));
+    const found = await searchNeisSchool(name).catch(() => null);
+    if (!found) { results.replaceChildren(el('p', 'status', '검색하지 못했어요. 잠시 후 다시 시도해 주세요.')); return; }
+    if (!found.length) { results.replaceChildren(el('p', 'status', '검색 결과가 없어요. 학교 이름을 줄여서 검색해 보세요.')); return; }
+    const list = el('ul', 'school-list');
+    found.forEach(item => {
+      const option = el('button', 'school-option');
+      option.type = 'button';
+      option.append(el('strong', '', item.schoolName), el('span', 'school-meta', item.officeName));
+      option.onclick = () => { saveNeisSchool(item); renderSchoolPicker(container, onReady); };
+      const li = el('li');
+      li.append(option);
+      list.append(li);
     });
-  };
-  document.getElementById('schoolSearchBtn').onclick = doSearch;
-  document.getElementById('schoolSearchInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); doSearch(); }
+    results.replaceChildren(list);
   });
+  onReady(null);
 }
 
 // 급식 알림용 학교 정보 저장소. localStorage는 서비스워커에서 못 쓰므로
