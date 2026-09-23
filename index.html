@@ -258,14 +258,16 @@
         const weightTotal = rows.reduce((sum, row) => sum + (Number.isFinite(row.weight) ? row.weight : 0), 0);
         renderMeter(weightTotal);
         const filled = rows.filter(row => row.score !== null);
-        const blanks = rows.length - filled.length;
+        // 점수만 있고 비율이 빈 행도 빈칸이다. 조용히 빼고 계산하면 입력한 점수가 사라진다.
+        const complete = filled.filter(row => row.weight !== null);
+        const blanks = rows.length - complete.length;
         const weightText = `반영비율 ${formatNumber(weightTotal)}% · 입력 ${filled.length}/${rows.length}`;
 
         if (!rows.length) return show('empty', { note: '수행평가나 정기고사를 1개 이상 추가해 주세요.' });
         if (!rows.every(row => inRange(row.score) && inRange(row.weight))) return show('warn', { note: '점수와 반영비율은 0~100 사이로 입력해 주세요.', meta: weightText });
         if (!filled.length) return show('empty', { note: '점수를 입력하면 바로 계산돼요.', meta: weightText });
 
-        const sum = weightedSum(filled.map(row => ({ score: row.score, weight: row.weight ?? 0 })));
+        const sum = weightedSum(complete);
         if (blanks) return show('partial', { label: '지금까지 반영된 점수', value: sum, note: `빈칸 ${blanks}개 남음 · 다 채우면 최종점수가 나와요.`, meta: weightText, mini: `반영 ${formatNumber(sum)}점` });
         if (Math.abs(weightTotal - 100) > 0.01) return show('warn', { note: `반영비율 합계를 100%로 맞춰 주세요. (현재 ${formatNumber(weightTotal)}%)`, meta: weightText });
 
