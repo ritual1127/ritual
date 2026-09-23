@@ -24,10 +24,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <meta property="og:image" content="https://naver1.cloud/og.png">
   <meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://naver1.cloud/og.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"내신 등급, 원점수와 반영비율만 알면 미리 계산할 수 있어요","url":"https://naver1.cloud/blog/grade-calculation/","image":"https://naver1.cloud/og.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://naver1.cloud/blog/grade-calculation/"},"datePublished":"2026-07-26","dateModified":"2026-08-09","author":{"@type":"Organization","name":"성적 계산기"},"publisher":{"@type":"Organization","name":"성적 계산기"}}</script>
-  <meta name="theme-color" content="#4f46e5">
-  <link rel="icon" href="../icon-192.png">
-  <link rel="stylesheet" href="../styles.css">
-  <script src="../site-nav.js"></script>
+  <meta name="theme-color" content="#FAF7F0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#14161D" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="../../icon-192.png">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="../../styles.css">
+  <script src="../../site-nav.js"></script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6088412169158396"
        crossorigin="anonymous"></script>
 </head>
@@ -37,44 +40,60 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
+  <a class="skip-link" href="#main">본문 바로가기</a>
+  <header class="appbar">
+    <div class="appbar-inner">
+      <a class="logo" href="/"><span class="logo-mark">성적</span>계산기</a>
+      <button type="button" class="theme-toggle" aria-pressed="false" aria-label="다크 모드">
+        <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
+        <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+      </button>
+    </div>
+  </header>
+  <nav class="toolnav" aria-label="도구">
+    <div class="toolnav-inner">
+      <a class="tool" href="/">수행·지필</a>
+      <a class="tool" href="/target-score/">목표점수</a>
+      <a class="tool" href="/rank/">내신등급</a>
+      <a class="tool" href="/gpa/">학점</a>
+      <a class="tool" href="/gpa-converter/">GPA 환산</a>
+      <span class="toolnav-sep" aria-hidden="true"></span>
+      <a class="tool" href="/todayfood/">급식</a>
+      <a class="tool" href="/todayclass/">시간표</a>
+    </div>
+  </nav>
 
-  <div class="top-bar">
-    <h1><span>성적 계산기</span> 블로그</h1>
-  </div>
-  <p class="tagline">시험 전에 등급을 미리 예측하고 싶은 학생들을 위한 글</p>
+  <main id="main" class="page page-narrow article">
+    <article class="prose">
+      <a class="back-link" href="/blog/">← 계산 가이드</a>
+      <h1>내신 등급, 원점수와 반영비율만 알면 미리 계산할 수 있어요</h1>
+      <p class="lede">시험 전에 등급을 미리 예측하고 싶은 학생들을 위한 글</p>
+      <p class="updated">2026년 7월 26일 · 2026년 8월 9일 수정</p>
+      <p class="article-lead">지필고사가 끝나고 성적표가 나오기 전까지, "이번엔 몇 등급 나올까" 하는 생각을 안 해본 학생은 없을 거예요. 사실 등급은 성적표가 나와야만 알 수 있는 게 아니에요. 학교에서 안내한 수행평가·지필고사 반영비율과 자신의 점수만 알면, 최종 원점수는 물론 대략적인 등급까지 미리 계산해볼 수 있습니다.</p>
 
+      <h2>원점수와 등급은 다른 개념이에요</h2>
+      <p>많은 학생들이 헷갈리는 부분이 바로 이거예요. 원점수는 내가 받은 실제 점수 그 자체이고, 등급은 그 원점수가 전체 학생들 사이에서 어느 구간에 위치하는지를 나타내는 상대적인 지표예요. 즉 90점을 받아도 등급컷에 따라 A가 될 수도, B가 될 수도 있는 거죠. 그래서 "몇 점을 받았다"보다 "등급컷보다 몇 점 위인지"가 더 중요한 정보가 됩니다.</p>
 
-  <div class="box article">
-    <p class="updated">2026년 7월 26일 · 2026년 8월 9일 수정</p>
-    <h2>내신 등급, 원점수와 반영비율만 알면 미리 계산할 수 있어요</h2>
+      <h2>수행평가와 지필고사, 왜 비율로 계산할까</h2>
+      <p>대부분의 과목은 한 번의 시험이 아니라 수행평가와 지필고사를 합산해서 최종 원점수를 냅니다. 예를 들어 수행평가 40%, 지필고사 60%로 반영한다면, 수행평가에서 만점을 받아도 지필고사를 망치면 최종 점수가 크게 떨어질 수 있어요. 반대로 수행평가 비중이 낮은 과목이라면, 지필고사 한 번의 실수가 상대적으로 덜 치명적이겠죠. 그래서 시험 기간이 오기 전에 내 과목별 반영비율을 정확히 알아두는 게 중요합니다.</p>
 
-    <p>지필고사가 끝나고 성적표가 나오기 전까지, "이번엔 몇 등급 나올까" 하는 생각을 안 해본 학생은 없을 거예요. 사실 등급은 성적표가 나와야만 알 수 있는 게 아니에요. 학교에서 안내한 수행평가·지필고사 반영비율과 자신의 점수만 알면, 최종 원점수는 물론 대략적인 등급까지 미리 계산해볼 수 있습니다.</p>
+      <h2>목표 등급을 위한 최소 점수 역산하기</h2>
+      <p>반영비율을 알고 있다면 반대로 계산하는 것도 가능해요. "지필고사에서 최소 몇 점을 받아야 이번 학기 목표 등급을 지킬 수 있을까"를 미리 역산해두면, 남은 시험 기간 동안 어떤 과목에 시간을 더 써야 할지 우선순위를 정하기 훨씬 쉬워져요. 이미 확정된 수행평가 점수가 있다면, 남은 지필고사 만점 대비 필요한 최소 점수를 계산해서 현실적인 목표를 세울 수 있습니다.</p>
 
-    <h2>원점수와 등급은 다른 개념이에요</h2>
-    <p>많은 학생들이 헷갈리는 부분이 바로 이거예요. 원점수는 내가 받은 실제 점수 그 자체이고, 등급은 그 원점수가 전체 학생들 사이에서 어느 구간에 위치하는지를 나타내는 상대적인 지표예요. 즉 90점을 받아도 등급컷에 따라 A가 될 수도, B가 될 수도 있는 거죠. 그래서 "몇 점을 받았다"보다 "등급컷보다 몇 점 위인지"가 더 중요한 정보가 됩니다.</p>
+      <h2>계산기로 직접 확인해보세요</h2>
+      <p>이런 계산을 손으로 하려면 과목마다 비율을 곱하고 더하는 과정이 번거롭고 실수하기도 쉬워요. <a href="/">성적 계산기</a>에 반영비율과 점수를 입력하면 최종 원점수와 등급이 입력하는 즉시 나오고, <a href="/target-score/">목표점수 계산기</a>에서는 남은 시험에서 필요한 점수를 등급별로 한 번에 볼 수 있어요. 입력한 값은 내 브라우저에만 저장되니 부담 없이 써도 됩니다.</p>
 
-    <h2>수행평가와 지필고사, 왜 비율로 계산할까</h2>
-    <p>대부분의 과목은 한 번의 시험이 아니라 수행평가와 지필고사를 합산해서 최종 원점수를 냅니다. 예를 들어 수행평가 40%, 지필고사 60%로 반영한다면, 수행평가에서 만점을 받아도 지필고사를 망치면 최종 점수가 크게 떨어질 수 있어요. 반대로 수행평가 비중이 낮은 과목이라면, 지필고사 한 번의 실수가 상대적으로 덜 치명적이겠죠. 그래서 시험 기간이 오기 전에 내 과목별 반영비율을 정확히 알아두는 게 중요합니다.</p>
+      <h2>정리하면</h2>
+      <p>등급은 성적표가 나와야만 아는 결과가 아니라, 반영비율과 원점수만 알면 시험 전에도 충분히 예측 가능한 숫자예요. 시험 기간마다 반영비율을 확인하고, 과목별로 필요한 최소 점수를 미리 계산해두는 습관을 들이면 남은 공부 시간을 훨씬 효율적으로 쓸 수 있습니다.</p>
 
-    <h2>목표 등급을 위한 최소 점수 역산하기</h2>
-    <p>반영비율을 알고 있다면 반대로 계산하는 것도 가능해요. "지필고사에서 최소 몇 점을 받아야 이번 학기 목표 등급을 지킬 수 있을까"를 미리 역산해두면, 남은 시험 기간 동안 어떤 과목에 시간을 더 써야 할지 우선순위를 정하기 훨씬 쉬워져요. 이미 확정된 수행평가 점수가 있다면, 남은 지필고사 만점 대비 필요한 최소 점수를 계산해서 현실적인 목표를 세울 수 있습니다.</p>
-
-    <h2>계산기로 직접 확인해보세요</h2>
-    <p>이런 계산을 손으로 하려면 과목마다 비율을 곱하고 더하는 과정이 번거롭고 실수하기도 쉬워요. <a href="../index.html">성적 계산기</a>에 과목을 등록하고 반영비율과 점수를 입력하면, 최종 원점수와 등급을 바로 확인할 수 있고, 원점수 그래프 화면에서 과목별 현황을 한눈에 비교할 수도 있어요. 계산 기록은 내 브라우저에만 저장되니 여러 과목, 여러 학기 성적을 관리해도 부담이 없습니다.</p>
-
-    <h2>정리하면</h2>
-    <p>등급은 성적표가 나와야만 아는 결과가 아니라, 반영비율과 원점수만 알면 시험 전에도 충분히 예측 가능한 숫자예요. 시험 기간마다 반영비율을 확인하고, 과목별로 필요한 최소 점수를 미리 계산해두는 습관을 들이면 남은 공부 시간을 훨씬 효율적으로 쓸 수 있습니다.</p>
-  </div>
+      <p class="cta"><a class="btn" href="/">내 점수로 바로 계산하기 →</a></p>
+    </article>
+  </main>
 
   <footer class="site-footer">
-    성적 계산기 · 수행평가와 지필고사 반영 비율을 입력해 최종 원점수와 등급을 무료로 계산하는 온라인 도구입니다.<br>
-    © 2026 성적 계산기. All rights reserved.
+    <p>계산 결과는 참고용이며 학교·대학의 공식 성적 처리 규정을 우선 확인하세요.</p>
+    <nav class="footer-links" aria-label="사이트 정보"><a href="/blog/">계산 가이드</a><a href="/faq/">자주 묻는 질문</a><a href="/guide/">사용법</a><a href="/privacy/">개인정보처리방침</a></nav>
+    <p class="copyright">© 2026 성적 계산기</p>
   </footer>
-  <div class="footer-links">
-    <a href="../guide/">사용법 안내</a>·
-    <a href="../blog/">블로그</a>·
-    <a href="../privacy/">개인정보처리방침</a>
-  </div>
-
 </body>
 </html>

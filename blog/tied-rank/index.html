@@ -18,45 +18,82 @@
   <meta name="twitter:title" content="동석차·동점자 중간석차 계산법">
   <meta name="twitter:description" content="같은 점수의 동점자가 있을 때 중간석차를 구하는 공식과 수강자 범위를 넘는 잘못된 입력 사례를 설명합니다.">
   <meta name="twitter:image" content="https://naver1.cloud/og.png">
-  <meta name="theme-color" content="#4f46e5">
+  <meta name="theme-color" content="#FAF7F0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#14161D" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="../../icon-192.png">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="../../styles.css">
   <script src="../../site-nav.js"></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"동석차·동점자 중간석차 계산법","description":"같은 점수의 동점자가 있을 때 중간석차를 구하는 공식과 수강자 범위를 넘는 잘못된 입력 사례를 설명합니다.","url":"https://naver1.cloud/blog/tied-rank/","image":"https://naver1.cloud/og.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://naver1.cloud/blog/tied-rank/"},"datePublished":"2026-08-09","dateModified":"2026-08-09","author":{"@type":"Organization","name":"성적 계산기"},"publisher":{"@type":"Organization","name":"성적 계산기"}}</script>
 </head>
 <body>
-  <header class="top-bar"><h1><span>동석차·동점자 중간석차 계산법</span></h1></header>
-  <p class="tagline">동점자가 차지한 순위 범위의 가운데 값을 중간석차로 사용합니다.</p>
-  <main class="content-section article">
-    <p class="updated">게시·수정 2026-08-09</p>
-    <p><strong>동점자가 여러 명이면 모두에게 시작 석차만 적용하지 않고, 그 학생들이 차지한 순위의 가운데를 사용합니다. 이를 중간석차라고 합니다.</strong></p>
+  <a class="skip-link" href="#main">본문 바로가기</a>
+  <header class="appbar">
+    <div class="appbar-inner">
+      <a class="logo" href="/"><span class="logo-mark">성적</span>계산기</a>
+      <button type="button" class="theme-toggle" aria-pressed="false" aria-label="다크 모드">
+        <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
+        <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+      </button>
+    </div>
+  </header>
+  <nav class="toolnav" aria-label="도구">
+    <div class="toolnav-inner">
+      <a class="tool" href="/">수행·지필</a>
+      <a class="tool" href="/target-score/">목표점수</a>
+      <a class="tool" href="/rank/">내신등급</a>
+      <a class="tool" href="/gpa/">학점</a>
+      <a class="tool" href="/gpa-converter/">GPA 환산</a>
+      <span class="toolnav-sep" aria-hidden="true"></span>
+      <a class="tool" href="/todayfood/">급식</a>
+      <a class="tool" href="/todayclass/">시간표</a>
+    </div>
+  </nav>
 
-    <h2>중간석차 공식</h2>
-    <p><strong>중간석차 = 석차 + (동점자 수 − 1) ÷ 2</strong>입니다. 동점자 수에는 본인도 포함합니다.</p>
+  <main id="main" class="page page-narrow article">
+    <article class="prose">
+      <a class="back-link" href="/blog/">← 계산 가이드</a>
+      <h1>동석차·동점자 중간석차 계산법</h1>
+      <p class="lede">동점자가 차지한 순위 범위의 가운데 값을 중간석차로 사용합니다.</p>
+      <p class="updated">게시·수정 2026-08-09</p>
+      <p class="article-lead">동점자가 여러 명이면 모두에게 시작 석차만 적용하지 않고, 그 학생들이 차지한 순위의 가운데를 사용합니다. 이를 중간석차라고 합니다.</p>
 
-    <h2>예시 1: 10등이 3명</h2>
-    <p>10등부터 세 명이 10·11·12등 자리를 차지합니다. 중간은 11등이며 공식으로도 10 + (3−1)÷2 = <strong>11등</strong>입니다.</p>
+      <section class="formula-box">
+        <h2>중간석차 공식</h2>
+        <p><strong>중간석차 = 석차 + (동점자 수 − 1) ÷ 2</strong>입니다. 동점자 수에는 본인도 포함합니다.</p>
+      </section>
 
-    <h2>예시 2: 공동 1등이 2명</h2>
-    <p>두 학생이 1·2등 자리를 함께 차지하므로 중간석차는 1 + (2−1)÷2 = <strong>1.5등</strong>입니다. 소수 석차가 나오는 것은 오류가 아닙니다.</p>
+      <h2>예시 1: 10등이 3명</h2>
+      <p>10등부터 세 명이 10·11·12등 자리를 차지합니다. 중간은 11등이며 공식으로도 10 + (3−1)÷2 = <strong>11등</strong>입니다.</p>
 
-    <h2>입력 가능한 범위 확인</h2>
-    <p><strong>석차 + 동점자 수 − 1 ≤ 수강자 수</strong>여야 합니다. 30명 중 29등 동점자가 3명이라는 입력은 31등 자리까지 필요하므로 성립하지 않습니다.</p>
+      <h2>예시 2: 공동 1등이 2명</h2>
+      <p>두 학생이 1·2등 자리를 함께 차지하므로 중간석차는 1 + (2−1)÷2 = <strong>1.5등</strong>입니다. 소수 석차가 나오는 것은 오류가 아닙니다.</p>
 
-    <h2>중간석차를 백분율로 바꾸기</h2>
-    <p>100명 중 20등 동점자 4명의 중간석차는 21.5등이고, 석차백분율은 21.5%입니다. 이 값으로 적용 등급 구간을 찾습니다. 동점자 모두에게 시작 석차 20등을 그대로 적용하면 백분율이 실제보다 앞서게 되므로 주의하세요.</p>
+      <h2>입력 가능한 범위 확인</h2>
+      <p><strong>석차 + 동점자 수 − 1 ≤ 수강자 수</strong>여야 합니다. 30명 중 29등 동점자가 3명이라는 입력은 31등 자리까지 필요하므로 성립하지 않습니다.</p>
 
-    <p><a class="btn" href="/rank/">동점자 포함 등급 계산하기</a></p>
-    <h2>이어서 확인하기</h2>
-    <ul>
-      <li><a href="/blog/rank-percentile/">석차백분율 계산 순서</a></li>
-      <li><a href="/blog/five-grade-system/">5등급제 경계</a></li>
-    </ul>
-    <h2>자주 묻는 질문</h2>
-    <details><summary>동점자 수에 나를 포함하나요?</summary><p>네. 같은 석차를 받은 전체 인원 수를 입력하며 본인도 포함합니다.</p></details>
-    <details><summary>동점자가 없으면 무엇을 입력하나요?</summary><p>동점자 수 1명을 입력하면 중간석차가 원래 석차와 같아집니다.</p></details>
+      <h2>중간석차를 백분율로 바꾸기</h2>
+      <p>100명 중 20등 동점자 4명의 중간석차는 21.5등이고, 석차백분율은 21.5%입니다. 이 값으로 적용 등급 구간을 찾습니다. 동점자 모두에게 시작 석차 20등을 그대로 적용하면 백분율이 실제보다 앞서게 되므로 주의하세요.</p>
+
+      <p class="cta"><a class="btn" href="/rank/">동점자 포함 등급 계산하기 →</a></p>
+
+      <h2>이어서 확인하기</h2>
+      <ul class="link-list">
+        <li><a href="/blog/rank-percentile/">석차백분율 계산 순서</a></li>
+        <li><a href="/blog/five-grade-system/">5등급제 경계</a></li>
+      </ul>
+
+      <h2>자주 묻는 질문</h2>
+      <details class="faq"><summary>동점자 수에 나를 포함하나요?</summary><p>네. 같은 석차를 받은 전체 인원 수를 입력하며 본인도 포함합니다.</p></details>
+      <details class="faq"><summary>동점자가 없으면 무엇을 입력하나요?</summary><p>동점자 수 1명을 입력하면 중간석차가 원래 석차와 같아집니다.</p></details>
+    </article>
   </main>
-  <footer class="site-footer">계산 결과는 참고용이며 학교·대학의 공식 성적 처리 규정을 우선 확인하세요.<br>© 2026 성적 계산기.</footer>
-  <div class="footer-links"><a href="/blog/">계산 가이드</a> · <a href="/faq/">자주 묻는 질문</a> · <a href="/privacy/">개인정보처리방침</a></div>
+
+  <footer class="site-footer">
+    <p>계산 결과는 참고용이며 학교·대학의 공식 성적 처리 규정을 우선 확인하세요.</p>
+    <nav class="footer-links" aria-label="사이트 정보"><a href="/blog/">계산 가이드</a><a href="/faq/">자주 묻는 질문</a><a href="/guide/">사용법</a><a href="/privacy/">개인정보처리방침</a></nav>
+    <p class="copyright">© 2026 성적 계산기</p>
+  </footer>
 </body>
 </html>

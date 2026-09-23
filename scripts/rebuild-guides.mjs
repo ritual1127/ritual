@@ -140,11 +140,43 @@ const guides = [
   }
 ];
 
+// 모든 페이지가 같은 셸을 쓴다(styles.css의 .appbar/.toolnav/.site-footer).
+const SHELL = `  <a class="skip-link" href="#main">본문 바로가기</a>
+  <header class="appbar">
+    <div class="appbar-inner">
+      <a class="logo" href="/"><span class="logo-mark">성적</span>계산기</a>
+      <button type="button" class="theme-toggle" aria-pressed="false" aria-label="다크 모드">
+        <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
+        <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+      </button>
+    </div>
+  </header>
+  <nav class="toolnav" aria-label="도구">
+    <div class="toolnav-inner">
+      <a class="tool" href="/">수행·지필</a>
+      <a class="tool" href="/target-score/">목표점수</a>
+      <a class="tool" href="/rank/">내신등급</a>
+      <a class="tool" href="/gpa/">학점</a>
+      <a class="tool" href="/gpa-converter/">GPA 환산</a>
+      <span class="toolnav-sep" aria-hidden="true"></span>
+      <a class="tool" href="/todayfood/">급식</a>
+      <a class="tool" href="/todayclass/">시간표</a>
+    </div>
+  </nav>`;
+
+const FOOTER = `  <footer class="site-footer">
+    <p>계산 결과는 참고용이며 학교·대학의 공식 성적 처리 규정을 우선 확인하세요.</p>
+    <nav class="footer-links" aria-label="사이트 정보"><a href="/blog/">계산 가이드</a><a href="/faq/">자주 묻는 질문</a><a href="/guide/">사용법</a><a href="/privacy/">개인정보처리방침</a></nav>
+    <p class="copyright">© 2026 성적 계산기</p>
+  </footer>`;
+
 function render(g) {
   const url = `https://naver1.cloud/blog/${g.slug}/`;
-  const sections = g.sections.map(([heading, body]) => `    <h2>${heading}</h2>\n    <p>${body}</p>`).join('\n\n');
-  const related = g.related.map(([href, label]) => `      <li><a href="${href}">${label}</a></li>`).join('\n');
-  const faqs = g.faqs.map(([q, a]) => `    <details><summary>${q}</summary><p>${a}</p></details>`).join('\n');
+  const sections = g.sections.map(([heading, body]) => heading.includes('공식')
+    ? `      <section class="formula-box">\n        <h2>${heading}</h2>\n        <p>${body}</p>\n      </section>`
+    : `      <h2>${heading}</h2>\n      <p>${body}</p>`).join('\n\n');
+  const related = g.related.map(([href, label]) => `        <li><a href="${href}">${label}</a></li>`).join('\n');
+  const faqs = g.faqs.map(([q, a]) => `      <details class="faq"><summary>${q}</summary><p>${a}</p></details>`).join('\n');
   const schema = JSON.stringify({
     '@context': 'https://schema.org', '@type': 'BlogPosting', headline: g.title,
     description: g.description, url, image: 'https://naver1.cloud/og.png',
@@ -173,31 +205,41 @@ function render(g) {
   <meta name="twitter:title" content="${g.title}">
   <meta name="twitter:description" content="${g.description}">
   <meta name="twitter:image" content="https://naver1.cloud/og.png">
-  <meta name="theme-color" content="#4f46e5">
+  <meta name="theme-color" content="#FAF7F0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#14161D" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="../../icon-192.png">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="../../styles.css">
   <script src="../../site-nav.js"></script>
   <script type="application/ld+json">${schema}</script>
 </head>
 <body>
-  <header class="top-bar"><h1><span>${g.title}</span></h1></header>
-  <p class="tagline">${g.tagline}</p>
-  <main class="content-section article">
-    <p class="updated">게시·수정 2026-08-09</p>
-    <p><strong>${g.intro}</strong></p>
+${SHELL}
+
+  <main id="main" class="page page-narrow article">
+    <article class="prose">
+      <a class="back-link" href="/blog/">← 계산 가이드</a>
+      <h1>${g.title}</h1>
+      <p class="lede">${g.tagline}</p>
+      <p class="updated">게시·수정 2026-08-09</p>
+      <p class="article-lead">${g.intro}</p>
 
 ${sections}
 
-    <p><a class="btn" href="${g.cta}">${g.ctaText}</a></p>
-    <h2>이어서 확인하기</h2>
-    <ul>
+      <p class="cta"><a class="btn" href="${g.cta}">${g.ctaText} →</a></p>
+
+      <h2>이어서 확인하기</h2>
+      <ul class="link-list">
 ${related}
-    </ul>
-    <h2>자주 묻는 질문</h2>
+      </ul>
+
+      <h2>자주 묻는 질문</h2>
 ${faqs}
+    </article>
   </main>
-  <footer class="site-footer">계산 결과는 참고용이며 학교·대학의 공식 성적 처리 규정을 우선 확인하세요.<br>© 2026 성적 계산기.</footer>
-  <div class="footer-links"><a href="/blog/">계산 가이드</a> · <a href="/faq/">자주 묻는 질문</a> · <a href="/privacy/">개인정보처리방침</a></div>
+
+${FOOTER}
 </body>
 </html>
 `;

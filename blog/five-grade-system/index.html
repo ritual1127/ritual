@@ -18,45 +18,80 @@
   <meta name="twitter:title" content="내신 5등급제 구간과 경계 계산법">
   <meta name="twitter:description" content="내신 5등급제의 누적 비율 10·34·66·90·100% 구간과 경계값을 석차백분율 예시로 설명합니다.">
   <meta name="twitter:image" content="https://naver1.cloud/og.png">
-  <meta name="theme-color" content="#4f46e5">
+  <meta name="theme-color" content="#FAF7F0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#14161D" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="../../icon-192.png">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="../../styles.css">
   <script src="../../site-nav.js"></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"내신 5등급제 구간과 경계 계산법","description":"내신 5등급제의 누적 비율 10·34·66·90·100% 구간과 경계값을 석차백분율 예시로 설명합니다.","url":"https://naver1.cloud/blog/five-grade-system/","image":"https://naver1.cloud/og.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://naver1.cloud/blog/five-grade-system/"},"datePublished":"2026-08-09","dateModified":"2026-08-09","author":{"@type":"Organization","name":"성적 계산기"},"publisher":{"@type":"Organization","name":"성적 계산기"}}</script>
 </head>
 <body>
-  <header class="top-bar"><h1><span>내신 5등급제 구간과 경계 계산법</span></h1></header>
-  <p class="tagline">5등급제는 석차백분율의 누적 경계 10·34·66·90·100%를 확인합니다.</p>
-  <main class="content-section article">
-    <p class="updated">게시·수정 2026-08-09</p>
-    <p><strong>5등급제 계산은 점수 자체보다 수강자 중 나의 위치를 백분율로 바꾸는 과정이 핵심입니다. 적용 대상과 실제 산출 기준은 학교의 성적 처리 안내를 먼저 확인하세요.</strong></p>
+  <a class="skip-link" href="#main">본문 바로가기</a>
+  <header class="appbar">
+    <div class="appbar-inner">
+      <a class="logo" href="/"><span class="logo-mark">성적</span>계산기</a>
+      <button type="button" class="theme-toggle" aria-pressed="false" aria-label="다크 모드">
+        <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
+        <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+      </button>
+    </div>
+  </header>
+  <nav class="toolnav" aria-label="도구">
+    <div class="toolnav-inner">
+      <a class="tool" href="/">수행·지필</a>
+      <a class="tool" href="/target-score/">목표점수</a>
+      <a class="tool" href="/rank/">내신등급</a>
+      <a class="tool" href="/gpa/">학점</a>
+      <a class="tool" href="/gpa-converter/">GPA 환산</a>
+      <span class="toolnav-sep" aria-hidden="true"></span>
+      <a class="tool" href="/todayfood/">급식</a>
+      <a class="tool" href="/todayclass/">시간표</a>
+    </div>
+  </nav>
 
-    <h2>5등급 누적 구간</h2>
-    <p><strong>1등급 10% 이하, 2등급 34% 이하, 3등급 66% 이하, 4등급 90% 이하, 5등급 100% 이하</strong>로 구분합니다. 앞 구간의 끝을 넘으면 다음 등급으로 이동합니다.</p>
+  <main id="main" class="page page-narrow article">
+    <article class="prose">
+      <a class="back-link" href="/blog/">← 계산 가이드</a>
+      <h1>내신 5등급제 구간과 경계 계산법</h1>
+      <p class="lede">5등급제는 석차백분율의 누적 경계 10·34·66·90·100%를 확인합니다.</p>
+      <p class="updated">게시·수정 2026-08-09</p>
+      <p class="article-lead">5등급제 계산은 점수 자체보다 수강자 중 나의 위치를 백분율로 바꾸는 과정이 핵심입니다. 적용 대상과 실제 산출 기준은 학교의 성적 처리 안내를 먼저 확인하세요.</p>
 
-    <h2>예시 1: 정확히 10% 경계</h2>
-    <p>수강자 100명 중 중간석차가 10등이면 10÷100×100 = 10%이므로 1등급 구간입니다. 중간석차가 11등이면 11%로 2등급 구간입니다.</p>
+      <h2>5등급 누적 구간</h2>
+      <p><strong>1등급 10% 이하, 2등급 34% 이하, 3등급 66% 이하, 4등급 90% 이하, 5등급 100% 이하</strong>로 구분합니다. 앞 구간의 끝을 넘으면 다음 등급으로 이동합니다.</p>
 
-    <h2>예시 2: 34% 경계</h2>
-    <p>수강자 200명에서 중간석차 68등은 34%로 2등급 구간입니다. 69등은 34.5%이므로 3등급 구간으로 넘어갑니다.</p>
+      <h2>예시 1: 정확히 10% 경계</h2>
+      <p>수강자 100명 중 중간석차가 10등이면 10÷100×100 = 10%이므로 1등급 구간입니다. 중간석차가 11등이면 11%로 2등급 구간입니다.</p>
 
-    <h2>동점자는 중간석차 사용</h2>
-    <p>10등인 학생이 3명 동점이라면 10, 11, 12등 자리를 함께 차지합니다. 중간석차는 10 + (3−1)÷2 = 11등이며 이 값으로 백분율을 구합니다.</p>
+      <h2>예시 2: 34% 경계</h2>
+      <p>수강자 200명에서 중간석차 68등은 34%로 2등급 구간입니다. 69등은 34.5%이므로 3등급 구간으로 넘어갑니다.</p>
 
-    <h2>단위수 평균과 개인 과목 등급은 다릅니다</h2>
-    <p>여러 과목 평균을 낼 때는 과목별 등급에 단위수를 곱해 합산한 뒤 총 단위수로 나눕니다. 한 과목의 석차등급 경계 계산과는 별도 과정입니다.</p>
+      <h2>동점자는 중간석차 사용</h2>
+      <p>10등인 학생이 3명 동점이라면 10, 11, 12등 자리를 함께 차지합니다. 중간석차는 10 + (3−1)÷2 = 11등이며 이 값으로 백분율을 구합니다.</p>
 
-    <p><a class="btn" href="/rank/">5등급제로 계산하기</a></p>
-    <h2>이어서 확인하기</h2>
-    <ul>
-      <li><a href="/blog/nine-grade-system/">내신 9등급제 경계</a></li>
-      <li><a href="/blog/tied-rank/">동점자 중간석차 계산</a></li>
-    </ul>
-    <h2>자주 묻는 질문</h2>
-    <details><summary>10.0%는 1등급인가요?</summary><p>이 계산 기준에서는 누적 10% 이하이므로 1등급 구간입니다.</p></details>
-    <details><summary>모든 학생에게 5등급제가 적용되나요?</summary><p>적용 교육과정과 과목에 따라 다를 수 있으므로 학교의 공식 안내를 확인해야 합니다.</p></details>
+      <h2>단위수 평균과 개인 과목 등급은 다릅니다</h2>
+      <p>여러 과목 평균을 낼 때는 과목별 등급에 단위수를 곱해 합산한 뒤 총 단위수로 나눕니다. 한 과목의 석차등급 경계 계산과는 별도 과정입니다.</p>
+
+      <p class="cta"><a class="btn" href="/rank/">5등급제로 계산하기 →</a></p>
+
+      <h2>이어서 확인하기</h2>
+      <ul class="link-list">
+        <li><a href="/blog/nine-grade-system/">내신 9등급제 경계</a></li>
+        <li><a href="/blog/tied-rank/">동점자 중간석차 계산</a></li>
+      </ul>
+
+      <h2>자주 묻는 질문</h2>
+      <details class="faq"><summary>10.0%는 1등급인가요?</summary><p>이 계산 기준에서는 누적 10% 이하이므로 1등급 구간입니다.</p></details>
+      <details class="faq"><summary>모든 학생에게 5등급제가 적용되나요?</summary><p>적용 교육과정과 과목에 따라 다를 수 있으므로 학교의 공식 안내를 확인해야 합니다.</p></details>
+    </article>
   </main>
-  <footer class="site-footer">계산 결과는 참고용이며 학교·대학의 공식 성적 처리 규정을 우선 확인하세요.<br>© 2026 성적 계산기.</footer>
-  <div class="footer-links"><a href="/blog/">계산 가이드</a> · <a href="/faq/">자주 묻는 질문</a> · <a href="/privacy/">개인정보처리방침</a></div>
+
+  <footer class="site-footer">
+    <p>계산 결과는 참고용이며 학교·대학의 공식 성적 처리 규정을 우선 확인하세요.</p>
+    <nav class="footer-links" aria-label="사이트 정보"><a href="/blog/">계산 가이드</a><a href="/faq/">자주 묻는 질문</a><a href="/guide/">사용법</a><a href="/privacy/">개인정보처리방침</a></nav>
+    <p class="copyright">© 2026 성적 계산기</p>
+  </footer>
 </body>
 </html>

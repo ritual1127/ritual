@@ -18,45 +18,80 @@
   <meta name="twitter:title" content="원점수와 A~E·내신등급의 차이">
   <meta name="twitter:description" content="시험 원점수, 성취도 A~E, 석차에 따른 내신등급이 서로 어떻게 다른지 사례와 함께 구분해 설명합니다.">
   <meta name="twitter:image" content="https://naver1.cloud/og.png">
-  <meta name="theme-color" content="#4f46e5">
+  <meta name="theme-color" content="#FAF7F0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#14161D" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="../../icon-192.png">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="../../styles.css">
   <script src="../../site-nav.js"></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"원점수와 A~E·내신등급의 차이","description":"시험 원점수, 성취도 A~E, 석차에 따른 내신등급이 서로 어떻게 다른지 사례와 함께 구분해 설명합니다.","url":"https://naver1.cloud/blog/raw-score-and-grade/","image":"https://naver1.cloud/og.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://naver1.cloud/blog/raw-score-and-grade/"},"datePublished":"2026-08-09","dateModified":"2026-08-09","author":{"@type":"Organization","name":"성적 계산기"},"publisher":{"@type":"Organization","name":"성적 계산기"}}</script>
 </head>
 <body>
-  <header class="top-bar"><h1><span>원점수와 A~E·내신등급의 차이</span></h1></header>
-  <p class="tagline">같은 90점이어도 원점수·성취도·석차등급은 서로 다른 정보입니다.</p>
-  <main class="content-section article">
-    <p class="updated">게시·수정 2026-08-09</p>
-    <p><strong>원점수는 내가 맞힌 정도이고, A~E는 정해진 성취 기준에 따른 구간이며, 내신등급은 같은 과목 수강자 안에서의 상대적인 위치를 나타낼 수 있습니다. 성적표의 열 이름을 먼저 확인해야 혼동하지 않습니다.</strong></p>
+  <a class="skip-link" href="#main">본문 바로가기</a>
+  <header class="appbar">
+    <div class="appbar-inner">
+      <a class="logo" href="/"><span class="logo-mark">성적</span>계산기</a>
+      <button type="button" class="theme-toggle" aria-pressed="false" aria-label="다크 모드">
+        <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
+        <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+      </button>
+    </div>
+  </header>
+  <nav class="toolnav" aria-label="도구">
+    <div class="toolnav-inner">
+      <a class="tool" href="/">수행·지필</a>
+      <a class="tool" href="/target-score/">목표점수</a>
+      <a class="tool" href="/rank/">내신등급</a>
+      <a class="tool" href="/gpa/">학점</a>
+      <a class="tool" href="/gpa-converter/">GPA 환산</a>
+      <span class="toolnav-sep" aria-hidden="true"></span>
+      <a class="tool" href="/todayfood/">급식</a>
+      <a class="tool" href="/todayclass/">시간표</a>
+    </div>
+  </nav>
 
-    <h2>원점수는 실제 받은 점수</h2>
-    <p>100점 만점 시험에서 87점을 받았다면 원점수는 87점입니다. 수행평가와 지필고사를 반영비율로 합친 값도 원점수 산출에 쓰일 수 있습니다.</p>
+  <main id="main" class="page page-narrow article">
+    <article class="prose">
+      <a class="back-link" href="/blog/">← 계산 가이드</a>
+      <h1>원점수와 A~E·내신등급의 차이</h1>
+      <p class="lede">같은 90점이어도 원점수·성취도·석차등급은 서로 다른 정보입니다.</p>
+      <p class="updated">게시·수정 2026-08-09</p>
+      <p class="article-lead">원점수는 내가 맞힌 정도이고, A~E는 정해진 성취 기준에 따른 구간이며, 내신등급은 같은 과목 수강자 안에서의 상대적인 위치를 나타낼 수 있습니다. 성적표의 열 이름을 먼저 확인해야 혼동하지 않습니다.</p>
 
-    <h2>A~E는 성취 수준</h2>
-    <p>A, B, C, D, E는 학교가 적용하는 성취도 기준에 따라 결정됩니다. 예를 들어 90점 이상이 A인 기준에서는 92점과 98점이 모두 A지만 원점수는 서로 다릅니다. 정확한 구간은 과목의 평가계획을 확인하세요.</p>
+      <h2>원점수는 실제 받은 점수</h2>
+      <p>100점 만점 시험에서 87점을 받았다면 원점수는 87점입니다. 수행평가와 지필고사를 반영비율로 합친 값도 원점수 산출에 쓰일 수 있습니다.</p>
 
-    <h2>내신등급은 석차 위치와 연결</h2>
-    <p>내신 석차등급은 수강자 수와 석차백분율을 사용합니다. 90점을 받아도 시험이 쉬워 상위 20%라면, 같은 90점으로 상위 4%인 과목과 등급이 다를 수 있습니다.</p>
+      <h2>A~E는 성취 수준</h2>
+      <p>A, B, C, D, E는 학교가 적용하는 성취도 기준에 따라 결정됩니다. 예를 들어 90점 이상이 A인 기준에서는 92점과 98점이 모두 A지만 원점수는 서로 다릅니다. 정확한 구간은 과목의 평가계획을 확인하세요.</p>
 
-    <h2>예시: 92점인데 등급이 다른 이유</h2>
-    <p>학생 A는 100명 중 3등, 학생 B는 다른 과목에서 100명 중 18등이라고 해보겠습니다. 둘 다 원점수 92점이어도 상대적 위치가 다르므로 석차등급 결과는 같지 않을 수 있습니다.</p>
+      <h2>내신등급은 석차 위치와 연결</h2>
+      <p>내신 석차등급은 수강자 수와 석차백분율을 사용합니다. 90점을 받아도 시험이 쉬워 상위 20%라면, 같은 90점으로 상위 4%인 과목과 등급이 다를 수 있습니다.</p>
 
-    <h2>무엇을 계산기에 넣어야 하나요?</h2>
-    <p>수행·지필 계산기에는 각 평가 점수와 비율을, 내신등급 계산기에는 석차·동점자·수강자 수를 넣습니다. A~E 목표라면 해당 과목이 안내한 성취도 점수 구간을 기준으로 목표점수를 정하세요.</p>
+      <h2>예시: 92점인데 등급이 다른 이유</h2>
+      <p>학생 A는 100명 중 3등, 학생 B는 다른 과목에서 100명 중 18등이라고 해보겠습니다. 둘 다 원점수 92점이어도 상대적 위치가 다르므로 석차등급 결과는 같지 않을 수 있습니다.</p>
 
-    <p><a class="btn" href="/rank/">내 석차로 등급 확인하기</a></p>
-    <h2>이어서 확인하기</h2>
-    <ul>
-      <li><a href="/">수행·지필 반영점수 계산기</a></li>
-      <li><a href="/blog/five-grade-system/">내신 5등급제 구간</a></li>
-    </ul>
-    <h2>자주 묻는 질문</h2>
-    <details><summary>A를 받으면 무조건 1등급인가요?</summary><p>아닙니다. 성취도와 석차등급은 산출 기준이 다르므로 같은 의미가 아닙니다.</p></details>
-    <details><summary>원점수만으로 내신등급을 알 수 있나요?</summary><p>수강자 분포와 석차 정보가 없다면 원점수만으로 정확한 석차등급을 정할 수 없습니다.</p></details>
+      <h2>무엇을 계산기에 넣어야 하나요?</h2>
+      <p>수행·지필 계산기에는 각 평가 점수와 비율을, 내신등급 계산기에는 석차·동점자·수강자 수를 넣습니다. A~E 목표라면 해당 과목이 안내한 성취도 점수 구간을 기준으로 목표점수를 정하세요.</p>
+
+      <p class="cta"><a class="btn" href="/rank/">내 석차로 등급 확인하기 →</a></p>
+
+      <h2>이어서 확인하기</h2>
+      <ul class="link-list">
+        <li><a href="/">수행·지필 반영점수 계산기</a></li>
+        <li><a href="/blog/five-grade-system/">내신 5등급제 구간</a></li>
+      </ul>
+
+      <h2>자주 묻는 질문</h2>
+      <details class="faq"><summary>A를 받으면 무조건 1등급인가요?</summary><p>아닙니다. 성취도와 석차등급은 산출 기준이 다르므로 같은 의미가 아닙니다.</p></details>
+      <details class="faq"><summary>원점수만으로 내신등급을 알 수 있나요?</summary><p>수강자 분포와 석차 정보가 없다면 원점수만으로 정확한 석차등급을 정할 수 없습니다.</p></details>
+    </article>
   </main>
-  <footer class="site-footer">계산 결과는 참고용이며 학교·대학의 공식 성적 처리 규정을 우선 확인하세요.<br>© 2026 성적 계산기.</footer>
-  <div class="footer-links"><a href="/blog/">계산 가이드</a> · <a href="/faq/">자주 묻는 질문</a> · <a href="/privacy/">개인정보처리방침</a></div>
+
+  <footer class="site-footer">
+    <p>계산 결과는 참고용이며 학교·대학의 공식 성적 처리 규정을 우선 확인하세요.</p>
+    <nav class="footer-links" aria-label="사이트 정보"><a href="/blog/">계산 가이드</a><a href="/faq/">자주 묻는 질문</a><a href="/guide/">사용법</a><a href="/privacy/">개인정보처리방침</a></nav>
+    <p class="copyright">© 2026 성적 계산기</p>
+  </footer>
 </body>
 </html>
