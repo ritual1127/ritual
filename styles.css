@@ -109,6 +109,8 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 
 /* ── 떠 있는 캡슐 상단바 ──────────────────────── */
 .appbar { position: sticky; top: 0; z-index: 30; padding: 10px 12px 0; pointer-events: none; }
+/* 캡슐 위 틈으로 비치는 글자를 종이색으로 흐려 준다 */
+.appbar::before { content: ""; position: absolute; inset: 0 0 auto; height: 18px; z-index: -1; background: linear-gradient(var(--paper) 40%, transparent); }
 .appbar-inner {
   pointer-events: auto; max-width: 1080px; height: 56px; margin: 0 auto; padding: 0 8px 0 12px;
   display: flex; align-items: center; gap: 2px; border-radius: 20px;
@@ -161,6 +163,11 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .theme-toggle:hover { background: var(--glass-hover); }
 .theme-toggle .icon-sun, .theme-toggle[aria-pressed="true"] .icon-moon { display: none; }
 .theme-toggle[aria-pressed="true"] .icon-sun { display: block; }
+@media (max-width: 340px) {
+  .appbar-inner { padding: 0 6px 0 8px; }
+  .tool-menu-btn { padding: 0 4px 0 8px; }
+  .mini-result { padding: 0 6px; font-size: 14px; }
+}
 
 @media (min-width: 960px) {
   .appbar { padding-top: 14px; }
@@ -380,8 +387,8 @@ select.input {
 details.formula { margin-top: 12px; }
 details.formula summary, details.faq summary { list-style: none; cursor: pointer; }
 details.formula summary::-webkit-details-marker, details.faq summary::-webkit-details-marker { display: none; }
-details.formula summary { display: inline-flex; align-items: center; gap: .3em; min-height: 32px; font-size: 13.5px; font-weight: 700; color: var(--ink-3); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line-strong); }
-details.formula summary::after { content: "보기"; }
+details.formula summary { display: inline-block; padding: 6px 0; font-size: 13.5px; font-weight: 700; color: var(--ink-3); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line-strong); }
+details.formula summary::after { content: " 보기"; }
 details.formula[open] summary::after { content: " 접기"; }
 details.formula p { margin-top: 4px; font-size: 13.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; word-break: break-all; }
 
@@ -563,7 +570,7 @@ details.faq p { padding: 0 0 14px; margin: 0; line-height: 1.75; }
 .confetti i { position: absolute; display: block; }
 .toast {
   position: fixed; top: 80px; left: 50%; z-index: 50;
-  display: flex; align-items: center; gap: 12px; max-width: calc(100vw - 32px);
+  display: flex; align-items: center; gap: 12px; width: max-content; max-width: calc(100vw - 32px);
   padding: 6px 6px 6px 18px; border-radius: 999px; color: var(--ink); font-size: 15px; font-weight: 700;
   opacity: 0; visibility: hidden; transform: translate(-50%, -10px);
   transition: opacity .2s, transform .25s var(--ease), visibility .2s;
