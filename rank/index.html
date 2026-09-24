@@ -10,7 +10,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- End Google Tag Manager -->
 
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
   <title>내신 석차등급 계산기 - 9등급제·5등급제 자동 계산 | 성적 계산기</title>
   <meta name="description" content="수강자 수와 석차만 입력하면 내신 석차등급(9등급제·5등급제)과 과목별 평균 등급을 자동으로 계산해주는 무료 계산기입니다.">
   <meta name="keywords" content="내신 석차등급 계산기, 9등급제, 5등급제, 내신 등급 계산기, 석차 백분율, 평균 등급">
@@ -64,13 +64,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <main id="main" class="page">
     <header class="page-head">
       <h1>내신 석차등급 계산기</h1>
+      <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
     </header>
 
     <div class="calc">
+      <form class="input-stack" id="rankForm" novalidate>
+        <section class="card step" aria-labelledby="systemTitle">
+          <div class="card-head"><div><h2 id="systemTitle">등급제</h2></div></div>
+          <div class="seg" role="group" aria-label="등급제">
+            <button type="button" data-system="9" aria-pressed="true">9등급제</button>
+            <button type="button" data-system="5" aria-pressed="false">5등급제</button>
+          </div>
+        </section>
+
+        <section class="card step" aria-labelledby="subjectTitle">
+          <div class="card-head"><div><h2 id="subjectTitle">과목별 입력</h2></div></div>
+          <div id="rows"></div>
+          <button type="button" class="btn-ghost btn-add" id="addRowBtn">+ 과목 추가</button>
+        </section>
+
+        <section class="card ref-card" aria-labelledby="cutTitle">
+          <div class="card-head"><div><h2 id="cutTitle">9등급제 등급 구간</h2></div></div>
+          <div class="chip-grid" id="cutGrid"></div>
+          <p class="field-hint mt">석차백분율 = (석차 + (동점자 수 − 1) ÷ 2) ÷ 수강자 수 × 100</p>
+        </section>
+      </form>
+
       <section class="card result-card" id="resultCard" data-state="empty" aria-labelledby="avgLabel">
         <div class="result-head">
           <p class="result-label" id="avgLabel">평균 등급</p>
-          <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
         </div>
         <div class="result-main">
           <p class="result-number"><span class="result-value"><span class="marker" id="avgValue">—</span></span><span class="result-unit">등급</span></p>
@@ -88,28 +110,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
         </div>
       </section>
-
-      <form class="input-stack" id="rankForm" novalidate>
-        <section class="card" aria-labelledby="systemTitle">
-          <div class="card-head"><div><h2 id="systemTitle">등급제</h2></div></div>
-          <div class="seg" role="group" aria-label="등급제">
-            <button type="button" data-system="9" aria-pressed="true">9등급제</button>
-            <button type="button" data-system="5" aria-pressed="false">5등급제</button>
-          </div>
-        </section>
-
-        <section class="card" aria-labelledby="subjectTitle">
-          <div class="card-head"><div><h2 id="subjectTitle">과목별 입력</h2></div></div>
-          <div id="rows"></div>
-          <button type="button" class="btn-ghost btn-add" id="addRowBtn">+ 과목 추가</button>
-        </section>
-
-        <section class="card" aria-labelledby="cutTitle">
-          <div class="card-head"><div><h2 id="cutTitle">9등급제 등급 구간</h2></div></div>
-          <div class="chip-grid" id="cutGrid"></div>
-          <p class="field-hint mt">석차백분율 = (석차 + (동점자 수 − 1) ÷ 2) ÷ 수강자 수 × 100</p>
-        </section>
-      </form>
     </div>
 
     <section class="note" aria-labelledby="howTitle">

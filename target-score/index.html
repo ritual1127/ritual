@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
   <title>목표점수 계산기 - 남은 시험에서 몇 점 받아야 할까?</title>
   <meta name="description" content="지금까지 본 수행평가와 시험의 점수·반영 비율을 입력하면 남은 시험에서 몇 점을 받아야 하는지 계산합니다.">
   <meta name="robots" content="index, follow">
@@ -51,13 +51,69 @@
   <main id="main" class="page">
     <header class="page-head">
       <h1>남은 시험에서 몇 점 받아야 할까?</h1>
+      <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
     </header>
 
     <div class="calc">
+      <form class="input-stack" id="targetForm" novalidate>
+        <section class="card step" aria-labelledby="goalTitle">
+          <div class="card-head"><div><h2 id="goalTitle">목표</h2></div></div>
+          <div class="seg" role="group" aria-label="목표 정하는 방법">
+            <button type="button" data-mode="score" aria-pressed="true">점수로 정하기</button>
+            <button type="button" data-mode="grade" aria-pressed="false">등급으로 정하기</button>
+          </div>
+          <div class="field mt" id="scoreGoal">
+            <label class="field-label" for="target">최종 목표 점수</label>
+            <span class="input-wrap"><input class="input" id="target" type="number" min="0" max="100" step="any" inputmode="decimal" enterkeyhint="next" placeholder="예: 90"><span class="unit">점</span></span>
+          </div>
+          <div class="mt" id="gradeGoal" hidden>
+            <div class="grade-pick" role="group" aria-label="목표 등급">
+              <button type="button" data-grade="A" aria-pressed="true">A</button>
+              <button type="button" data-grade="B" aria-pressed="false">B</button>
+              <button type="button" data-grade="C" aria-pressed="false">C</button>
+              <button type="button" data-grade="D" aria-pressed="false">D</button>
+              <button type="button" data-grade="E" aria-pressed="false">E</button>
+            </div>
+            <p class="field-hint mt-sm" id="gradeStandard">A등급 · 최종 90점 이상</p>
+          </div>
+        </section>
+
+        <section class="card step" aria-labelledby="completedTitle">
+          <div class="card-head"><div><h2 id="completedTitle">지금까지 본 평가</h2></div></div>
+          <div class="rows-head row-named" aria-hidden="true"><span>평가 이름</span><span>받은 점수</span><span>비율</span><span></span></div>
+          <div class="rows" id="completedRows"></div>
+          <p class="empty-line" id="completedEmpty" hidden>아직 본 평가가 없어요. 없으면 비워 둬도 돼요.</p>
+          <button type="button" class="btn-ghost btn-add" id="addCompleted">+ 평가 추가</button>
+        </section>
+
+        <section class="card step" aria-labelledby="remainingTitle">
+          <div class="card-head"><div><h2 id="remainingTitle">앞으로 볼 시험</h2></div></div>
+          <div class="fields">
+            <div class="field">
+              <label class="field-label" for="remainingName">시험 이름</label>
+              <input class="input" id="remainingName" type="text" placeholder="예: 기말고사" enterkeyhint="next">
+            </div>
+            <div class="field">
+              <label class="field-label" for="remainingWeight">반영비율</label>
+              <span class="input-wrap"><input class="input" id="remainingWeight" type="number" min="0" max="100" step="any" inputmode="decimal" enterkeyhint="done" placeholder="예: 40"><span class="unit">%</span></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="card meter-card" aria-label="반영비율 합계">
+          <div class="meter" id="weightMeter" data-state="under">
+            <div class="meter-top"><span class="meter-label">본 평가 + 남은 시험 비율</span><span class="meter-text" id="weightText">0%</span></div>
+            <div class="meter-track"><div class="meter-fill" id="weightFill"></div></div>
+          </div>
+          <div class="card-foot">
+            <button type="button" class="btn-ghost btn-sm" id="fillRemainingBtn" hidden></button>
+          </div>
+        </section>
+      </form>
+
       <section class="card result-card" id="resultCard" data-state="empty" aria-labelledby="requiredLabel">
         <div class="result-head">
           <p class="result-label" id="requiredLabel">필요한 점수</p>
-          <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
         </div>
         <div class="result-main">
           <p class="result-number"><span class="result-value"><span class="marker" id="requiredValue">—</span></span><span class="result-unit">점</span></p>
@@ -81,62 +137,6 @@
           </div>
         </div>
       </section>
-
-      <form class="input-stack" id="targetForm" novalidate>
-        <section class="card" aria-labelledby="goalTitle">
-          <div class="card-head"><div><h2 id="goalTitle">목표</h2></div></div>
-          <div class="seg" role="group" aria-label="목표 정하는 방법">
-            <button type="button" data-mode="score" aria-pressed="true">점수로 정하기</button>
-            <button type="button" data-mode="grade" aria-pressed="false">등급으로 정하기</button>
-          </div>
-          <div class="field mt" id="scoreGoal">
-            <label class="field-label" for="target">최종 목표 점수</label>
-            <span class="input-wrap"><input class="input" id="target" type="number" min="0" max="100" step="any" inputmode="decimal" enterkeyhint="next" placeholder="예: 90"><span class="unit">점</span></span>
-          </div>
-          <div class="mt" id="gradeGoal" hidden>
-            <div class="grade-pick" role="group" aria-label="목표 등급">
-              <button type="button" data-grade="A" aria-pressed="true">A</button>
-              <button type="button" data-grade="B" aria-pressed="false">B</button>
-              <button type="button" data-grade="C" aria-pressed="false">C</button>
-              <button type="button" data-grade="D" aria-pressed="false">D</button>
-              <button type="button" data-grade="E" aria-pressed="false">E</button>
-            </div>
-            <p class="field-hint mt-sm" id="gradeStandard">A등급 · 최종 90점 이상</p>
-          </div>
-        </section>
-
-        <section class="card" aria-labelledby="completedTitle">
-          <div class="card-head"><div><h2 id="completedTitle">지금까지 본 평가</h2></div></div>
-          <div class="rows-head row-named" aria-hidden="true"><span>평가 이름</span><span>받은 점수</span><span>비율</span><span></span></div>
-          <div class="rows" id="completedRows"></div>
-          <p class="empty-line" id="completedEmpty" hidden>아직 본 평가가 없어요. 없으면 비워 둬도 돼요.</p>
-          <button type="button" class="btn-ghost btn-add" id="addCompleted">+ 평가 추가</button>
-        </section>
-
-        <section class="card" aria-labelledby="remainingTitle">
-          <div class="card-head"><div><h2 id="remainingTitle">앞으로 볼 시험</h2></div></div>
-          <div class="fields">
-            <div class="field">
-              <label class="field-label" for="remainingName">시험 이름</label>
-              <input class="input" id="remainingName" type="text" placeholder="예: 기말고사" enterkeyhint="next">
-            </div>
-            <div class="field">
-              <label class="field-label" for="remainingWeight">반영비율</label>
-              <span class="input-wrap"><input class="input" id="remainingWeight" type="number" min="0" max="100" step="any" inputmode="decimal" enterkeyhint="done" placeholder="예: 40"><span class="unit">%</span></span>
-            </div>
-          </div>
-        </section>
-
-        <section class="card" aria-label="반영비율 합계">
-          <div class="meter" id="weightMeter" data-state="under">
-            <div class="meter-top"><span class="meter-label">본 평가 + 남은 시험 비율</span><span class="meter-text" id="weightText">0%</span></div>
-            <div class="meter-track"><div class="meter-fill" id="weightFill"></div></div>
-          </div>
-          <div class="card-foot">
-            <button type="button" class="btn-ghost btn-sm" id="fillRemainingBtn" hidden></button>
-          </div>
-        </section>
-      </form>
     </div>
 
     <section class="note" aria-labelledby="howTitle">

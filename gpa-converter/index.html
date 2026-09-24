@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
   <title>GPA 환산기 - 4.5·4.3·4.0 만점 비례 변환</title>
   <meta name="description" content="숫자 GPA를 4.5, 4.3, 4.0 등 다른 만점 기준으로 단순 비례 환산하는 참고용 계산기입니다.">
   <meta name="robots" content="index, follow">
@@ -52,25 +52,10 @@
   <main id="main" class="page">
     <header class="page-head">
       <h1>GPA 만점 환산기</h1>
+      <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
     </header>
 
     <div class="calc">
-      <section class="card result-card" id="resultCard" data-state="empty" aria-labelledby="convertedLabel">
-        <div class="result-head">
-          <p class="result-label" id="convertedLabel">환산한 GPA</p>
-          <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
-        </div>
-        <div class="result-main">
-          <p class="result-number"><span class="result-value"><span class="marker" id="convertedValue">—</span></span><span class="result-unit" id="convertedUnit">/ 4.3</span></p>
-        </div>
-        <div class="ratio" aria-hidden="true">
-          <div class="ratio-row"><span>현재</span><div class="ratio-track"><div class="ratio-fill" id="fromFill"></div></div><span class="num" id="fromText"></span></div>
-          <div class="ratio-row is-target"><span>환산</span><div class="ratio-track"><div class="ratio-fill" id="toFill"></div></div><span class="num" id="toText"></span></div>
-        </div>
-        <p class="result-note" id="convertedNote">GPA와 만점을 넣으면 바로 환산돼요.</p>
-        <p class="result-meta">단순 비례 참고값이에요. 대학·기관의 공식 환산표가 아니에요.</p>
-      </section>
-
       <form class="input-stack" id="convertForm" novalidate>
         <section class="card" aria-labelledby="inputTitle">
           <div class="card-head"><div><h2 id="inputTitle">환산할 값</h2></div></div>
@@ -98,6 +83,21 @@
           </div>
         </section>
       </form>
+
+      <section class="card result-card" id="resultCard" data-state="empty" aria-labelledby="convertedLabel">
+        <div class="result-head">
+          <p class="result-label" id="convertedLabel">환산한 GPA</p>
+        </div>
+        <div class="result-main">
+          <p class="result-number"><span class="result-value"><span class="marker" id="convertedValue">—</span></span><span class="result-unit" id="convertedUnit">/ 4.3</span></p>
+        </div>
+        <div class="ratio" aria-hidden="true">
+          <div class="ratio-row"><span>현재</span><div class="ratio-track"><div class="ratio-fill" id="fromFill"></div></div><span class="num" id="fromText"></span></div>
+          <div class="ratio-row is-target"><span>환산</span><div class="ratio-track"><div class="ratio-fill" id="toFill"></div></div><span class="num" id="toText"></span></div>
+        </div>
+        <p class="result-note" id="convertedNote">GPA와 만점을 넣으면 바로 환산돼요.</p>
+        <p class="result-meta">단순 비례 참고값이에요. 대학·기관의 공식 환산표가 아니에요.</p>
+      </section>
     </div>
 
     <section class="note" aria-labelledby="howTitle">

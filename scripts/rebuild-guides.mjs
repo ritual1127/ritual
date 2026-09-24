@@ -188,7 +188,7 @@ function render(g) {
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
   <title>${g.title} | 성적 계산기</title>
   <meta name="description" content="${g.description}">
   <meta name="robots" content="index, follow">

@@ -10,7 +10,7 @@
   <!-- End Google Tag Manager -->
 
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
   <title>성적 계산기 - 수행평가·지필고사 반영 점수 계산</title>
   <meta name="description" content="수행평가와 중간·기말고사 점수, 반영비율을 입력하면 최종 원점수와 A~E 등급을 바로 계산합니다.">
   <meta name="keywords" content="성적계산기, 수행평가 계산기, 지필고사 계산기, 내신 등급 계산, 원점수 계산기, 등급컷 계산">
@@ -85,29 +85,12 @@
   <main id="main" class="page">
     <header class="page-head">
       <h1>성적 계산기</h1>
+      <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
     </header>
 
     <div class="calc">
-      <section class="card result-card" id="resultCard" data-state="empty" aria-labelledby="resultLabel">
-        <div class="result-head">
-          <p class="result-label" id="resultLabel">내 최종점수</p>
-          <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
-        </div>
-        <div class="result-main">
-          <p class="result-number"><span class="result-value"><span class="marker" id="finalValue">—</span></span><span class="result-unit">점</span></p>
-          <span class="grade" id="finalGrade" hidden></span>
-        </div>
-        <div class="scorebar" aria-hidden="true">
-          <div class="scorebar-track"><span class="scorebar-fill" id="scoreFill"></span></div>
-          <div class="scorebar-zones"><span data-grade="E">E</span><span data-grade="D">D</span><span data-grade="C">C</span><span data-grade="B">B</span><span data-grade="A">A</span></div>
-        </div>
-        <p class="result-note" id="resultNote">점수를 입력하면 바로 계산돼요.</p>
-        <p class="result-meta" id="resultMeta"></p>
-        <details class="formula" id="formulaBox" hidden><summary>계산식</summary><p id="formulaText"></p></details>
-      </section>
-
       <form class="input-stack" id="gradeForm" novalidate>
-        <section class="card" aria-labelledby="performanceTitle">
+        <section class="card step" aria-labelledby="performanceTitle">
           <div class="card-head">
             <div><h2 id="performanceTitle">수행평가</h2></div>
             <div class="stepper" role="group" aria-label="수행평가 개수">
@@ -121,7 +104,7 @@
           <p class="empty-line" id="performanceEmpty" hidden>수행평가가 없어요. + 버튼으로 추가할 수 있어요.</p>
         </section>
 
-        <section class="card" aria-labelledby="examTitle">
+        <section class="card step" aria-labelledby="examTitle">
           <div class="card-head">
             <div><h2 id="examTitle">정기고사</h2></div>
             <div class="stepper" role="group" aria-label="정기고사 개수">
@@ -135,7 +118,7 @@
           <p class="empty-line" id="examEmpty" hidden>정기고사가 없어요. + 버튼으로 추가할 수 있어요.</p>
         </section>
 
-        <section class="card" aria-label="반영비율 합계">
+        <section class="card meter-card" aria-label="반영비율 합계">
           <div class="meter" id="weightMeter" data-state="under">
             <div class="meter-top"><span class="meter-label">반영비율 합계</span><span class="meter-text" id="weightText">0%</span></div>
             <div class="meter-track"><div class="meter-fill" id="weightFill"></div></div>
@@ -145,6 +128,23 @@
           </div>
         </section>
       </form>
+
+      <section class="card result-card" id="resultCard" data-state="empty" aria-labelledby="resultLabel">
+        <div class="result-head">
+          <p class="result-label" id="resultLabel">내 최종점수</p>
+        </div>
+        <div class="result-main">
+          <p class="result-number"><span class="result-value"><span class="marker" id="finalValue">—</span></span><span class="result-unit">점</span></p>
+          <span class="grade" id="finalGrade" hidden></span>
+        </div>
+        <div class="scorebar" aria-hidden="true">
+          <div class="scorebar-track"><span class="scorebar-fill" id="scoreFill"></span></div>
+          <div class="scorebar-zones"><span data-grade="E">E</span><span data-grade="D">D</span><span data-grade="C">C</span><span data-grade="B">B</span><span data-grade="A">A</span></div>
+        </div>
+        <p class="result-note" id="resultNote">점수를 입력하면 바로 계산돼요.</p>
+        <p class="result-meta" id="resultMeta"></p>
+        <details class="formula" id="formulaBox" hidden><summary>계산식</summary><p id="formulaText"></p></details>
+      </section>
     </div>
 
     <section class="note" aria-labelledby="howTitle">

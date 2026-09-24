@@ -10,7 +10,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- End Google Tag Manager -->
 
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
   <title>학점 계산기 - 평점평균(GPA) 4.5·4.3·4.0 자동 계산 | 성적 계산기</title>
   <meta name="description" content="과목별 학점과 성적만 입력하면 평점평균(GPA)을 바로 계산해주는 무료 학점 계산기. 4.5 / 4.3 / 4.0 만점 기준을 모두 지원합니다.">
   <meta name="keywords" content="학점 계산기, 평점평균 계산기, GPA 계산기, 4.5 만점, 4.3 만점, 만점 대비 비율">
@@ -64,13 +64,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <main id="main" class="page">
     <header class="page-head">
       <h1>학점 계산기</h1>
+      <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
     </header>
 
     <div class="calc">
+      <form class="input-stack" id="gpaForm" novalidate>
+        <section class="card step" aria-labelledby="scaleTitle">
+          <div class="card-head"><div><h2 id="scaleTitle">만점 기준</h2></div></div>
+          <div class="seg" role="group" aria-label="만점 기준">
+            <button type="button" data-scale="4.5" aria-pressed="true">4.5 만점</button>
+            <button type="button" data-scale="4.3" aria-pressed="false">4.3 만점</button>
+            <button type="button" data-scale="4.0" aria-pressed="false">4.0 만점</button>
+          </div>
+        </section>
+
+        <section class="card step" aria-labelledby="courseTitle">
+          <div class="card-head"><div><h2 id="courseTitle">수강 과목</h2></div></div>
+          <div class="course course-head" aria-hidden="true"><span>과목명</span><span>학점</span><span>성적</span><span></span></div>
+          <div id="rows"></div>
+          <button type="button" class="btn-ghost btn-add" id="addRowBtn">+ 과목 추가</button>
+        </section>
+
+        <section class="card ref-card" aria-labelledby="pointTitle">
+          <div class="card-head"><div><h2 id="pointTitle">4.5 만점 기준 평점표</h2></div></div>
+          <div class="chip-grid" id="scaleGrid"></div>
+          <p class="field-hint mt">평점평균 = Σ(과목 평점 × 학점) ÷ Σ평점 반영 학점</p>
+        </section>
+      </form>
+
       <section class="card result-card" id="resultCard" data-state="empty" aria-labelledby="gpaLabel">
         <div class="result-head">
           <p class="result-label" id="gpaLabel">평점평균 (GPA)</p>
-          <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
         </div>
         <div class="result-main">
           <p class="result-number"><span class="result-value"><span class="marker" id="gpaValue">—</span></span><span class="result-unit" id="gpaUnit">/ 4.5</span></p>
@@ -89,30 +113,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
         </div>
       </section>
-
-      <form class="input-stack" id="gpaForm" novalidate>
-        <section class="card" aria-labelledby="scaleTitle">
-          <div class="card-head"><div><h2 id="scaleTitle">만점 기준</h2></div></div>
-          <div class="seg" role="group" aria-label="만점 기준">
-            <button type="button" data-scale="4.5" aria-pressed="true">4.5 만점</button>
-            <button type="button" data-scale="4.3" aria-pressed="false">4.3 만점</button>
-            <button type="button" data-scale="4.0" aria-pressed="false">4.0 만점</button>
-          </div>
-        </section>
-
-        <section class="card" aria-labelledby="courseTitle">
-          <div class="card-head"><div><h2 id="courseTitle">수강 과목</h2></div></div>
-          <div class="course course-head" aria-hidden="true"><span>과목명</span><span>학점</span><span>성적</span><span></span></div>
-          <div id="rows"></div>
-          <button type="button" class="btn-ghost btn-add" id="addRowBtn">+ 과목 추가</button>
-        </section>
-
-        <section class="card" aria-labelledby="pointTitle">
-          <div class="card-head"><div><h2 id="pointTitle">4.5 만점 기준 평점표</h2></div></div>
-          <div class="chip-grid" id="scaleGrid"></div>
-          <p class="field-hint mt">평점평균 = Σ(과목 평점 × 학점) ÷ Σ평점 반영 학점</p>
-        </section>
-      </form>
     </div>
 
     <section class="note" aria-labelledby="howTitle">
