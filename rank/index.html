@@ -262,7 +262,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           value: fixedNumber(avg),
           note: invalid ? `석차 입력이 잘못된 과목 ${invalid}개는 빼고 계산했어요.` : '과목별 등급에 단위수를 곱해 평균을 냈어요.',
           meta: `단위수 합 ${formatNumber(units)} · 과목 ${results.length}개 · ${system}등급제`,
-          mini: `평균 ${fixedNumber(avg)}등급`
+          mini: `${fixedNumber(avg)}등급`
         });
       }
 

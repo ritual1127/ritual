@@ -6,7 +6,7 @@ const context = vm.createContext({});
 vm.runInContext(fs.readFileSync(new URL('../calc-core.js', import.meta.url), 'utf8'), context);
 // vm 안에서 만든 객체는 프로토타입이 달라 deepEqual 전에 현재 realm 객체로 옮긴다.
 const plain = value => JSON.parse(JSON.stringify(value));
-const c = vm.runInContext('({ formatNumber, fixedNumber, gradeFor, nextGradeGap, weightedSum, ceil2, requiredScore, rankPercentile, rankGrade, rankTier, rankRowStatus, mapGrade, gpaSummary, convertGpa, splitWeights, projectedScore })', context);
+const c = vm.runInContext('({ formatNumber, fixedNumber, gradeFor, nextGradeGap, weightedSum, ceil2, requiredScore, rankPercentile, rankGrade, rankTier, rankRowStatus, mapGrade, gpaSummary, convertGpa, projectedScore })', context);
 
 // 수행·지필
 assert.equal(c.weightedSum([{ score: 90, weight: 40 }, { score: 80, weight: 30 }, { score: 70, weight: 30 }]), 81);
@@ -66,11 +66,6 @@ assert.equal(c.convertGpa(5, 4.5, 4.3), null);
 assert.equal(c.convertGpa(1, 0, 4.3), null);
 
 // 비율 빠른 채우기: 합이 정확히 total이 되도록 나머지는 마지막 칸에
-assert.deepEqual(plain(c.splitWeights(40, 3)), [13.33, 13.33, 13.34]);
-assert.deepEqual(plain(c.splitWeights(60, 2)), [30, 30]);
-assert.deepEqual(plain(c.splitWeights(100, 1)), [100]);
-assert.deepEqual(plain(c.splitWeights(50, 0)), []);
-assert.equal(c.splitWeights(70, 3).reduce((a, b) => a + b, 0).toFixed(2), '70.00');
 
 // 만약에 슬라이더
 assert.equal(c.projectedScore(51, 40, 97.5), 90);

@@ -343,8 +343,8 @@
         renderWhatIf();
         if (answer.status === 'reached') return show('done', { value: 0, note: `이미 ${goal} 달성! 0점을 받아도 최종 ${formatNumber(completed)}점이에요.`, meta, mini: '목표 달성' });
         const need = ceil2(answer.score);
-        if (answer.status === 'impossible') return show('bad', { value: need, note: `100점을 받아도 최종 ${formatNumber(completed + remaining)}점이에요. 목표를 조금 낮춰 보세요.`, meta, mini: `필요 ${formatNumber(need)}점` });
-        show('done', { value: need, note: `${exam}에서 ${formatNumber(need)}점 이상 받으면 ${goal} 달성!`, meta, mini: `필요 ${formatNumber(need)}점` });
+        if (answer.status === 'impossible') return show('bad', { value: need, note: `100점을 받아도 최종 ${formatNumber(completed + remaining)}점이에요. 목표를 조금 낮춰 보세요.`, meta, mini: `${formatNumber(need)}점` });
+        show('done', { value: need, note: `${exam}에서 ${formatNumber(need)}점 이상 받으면 ${goal} 달성!`, meta, mini: `${formatNumber(need)}점` });
       }
 
       form.addEventListener('submit', event => event.preventDefault());

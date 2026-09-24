@@ -76,15 +76,6 @@ function gpaSummary(rows, scale) {
   return { total, graded, gpa: graded ? roundFloat(points / graded) : null };
 }
 
-// 비율을 칸 수로 나눈다. 소수 둘째 자리까지, 합이 total에서 어긋나지 않게 나머지는 마지막 칸에 준다.
-function splitWeights(total, count) {
-  if (!(count > 0)) return [];
-  const base = Math.floor(total / count * 100) / 100;
-  const out = Array(count).fill(base);
-  out[count - 1] = roundFloat(total - base * (count - 1));
-  return out;
-}
-
 function projectedScore(completedScore, remainingWeight, examScore) {
   return roundFloat(completedScore + examScore * remainingWeight / 100);
 }

@@ -107,16 +107,6 @@
       </section>
 
       <form class="input-stack" id="gradeForm" novalidate>
-        <section class="card" aria-labelledby="presetTitle">
-          <div class="card-head"><div><h2 id="presetTitle">반영비율 빠른 선택</h2></div></div>
-          <div class="chip-grid" role="group" aria-label="수행평가 대 정기고사 비율">
-            <button type="button" class="chip chip-btn" data-preset="20" aria-pressed="false">20 : 80</button>
-            <button type="button" class="chip chip-btn" data-preset="30" aria-pressed="false">30 : 70</button>
-            <button type="button" class="chip chip-btn" data-preset="40" aria-pressed="false">40 : 60</button>
-            <button type="button" class="chip chip-btn" data-preset="50" aria-pressed="false">50 : 50</button>
-          </div>
-        </section>
-
         <section class="card" aria-labelledby="performanceTitle">
           <div class="card-head">
             <div><h2 id="performanceTitle">수행평가</h2></div>
@@ -266,18 +256,12 @@
           : `${formatNumber(total)}% · ${formatNumber(100 - total)}% 더 필요`;
       }
 
-      const groupSum = kind => state[kind].reduce((sum, row) => sum + (Number(row.weight) || 0), 0);
-
       function update() {
         save();
         const rows = [...state.performance, ...state.exam].map(({ score, weight }) => ({ score: num(score), weight: num(weight) }));
         form.querySelectorAll('input[data-field]').forEach(input => input.setAttribute('aria-invalid', String(!inRange(num(input.value)))));
         const weightTotal = rows.reduce((sum, row) => sum + (Number.isFinite(row.weight) ? row.weight : 0), 0);
         renderMeter(weightTotal);
-        form.querySelectorAll('[data-preset]').forEach(chip => {
-          const perf = Number(chip.dataset.preset);
-          chip.setAttribute('aria-pressed', String(Math.abs(groupSum('performance') - perf) < .01 && Math.abs(groupSum('exam') - (100 - perf)) < .01));
-        });
         const blankWeights = rows.filter(row => row.weight === null).length;
         const rest = 100 - weightTotal;
         $('fillRestBtn').hidden = !(blankWeights === 1 && rest > .001 && rows.every(row => inRange(row.weight)));
@@ -293,7 +277,7 @@
         if (!filled.length) return show('empty', { note: '점수를 입력하면 바로 계산돼요.', meta: weightText });
 
         const sum = weightedSum(complete);
-        if (blanks) return show('partial', { label: '지금까지 반영된 점수', value: sum, note: `빈칸 ${blanks}개 남음 · 다 채우면 최종점수가 나와요.`, meta: weightText, mini: `반영 ${formatNumber(sum)}점` });
+        if (blanks) return show('partial', { label: '지금까지 반영된 점수', value: sum, note: `빈칸 ${blanks}개 남음 · 다 채우면 최종점수가 나와요.`, meta: weightText, mini: `${formatNumber(sum)}점` });
         if (Math.abs(weightTotal - 100) > 0.01) return show('warn', { note: `반영비율 합계를 100%로 맞춰 주세요. (현재 ${formatNumber(weightTotal)}%)`, meta: weightText });
 
         const grade = gradeFor(sum);
@@ -315,17 +299,7 @@
         state[kind][index][field] = event.target.value;
         update();
       });
-      function applyPreset(perf) {
-        for (const kind of Object.keys(KINDS)) if (!state[kind].length) state[kind].push({ score: '', weight: '' });
-        splitWeights(perf, state.performance.length).forEach((weight, i) => { state.performance[i].weight = String(weight); });
-        splitWeights(100 - perf, state.exam.length).forEach((weight, i) => { state.exam[i].weight = String(weight); });
-        renderAll();
-        update();
-      }
-
       form.addEventListener('click', event => {
-        const preset = event.target.closest('[data-preset]');
-        if (preset) return applyPreset(Number(preset.dataset.preset));
         const button = event.target.closest('[data-count]');
         if (!button) return;
         const kind = button.dataset.count;
