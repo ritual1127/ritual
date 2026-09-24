@@ -140,7 +140,7 @@ const guides = [
   }
 ];
 
-// 모든 페이지가 같은 셸을 쓴다(styles.css의 .appbar/.toolnav/.site-footer).
+// 모든 페이지가 같은 셸을 쓴다(styles.css의 .appbar/.site-footer).
 const SHELL = `  <a class="skip-link" href="#main">본문 바로가기</a>
   <header class="appbar">
     <div class="appbar-inner glass">
@@ -209,8 +209,8 @@ function render(g) {
   <link rel="icon" href="../../icon-192.png">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-  <link rel="stylesheet" href="../../styles.css">
-  <script src="../../site-nav.js"></script>
+  <link rel="stylesheet" href="../../styles.css?v=20260924">
+  <script src="../../site-nav.js?v=20260924"></script>
   <script type="application/ld+json">${schema}</script>
 </head>
 <body>
