@@ -62,26 +62,25 @@
 
   <a class="skip-link" href="#main">본문 바로가기</a>
   <header class="appbar">
-    <div class="appbar-inner">
-      <a class="logo" href="/"><img class="logo-icon" src="/favicon.png" alt="" width="30" height="30"><span class="logo-mark">성적</span>계산기</a>
+    <div class="appbar-inner glass">
+      <a class="logo" href="/"><img class="logo-icon" src="/favicon.png" alt="" width="30" height="30"><span class="logo-text"><span class="logo-mark">성적</span>계산기</span></a>
+      <button type="button" class="tool-menu-btn" aria-expanded="false" aria-controls="toolMenu" aria-label="도구 메뉴, 현재 수행·지필"><span>수행·지필</span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+      <nav class="tools glass" id="toolMenu" aria-label="도구">
+        <a class="tool" href="/" aria-current="page">수행·지필</a>
+        <a class="tool" href="/target-score/">목표점수</a>
+        <a class="tool" href="/rank/">내신등급</a>
+        <a class="tool" href="/gpa/">학점</a>
+        <a class="tool" href="/gpa-converter/">GPA 환산</a>
+        <span class="tools-sep" aria-hidden="true"></span>
+        <a class="tool" href="/todayfood/">급식</a>
+        <a class="tool" href="/todayclass/">시간표</a>
+      </nav>
       <button type="button" class="theme-toggle" aria-pressed="false" aria-label="다크 모드">
         <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
         <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
       </button>
     </div>
   </header>
-  <nav class="toolnav" aria-label="도구">
-    <div class="toolnav-inner">
-      <a class="tool" href="/" aria-current="page">수행·지필</a>
-      <a class="tool" href="/target-score/">목표점수</a>
-      <a class="tool" href="/rank/">내신등급</a>
-      <a class="tool" href="/gpa/">학점</a>
-      <a class="tool" href="/gpa-converter/">GPA 환산</a>
-      <span class="toolnav-sep" aria-hidden="true"></span>
-      <a class="tool" href="/todayfood/">급식</a>
-      <a class="tool" href="/todayclass/">시간표</a>
-    </div>
-  </nav>
 
   <main id="main" class="page">
     <header class="page-head">

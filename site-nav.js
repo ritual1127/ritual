@@ -1,4 +1,4 @@
-// 모든 페이지 공통: 테마, 도구 칩, 서비스워커, 계산기 입력 보조, 미니 결과, 모션(롤링·도장·축하·낙서), 되돌리기 알림
+// 모든 페이지 공통: 테마, 도구 메뉴, 서비스워커, 계산기 입력 보조, 미니 결과, 모션(롤링·도장·축하), 되돌리기 알림
 (function () {
   const root = document.documentElement;
   const PAPER = { light: '#FAF7F0', dark: '#14161D' };
@@ -25,18 +25,23 @@
     media.addEventListener('change', () => applyTheme(savedTheme()));
   }
 
-  function setupToolnav() {
-    const nav = document.querySelector('.toolnav-inner');
-    if (!nav) return;
-    const active = nav.querySelector('[aria-current="page"]');
-    if (active) nav.scrollLeft = active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2;
-    const edges = () => {
-      nav.dataset.start = String(nav.scrollLeft <= 2);
-      nav.dataset.end = String(nav.scrollLeft + nav.clientWidth >= nav.scrollWidth - 2);
+  // 모바일 도구 메뉴: 캡슐의 현재 도구 버튼으로 여닫는다(데스크톱은 CSS가 탭으로 펼친다).
+  function setupToolMenu() {
+    const bar = document.querySelector('.appbar-inner');
+    const button = bar?.querySelector('.tool-menu-btn');
+    if (!button) return;
+    const setOpen = open => {
+      bar.dataset.menu = open ? 'open' : 'closed';
+      button.setAttribute('aria-expanded', String(open));
     };
-    nav.addEventListener('scroll', edges, { passive: true });
-    addEventListener('resize', edges, { passive: true });
-    edges();
+    button.addEventListener('click', () => setOpen(button.getAttribute('aria-expanded') !== 'true'));
+    document.addEventListener('keydown', event => {
+      if (event.key !== 'Escape' || button.getAttribute('aria-expanded') !== 'true') return;
+      setOpen(false);
+      button.focus();
+    });
+    document.addEventListener('click', event => { if (!bar.contains(event.target)) setOpen(false); });
+    addEventListener('pageshow', () => setOpen(false));
   }
 
   // 계산기 입력 보조: 포커스 시 전체 선택, Enter로 다음 칸, blur 시 범위 보정
@@ -213,7 +218,7 @@
   const releaseToast = () => { clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, 5000); };
   window.showToast = (message, { action, onAction } = {}) => {
     if (!toast) {
-      toast = make('div', 'toast');
+      toast = make('div', 'toast glass');
       toast.setAttribute('role', 'status');
       toast.addEventListener('focusin', holdToast);
       toast.addEventListener('mouseenter', holdToast);
@@ -233,18 +238,12 @@
     releaseToast();
   };
 
-  // 제목 아래 펜 낙서 밑줄. 고정 SVG 문자열만 넣는다.
-  function doodle() {
-    document.querySelectorAll('.page-head h1, .prose h1').forEach(h1 => {
-      h1.insertAdjacentHTML('beforeend', '<svg class="doodle" viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path pathLength="1" d="M2 9.5C28 4 52 12.5 82 8.5S140 3.5 168 7.5 194 10 198 7"/></svg>');
-    });
-  }
 
   if ('serviceWorker' in navigator) {
     addEventListener('load', () => navigator.serviceWorker.register('/app-sw.js').catch(() => {}));
   }
 
-  function init() { setupThemeToggle(); setupToolnav(); doodle(); }
+  function init() { setupThemeToggle(); setupToolMenu(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
