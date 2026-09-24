@@ -2,3 +2,4 @@ dist/
 og-source.png
 build-seo-content.mjs
 .wrangler/
+.dev.vars

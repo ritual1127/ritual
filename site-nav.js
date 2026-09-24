@@ -4,6 +4,18 @@
   const PAPER = { light: '#F5F5F7', dark: '#000000' };
   const media = matchMedia('(prefers-color-scheme: dark)');
 
+  // 방문 통계(관리자 대시보드): 쿠키·IP 없이 경로와 유입 사이트만 보낸다. 로봇은 서버가 거른다.
+  let apiBase = null;
+  try { apiBase = localStorage.getItem('apiBase'); } catch {}
+  const API = window.SITE_API = apiBase || 'https://seongjeok-feedback-api.smilepea.workers.dev';
+  // 브라우저에서 '추적 안 함'이나 GPC를 켰으면 보내지 않는다.
+  const optOut = navigator.globalPrivacyControl === true || navigator.doNotTrack === '1';
+  window.track = data => { if (optOut) return; try { navigator.sendBeacon(`${API}/t`, JSON.stringify({ path: location.pathname, ...data })); } catch {} };
+  if (!location.pathname.startsWith('/admin')) window.track({ type: 'view', ref: document.referrer });
+  // 계산 완료는 사용자가 직접 입력한 뒤 결과가 처음 나올 때 한 번만 센다(저장된 값을 불러온 건 빼고).
+  let typed = false, counted = false;
+  document.addEventListener('input', () => { typed = true; }, true);
+
   function savedTheme() { try { return localStorage.getItem('theme'); } catch { return null; } }
   function currentTheme() { return root.dataset.theme || (media.matches ? 'dark' : 'light'); }
   function applyTheme(theme) {
@@ -160,6 +172,7 @@
   // 스크린리더에는 입력이 멈춘 뒤 한 번만 읽힌다.
   let live = null, liveTimer = 0;
   window.setMiniResult = text => {
+    if (text && typed && !counted) { counted = true; window.track({ type: 'calc' }); }
     const main = document.querySelector('.bar-main');
     if (main) {
       const [value, ...rest] = text.split(' · ');

@@ -10,7 +10,7 @@ const descriptions = new Map();
 
 function walk(dir) {
   for (const item of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (['.git', 'dist', 'node_modules', 'feedback-api', '.wrangler', '.sites-stage'].includes(item.name)) continue;
+    if (['.git', 'dist', 'node_modules', 'feedback-api', '.wrangler', '.sites-stage', 'admin'].includes(item.name)) continue;
     const full = path.join(dir, item.name);
     if (item.isDirectory()) walk(full);
     else if (item.name === 'index.html') htmlFiles.push(full);

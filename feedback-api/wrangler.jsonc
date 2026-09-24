@@ -7,6 +7,20 @@
     { "binding": "FEEDBACK_KV", "id": "44077a39497246a992d8389fa97f3d42" },
     { "binding": "PUSH_KV", "id": "548ecf18ce254bd2b3e88e4c20280ebe" }
   ],
+  // 방문 통계·AI 질문·문의·관리자 로그인 실패 기록
+  "d1_databases": [
+    { "binding": "DB", "database_name": "seongjeok-db", "database_id": "1a91c3a0-b22f-4f6e-be22-d4c3f3d09c38", "migrations_dir": "migrations" }
+  ],
+  // AI 도우미: 답변 생성·임베딩(Workers AI 무료 한도)과 의미 검색 색인. remote는 wrangler dev에서만 쓰인다.
+  "ai": { "binding": "AI", "remote": true },
+  "vectorize": [
+    { "binding": "VEC", "index_name": "seongjeok-kb", "remote": true }
+  ],
+  "ratelimits": [
+    { "name": "CHAT_RL", "namespace_id": "4101", "simple": { "limit": 10, "period": 60 } },
+    { "name": "FORM_RL", "namespace_id": "4102", "simple": { "limit": 3, "period": 60 } },
+    { "name": "TRACK_RL", "namespace_id": "4103", "simple": { "limit": 60, "period": 60 } }
+  ],
   "triggers": {
     "crons": ["30 2 * * *"]
   }

@@ -12,7 +12,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
   <title>개인정보처리방침 - 성적 계산기</title>
-  <meta name="description" content="성적 계산기가 개인정보를 수집·이용하지 않는 방식과 광고 쿠키 이용 안내를 담은 개인정보처리방침입니다.">
+  <meta name="description" content="성적 계산기의 문의하기·AI 도우미·방문 통계에서 처리하는 정보와 보관 기간, 광고 쿠키 이용을 안내하는 개인정보처리방침입니다.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://naver1.cloud/privacy/">
   <meta property="og:url" content="https://naver1.cloud/privacy/">
@@ -23,8 +23,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <link rel="icon" href="../icon-192.png?v=6">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-  <link rel="stylesheet" href="../styles.css?v=20260924e">
-  <script src="../site-nav.js?v=20260924e"></script>
+  <link rel="stylesheet" href="../styles.css?v=20260924f">
+  <script src="../site-nav.js?v=20260924f"></script>
+  <script src="../assistant.js?v=20260924f" defer></script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6088412169158396"
        crossorigin="anonymous"></script>
 </head>
@@ -62,19 +63,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h1>개인정보처리방침</h1>
       <p class="lede">성적 계산기는 이용자의 개인정보를 다음과 같이 처리합니다</p>
       <p class="updated">시행일자: 2026년 9월 24일</p>
-      <h2>1. 수집하는 개인정보 항목</h2>
-      <p>성적 계산기(이하 '사이트')는 회원가입이나 로그인 없이 이용할 수 있으며, 서버에 개인을 식별할 수 있는 정보를 저장하지 않습니다. 과목·점수 계산 기록과 다크 모드 설정은 이용자의 브라우저(localStorage)에만 저장되며 서버로 전송되지 않습니다.</p>
-      <h2>2. 급식·시간표 조회 기능</h2>
+      <h2>1. 수집하는 개인정보 항목과 목적</h2>
+      <p>성적 계산기(이하 '사이트')는 회원가입이나 로그인 없이 이용할 수 있습니다. 과목·점수 계산 기록, 고른 학교·학년·반, 다크 모드 설정은 이용자의 브라우저(localStorage)에만 저장되며 서버로 전송되지 않습니다. 이용자가 아래 기능을 쓸 때에만 다음 정보를 처리합니다.</p>
+      <ul>
+      <li><strong>문의하기</strong>: 문의 유형, 문의 내용, 이메일(선택), 문의를 보낸 페이지 주소. 문의 확인과 답변, 오류 수정을 위해 처리하며 접수일로부터 1년 동안 보관합니다.</li>
+      <li><strong>AI 도우미</strong>: 질문 내용, 답변 앞부분, 답한 방식, 질문한 페이지 주소. 답변 제공과 답변 품질 개선을 위해 처리하며 90일 동안 보관합니다. 대화 화면은 이용자의 브라우저 탭에만 남고 창을 닫으면 사라집니다.</li>
+      <li><strong>방문 통계</strong>: 방문한 페이지 주소, 들어온 사이트의 도메인, 기기 종류(휴대폰·PC·태블릿), 국가, 방문 날짜와 시간대, 하루 단위로 바뀌는 익명 방문자 값. 이용 현황 파악과 서비스 개선을 위해 처리하며 180일 동안 보관합니다. 익명 방문자 값은 IP 주소와 브라우저 정보를 비밀값과 함께 해시해 만든 값으로, IP 주소 자체는 저장하지 않고 날짜가 바뀌면 같은 사람도 다른 값이 됩니다. 쿠키는 쓰지 않으며, 브라우저에서 '추적 안 함(Do Not Track)'이나 GPC를 켜면 방문 통계를 보내지 않습니다.</li>
+      <li><strong>급식 알림</strong>(켠 경우): 브라우저 푸시 구독 정보(알림 전송 주소와 암호화 키). 매일 급식 알림을 보내기 위해 처리하며, 알림을 끄거나 구독이 만료되면 삭제합니다.</li>
+      </ul>
+      <p>AI 도우미와 문의하기에는 이름, 전화번호, 학번 같은 개인정보를 적지 말아 주세요.</p>
+      <h2>2. 처리 위탁과 국외 이전</h2>
+      <p>위 정보는 서버 운영을 위해 Cloudflare, Inc.(미국)의 서비스(Workers, D1·KV 데이터베이스, Workers AI, Vectorize)에 저장·처리됩니다. 이용자가 해당 기능을 쓸 때 네트워크를 통해 전송되며, 보관 기간은 1번 항목과 같습니다. 국외 이전을 원하지 않으면 AI 도우미·문의하기·급식 알림을 쓰지 않고, 브라우저의 '추적 안 함' 설정을 켜면 됩니다. 이 경우에도 계산기와 급식·시간표 조회는 그대로 쓸 수 있습니다.</p>
+      <h2>3. 급식·시간표 조회 기능</h2>
       <p>'오늘의 급식', '우리학교 시간표' 기능은 교육부·한국교육학술정보원이 제공하는 NEIS 교육정보 개방포털의 공개 데이터를 조회하는 기능으로, 이 과정에서 개인정보를 수집하지 않습니다.</p>
-      <h2>3. 광고 서비스 및 쿠키</h2>
+      <h2>4. 만 14세 미만 아동</h2>
+      <p>사이트는 만 14세 미만 아동의 개인정보를 법정대리인 동의 없이 수집하지 않습니다. 만 14세 미만 이용자는 문의하기에 이메일을 적지 말아 주세요. 만 14세 미만 아동의 정보가 수집된 사실을 알게 되면 바로 삭제합니다.</p>
+      <h2>5. 파기</h2>
+      <p>보관 기간이 지난 정보는 매일 자동으로 삭제합니다. 문의 삭제를 원하면 문의하기로 요청해 주세요. 확인 후 바로 지웁니다.</p>
+      <h2>6. 광고 서비스 및 쿠키</h2>
       <p>이 사이트는 구글 애드센스를 통해 광고를 게재합니다. 광고 서비스는 이용자의 관심에 맞는 광고를 제공하기 위해 쿠키를 사용할 수 있습니다.</p>
       <ul>
       <li>제3자 광고 공급업체는 쿠키를 사용하여 이용자가 이 사이트 및 다른 사이트를 방문한 기록을 바탕으로 광고를 게재할 수 있습니다.</li>
       <li>구글 광고 서비스 이용 시, 이용자는 <a href="https://adssettings.google.com" target="_blank" rel="noopener">구글 광고 설정</a>에서 맞춤 광고를 비활성화할 수 있습니다.</li>
       <li>브라우저 설정에서 쿠키 저장을 거부하거나 삭제할 수 있습니다.</li>
       </ul>
-      <h2>4. 방침 변경</h2>
-      <p>이 개인정보처리방침은 관련 법령 및 서비스 변경 사항에 따라 수정될 수 있으며, 변경 시 이 페이지를 통해 공지합니다.</p>
+      <h2>7. 문의와 방침 변경</h2>
+      <p>개인정보와 관련된 문의나 열람·삭제 요청은 화면의 '문의하기'로 보내 주세요. 이 개인정보처리방침은 관련 법령 및 서비스 변경 사항에 따라 수정될 수 있으며, 변경 시 이 페이지를 통해 공지합니다.</p>
     </article>
   </main>
 

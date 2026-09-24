@@ -677,6 +677,131 @@ details.faq p { padding: 0 0 16px; margin: 0; font-size: 15px; line-height: 1.6;
 @media (min-width: 960px) { .toast { top: 84px; } }
 .is-new { animation: row-in .35s var(--ease) both; }
 
+/* ── AI 도우미 · 문의하기: PC는 왼쪽 아래 유리 도크, 휴대폰은 도구 메뉴 맨 아래 두 줄. 패널은 유리 시트 ── */
+[data-app="ai"] { --app-ink: #3D4FE0; --app-a: #8E9BFF; --app-b: #4A5CFF; --app-glow: rgba(74, 92, 255, .5); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M10.5 3.5c.5 3.9 2.1 5.5 6 6-3.9.5-5.5 2.1-6 6-.5-3.9-2.1-5.5-6-6 3.9-.5 5.5-2.1 6-6z'/%3E%3Cpath d='M17.5 13.5c.3 2 1.1 2.8 3 3-1.9.3-2.7 1.1-3 3-.3-1.9-1.1-2.7-3-3 1.9-.2 2.7-1 3-3z'/%3E%3C/svg%3E"); }
+[data-app="mail"] { --app-ink: #55555C; --app-a: #B4B4BC; --app-b: #72727A; --app-glow: rgba(90, 90, 100, .45); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='5.5' width='17' height='13' rx='3'/%3E%3Cpath d='M4.5 7.5 12 13l7.5-5.5'/%3E%3C/svg%3E"); }
+
+.tools-extra { grid-column: 1 / -1; display: grid; gap: 2px; margin-top: 2px; padding-top: 10px; border-top: 1px solid var(--hairline); }
+.tools-row {
+  display: flex; align-items: center; gap: 12px; width: 100%; min-height: 54px; padding: 6px 10px;
+  border: 0; border-radius: 16px; background: transparent; color: var(--ink); text-align: left; transition: background-color .15s;
+}
+.tools-row:hover { background: var(--chip); }
+.tools-row .app-icon { width: 38px; height: 38px; }
+.tools-row-text { flex: 1; min-width: 0; display: grid; line-height: 1.25; }
+.tools-row-title { font-size: 16px; font-weight: 600; letter-spacing: -.02em; }
+.tools-row-hint { font-size: 13px; color: var(--ink-2); }
+.tools-row > .icon { width: 18px; height: 18px; color: var(--ink-3); }
+
+.assist-dock { display: none; }
+.assist-panel {
+  --glass-bg: var(--glass-sheet); --glass-blur: 26px; --glass-extra: var(--glass-lift); --lens: initial;
+  position: fixed; z-index: 40; inset: calc(10px + env(safe-area-inset-top, 0px)) 8px calc(10px + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-direction: column; border-radius: 28px; color: var(--ink);
+}
+.assist-panel[hidden] { display: none !important; }
+/* 패널 자체를 움직이면 크롬이 뒤 화면 흐림을 끈다. 유리판은 바로 띄우고 안쪽 내용만 올라오게 한다. */
+.assist-panel > * { animation: assist-in .34s var(--spring) backwards; }
+@keyframes assist-in { from { opacity: 0; transform: translateY(12px); } }
+.assist-head { display: flex; align-items: center; gap: 4px; padding: 12px 10px 8px 12px; }
+.assist-tabs { flex: 1; display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: var(--fill); }
+.assist-tabs button {
+  flex: 1; min-height: 36px; border: 0; border-radius: 999px; background: transparent; color: var(--ink-2);
+  font-size: 14px; font-weight: 600; transition: background-color .2s, color .2s, box-shadow .2s;
+}
+.assist-tabs button[aria-selected="true"] { background: var(--canvas); color: var(--ink); box-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 0 0 .5px rgba(0, 0, 0, .04); }
+.assist-icon-btn { flex: none; width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--ink-2); }
+.assist-icon-btn:hover { background: var(--chip); color: var(--ink); }
+.assist-icon-btn .icon { width: 19px; height: 19px; }
+.assist-view { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.assist-view[hidden] { display: none; }
+.assist-log { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 12px; padding: 8px 14px 14px; }
+.assist-msg { display: grid; gap: 6px; max-width: 90%; }
+.assist-msg.is-user { align-self: flex-end; justify-items: end; }
+.assist-msg.is-bot { align-self: flex-start; }
+.assist-msg.is-new { animation: row-in .3s var(--ease) both; }
+.assist-bubble { padding: 10px 14px; border-radius: 20px; font-size: 15px; line-height: 1.55; letter-spacing: -.01em; overflow-wrap: anywhere; }
+.is-user .assist-bubble { background: var(--button); color: #fff; border-bottom-right-radius: 7px; white-space: pre-wrap; }
+.is-bot .assist-bubble { background: var(--canvas); border: 1px solid var(--hairline); border-bottom-left-radius: 7px; }
+.assist-bubble > * + * { margin-top: 6px; }
+.assist-bubble ul, .assist-bubble ol { display: grid; gap: 3px; padding-left: 18px; }
+.assist-bubble strong { font-weight: 700; }
+.assist-bubble a { font-weight: 600; }
+.assist-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding-left: 4px; }
+.assist-tag { font-size: 12px; color: var(--ink-3); }
+.assist-src, .assist-more {
+  display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border-radius: 999px;
+  font-size: 13px; font-weight: 600; white-space: nowrap;
+}
+.assist-src { background: var(--chip); color: var(--ink); }
+.assist-src:hover { text-decoration: none; background: var(--chip-strong); }
+.assist-more { border: 1px solid var(--primary); background: transparent; color: var(--primary); }
+.assist-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.assist-chip {
+  min-height: 36px; padding: 0 14px; border: 1px solid var(--divider); border-radius: 999px; background: var(--canvas);
+  color: var(--ink); font-size: 14px; text-align: left; transition: border-color .15s, background-color .15s;
+}
+.assist-chip:hover { border-color: var(--focus); }
+.assist-typing { display: inline-flex; gap: 4px; padding: 6px 2px; }
+.assist-typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); animation: assist-dot 1s var(--ease) infinite; }
+.assist-typing i:nth-child(2) { animation-delay: .15s; }
+.assist-typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes assist-dot { 0%, 60%, 100% { opacity: .35; transform: none; } 30% { opacity: 1; transform: translateY(-3px); } }
+.assist-form {
+  display: flex; align-items: flex-end; gap: 8px; margin: 0 12px; padding: 5px 5px 5px 16px;
+  border: 1px solid var(--field-line); border-radius: 24px; background: var(--canvas); transition: border-color .15s, box-shadow .15s;
+}
+.assist-form:focus-within { border-color: var(--focus); box-shadow: 0 0 0 1px var(--focus); }
+.assist-input {
+  flex: 1; min-width: 0; height: 38px; max-height: 120px; padding: 8px 0; border: 0; outline: none; resize: none;
+  background: transparent; color: var(--ink); font-size: 16px; line-height: 1.4;
+}
+.assist-input::placeholder { color: var(--ink-3); }
+.assist-send { flex: none; width: 38px; height: 38px; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--button); color: #fff; transition: background-color .15s, transform .15s var(--ease); }
+.assist-send .icon { width: 19px; height: 19px; stroke-width: 2.4; }
+.assist-send.is-stop { background: var(--ink); color: var(--canvas); }
+.assist-send:active, .assist-chip:active, .assist-more:active, .tools-row:active, .assist-dock-btn:active { transform: scale(.95); }
+.assist-note { margin: 8px 16px 12px; font-size: 12px; line-height: 1.45; color: var(--ink-3); text-align: center; }
+.assist-contact { overflow-y: auto; overscroll-behavior: contain; padding: 6px 16px 4px; }
+.assist-contact form { display: grid; gap: 16px; }
+.assist-contact form[hidden] { display: none; }
+.assist-kinds button { min-height: 40px; padding: 0 12px; font-size: 14px; }
+.assist-textarea { height: auto; min-height: 132px; padding: 12px 14px; line-height: 1.5; resize: vertical; }
+.assist-optional { margin-left: 4px; font-weight: 400; color: var(--ink-3); }
+.assist-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.assist-error { font-size: 14px; color: var(--bad); }
+.assist-submit { width: 100%; }
+.assist-contact .assist-note { margin: 0 4px 12px; }
+.assist-done { display: grid; justify-items: center; gap: 8px; padding: 48px 12px; text-align: center; }
+.assist-done[hidden] { display: none; }
+.assist-done-icon { width: 58px; height: 58px; display: grid; place-items: center; border-radius: 50%; background: var(--good); color: #fff; }
+.assist-done-icon .icon { width: 28px; height: 28px; stroke-width: 2.4; }
+.assist-done-title { font-size: 21px; font-weight: 600; }
+
+@media (max-width: 959px) {
+  html.assist-open { overflow: hidden; }
+  html.assist-open .appbar { visibility: hidden; }
+}
+@media (min-width: 960px) {
+  .tools-extra { display: none; }
+  .assist-dock {
+    --glass-bg: var(--glass-cap); --glass-blur: 10px; --glass-extra: var(--glass-lift);
+    position: fixed; z-index: 35; left: 20px; bottom: 20px; display: flex; gap: 2px; padding: 5px; border-radius: 999px;
+  }
+  .assist-dock-btn {
+    display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px 0 6px; border: 0; border-radius: 999px;
+    background: transparent; color: var(--ink); font-size: 15px; font-weight: 600; letter-spacing: -.02em; transition: background-color .15s, transform .15s var(--ease);
+  }
+  .assist-dock-btn:hover, .assist-dock-btn[aria-pressed="true"] { background: var(--chip); }
+  .assist-dock-btn .app-icon { width: 32px; height: 32px; }
+  .assist-panel { inset: auto auto 84px 20px; width: 400px; height: min(640px, calc(100vh - 176px)); }
+}
+/* 좁은 PC 화면에서는 도크를 아이콘만 남겨 본문을 덜 가린다 */
+@media (min-width: 960px) and (max-width: 1359px) {
+  .assist-dock-label { display: none; }
+  .assist-dock-btn { width: 44px; padding: 0; justify-content: center; }
+}
+
 /* ── 푸터 ─────────────────────────────────────── */
 .site-footer {
   max-width: 1080px; margin: 0 auto; padding: 20px 16px 32px;

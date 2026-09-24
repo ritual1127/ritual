@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="no-referrer">
+  <title>관리자 대시보드 · 성적 계산기</title>
+  <meta name="theme-color" content="#F5F5F7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.png">
+  <link rel="stylesheet" href="../styles.css?v=20260924f">
+  <script src="../site-nav.js?v=20260924f"></script>
+  <style>
+    .admin { max-width: 1180px; }
+    .admin-title { flex: 1; min-width: 200px; font-size: 28px; font-weight: 600; line-height: 1.15; letter-spacing: -.015em; }
+    .admin-login { max-width: 380px; margin: 12vh auto 0; padding: 32px 28px; display: grid; gap: 18px; justify-items: center; text-align: center; background: var(--canvas); border: 1px solid var(--hairline); border-radius: 22px; }
+    .admin-login img { width: 56px; height: 56px; border-radius: 14px; }
+    .admin-login p { color: var(--ink-2); font-size: 15px; }
+    .admin-login form { width: 100%; display: grid; gap: 12px; }
+    .admin-login .input { text-align: center; font-size: 24px; letter-spacing: .4em; }
+    .admin-msg { min-height: 20px; font-size: 14px; color: var(--bad) !important; }
+    .admin-top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .admin-top .seg { flex-wrap: nowrap; }
+    .admin-top .seg button { min-height: 40px; padding: 0 14px; font-size: 14px; }
+    .admin-top .theme-toggle { width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--chip); color: var(--ink); }
+    .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 12px; }
+    .kpi, .panel { background: var(--canvas); border: 1px solid var(--hairline); border-radius: 18px; }
+    .kpi { padding: 18px 20px; display: grid; gap: 4px; }
+    .kpi-label { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+    .kpi-value { font-size: 34px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1.1; }
+    .kpi-delta { font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+    .kpi-delta.up { color: var(--good); }
+    .kpi-delta.down { color: var(--bad); }
+    .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 12px; }
+    .panel { grid-column: span 12; padding: 20px 22px; min-width: 0; }
+    .panel h2 { font-size: 17px; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .panel h2 small { margin-left: auto; font-size: 13px; font-weight: 400; color: var(--ink-3); }
+    @media (min-width: 900px) { .span-8 { grid-column: span 8; } .span-6 { grid-column: span 6; } .span-4 { grid-column: span 4; } }
+    .chart { width: 100%; height: 220px; display: block; }
+    .chart .bar-views { fill: var(--fill); }
+    .chart .bar-visitors { fill: var(--primary); }
+    .chart .axis { fill: var(--ink-3); font-size: 11px; }
+    .chart .grid-line { stroke: var(--hairline); stroke-width: 1; }
+    .legend { display: flex; gap: 14px; font-size: 12px; color: var(--ink-2); margin-top: 8px; }
+    .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+    .rows { display: grid; gap: 10px; }
+    .row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; align-items: center; font-size: 14px; }
+    .row-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+    .row-name .app-icon { width: 20px; height: 20px; border-radius: 6px; }
+    .row-num { font-variant-numeric: tabular-nums; color: var(--ink-2); }
+    .row-bar { grid-column: 1 / -1; height: 6px; border-radius: 99px; background: var(--fill); overflow: hidden; }
+    .row-bar span { display: block; height: 100%; border-radius: inherit; background: var(--primary); }
+    .empty { color: var(--ink-3); font-size: 14px; }
+    .stack { display: flex; height: 12px; border-radius: 99px; overflow: hidden; background: var(--fill); }
+    .stack span { height: 100%; }
+    .hours { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; align-items: end; height: 120px; }
+    .hours span { background: var(--primary); border-radius: 4px 4px 1px 1px; min-height: 2px; opacity: .85; }
+    .hours-axis { display: grid; grid-template-columns: repeat(4, 1fr); font-size: 11px; color: var(--ink-3); margin-top: 6px; }
+    .list { display: grid; }
+    .item { display: grid; gap: 6px; padding: 14px 0; border-top: 1px solid var(--hairline); }
+    .item:first-child { border-top: 0; padding-top: 0; }
+    .item-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); }
+    .pill { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 999px; background: var(--chip); color: var(--ink); font-size: 12px; font-weight: 600; }
+    .pill.bug { background: var(--bad-soft); color: var(--bad); }
+    .pill.done { background: var(--fill); color: var(--ink-3); }
+    .pill.ai { background: rgba(74, 92, 255, .14); color: #3D4FE0; }
+    .item-body { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px; line-height: 1.5; }
+    .item-answer { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+    .item-actions { display: flex; gap: 8px; margin-left: auto; }
+    .item-actions button { min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--divider); background: var(--canvas); color: var(--ink); font-size: 13px; }
+    .item-actions button.danger { color: var(--bad); border-color: var(--bad); }
+    .toolbar { display: flex; gap: 8px; margin-bottom: 12px; }
+    .toolbar .chip-btn { min-height: 34px; padding: 0 12px; font-size: 13px; }
+    .progress { height: 8px; border-radius: 99px; background: var(--fill); overflow: hidden; margin: 12px 0 6px; }
+    .progress span { display: block; height: 100%; width: 0; background: var(--primary); transition: width .2s; }
+    .muted { color: var(--ink-2); font-size: 14px; }
+    .scroll { max-height: 520px; overflow-y: auto; }
+    @media (prefers-reduced-motion: reduce) { .progress span { transition: none; } }
+  </style>
+</head>
+<body>
+  <main class="page admin" id="main">
+    <h1 class="sr-only">관리자 대시보드</h1>
+    <section class="admin-login" id="login">
+      <img src="/favicon.png?v=6" alt="" width="56" height="56">
+      <h2>관리자</h2>
+      <p>비밀번호를 입력하세요</p>
+      <form id="loginForm" autocomplete="off">
+        <input class="input" id="pin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="12" aria-label="비밀번호" required>
+        <button class="btn" type="submit" id="loginBtn">들어가기</button>
+        <p class="admin-msg" id="loginMsg" role="alert"></p>
+      </form>
+    </section>
+
+    <section id="dash" hidden>
+      <header class="admin-top">
+        <p class="admin-title" aria-hidden="true">분석 대시보드</p>
+        <div class="seg" id="period" role="group" aria-label="기간">
+          <button type="button" data-days="1" aria-pressed="false">오늘</button>
+          <button type="button" data-days="7" aria-pressed="true">7일</button>
+          <button type="button" data-days="30" aria-pressed="false">30일</button>
+          <button type="button" data-days="90" aria-pressed="false">90일</button>
+        </div>
+        <button type="button" class="btn-ghost btn-sm" id="refresh">새로고침</button>
+        <button type="button" class="btn-ghost btn-sm" id="logout">나가기</button>
+        <button type="button" class="theme-toggle" aria-pressed="false" aria-label="다크 모드">
+          <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
+          <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+        </button>
+      </header>
+
+      <div class="kpis" id="kpis"></div>
+
+      <div class="grid">
+        <article class="panel span-8"><h2>방문 추이 <small id="seriesRange"></small></h2><svg class="chart" id="chart" role="img" aria-label="날짜별 방문자와 페이지뷰"></svg>
+          <div class="legend"><span><i style="background:var(--primary)"></i>방문자</span><span><i style="background:var(--fill)"></i>페이지뷰</span></div></article>
+        <article class="panel span-4"><h2>기기</h2><div id="devices"></div><h2 style="margin-top:22px">국가</h2><div class="rows" id="countries"></div></article>
+        <article class="panel span-6"><h2>인기 페이지</h2><div class="rows" id="pages"></div></article>
+        <article class="panel span-6"><h2>도구별 계산 완료</h2><div class="rows" id="tools"></div></article>
+        <article class="panel span-6"><h2>유입 경로</h2><div class="rows" id="refs"></div></article>
+        <article class="panel span-6"><h2>시간대별 방문 <small>한국 시간</small></h2><div class="hours" id="hours"></div><div class="hours-axis"><span>0시</span><span>6시</span><span>12시</span><span>18시</span></div></article>
+        <article class="panel span-6"><h2>AI 도우미 <small id="chatTotal"></small></h2><div id="routes"></div>
+          <div class="toolbar" style="margin-top:16px"><button type="button" class="chip-btn" data-filter="all" aria-pressed="true">최근 질문</button><button type="button" class="chip-btn" data-filter="none" aria-pressed="false">못 답한 질문</button></div>
+          <div class="list scroll" id="chats"></div></article>
+        <article class="panel span-6"><h2>문의함 <small id="inqCount"></small></h2>
+          <div class="toolbar"><button type="button" class="chip-btn" data-inq="new" aria-pressed="true">새 문의</button><button type="button" class="chip-btn" data-inq="all" aria-pressed="false">전체</button></div>
+          <div class="list scroll" id="inquiries"></div></article>
+        <article class="panel span-12"><h2>AI 지식 색인</h2><p class="muted" id="kbInfo">불러오는 중…</p>
+          <div class="progress" id="kbProgress" hidden><span></span></div>
+          <button type="button" class="btn btn-sm" id="reindex" style="margin-top:12px">지금 색인하기</button></article>
+      </div>
+    </section>
+  </main>
+  <script src="admin.js?v=20260924f"></script>
+</body>
+</html>

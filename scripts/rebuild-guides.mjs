@@ -210,8 +210,9 @@ function render(g) {
   <link rel="icon" href="../../icon-192.png?v=6">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-  <link rel="stylesheet" href="../../styles.css?v=20260924e">
-  <script src="../../site-nav.js?v=20260924e"></script>
+  <link rel="stylesheet" href="../../styles.css?v=20260924f">
+  <script src="../../site-nav.js?v=20260924f"></script>
+  <script src="../../assistant.js?v=20260924f" defer></script>
   <script type="application/ld+json">${schema}</script>
 </head>
 <body>
