@@ -1,7 +1,7 @@
-// 모든 페이지 공통: 테마, 도구 메뉴, 서비스워커, 계산기 입력 보조, 미니 결과, 모션(롤링·도장·축하), 되돌리기 알림
+// 모든 페이지 공통: 테마, 도구 메뉴, 서비스워커, 계산기 입력 보조, 결과 바, 리퀴드 글래스 굴절, 모션(롤링·도장·축하), 되돌리기 알림
 (function () {
   const root = document.documentElement;
-  const PAPER = { light: '#FAF7F0', dark: '#14161D' };
+  const PAPER = { light: '#F4F5F8', dark: '#0F1117' };
   const media = matchMedia('(prefers-color-scheme: dark)');
 
   function savedTheme() { try { return localStorage.getItem('theme'); } catch { return null; } }
@@ -69,32 +69,77 @@
     input.dispatchEvent(new Event('input', { bubbles: true }));
   });
 
-  // 결과 카드가 화면 밖일 때만 상단바에 결과를 띄운다. 스크린리더에는 입력이 멈춘 뒤 한 번만 읽힌다.
-  let mini = null, live = null, liveTimer = 0, miniText = '', cardVisible = true;
-  function paintMini() {
-    mini.textContent = miniText;
-    mini.setAttribute('aria-label', `결과 보기: ${miniText}`);
-    mini.hidden = !miniText || cardVisible;
+  // 리퀴드 글래스 굴절: 가장자리 띠에서 뒤 화면이 휘어 보이게 요소 크기에 맞춘 SVG 변위 필터를 만든다.
+  // backdrop-filter에 SVG 필터를 거는 건 크로미움만 되므로 거기서만 켠다. 나머지는 CSS의 흐림 유리로 남는다.
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const canLens = 'ResizeObserver' in window && !!navigator.userAgentData?.brands?.some(brand => brand.brand === 'Chromium');
+  let lensDefs = null, lensCount = 0;
+  // 가운데는 128(변위 없음), 가장자리로 갈수록 0·255로 기울어 바깥쪽을 끌어온다. R은 가로, G는 세로.
+  const edgeMap = (w, h, axis, band) => {
+    const t = Math.min(band / (axis === 'x' ? w : h), .45).toFixed(4);
+    const [mid, end, dir] = axis === 'x' ? ['#800000', '#f00', ''] : ['#008000', '#0f0', ' x2="0" y2="1"'];
+    return 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="${SVG_NS}" width="${w}" height="${h}"><linearGradient id="g"${dir}><stop offset="0" stop-color="#000"/><stop offset="${t}" stop-color="${mid}"/><stop offset="${1 - t}" stop-color="${mid}"/><stop offset="1" stop-color="${end}"/></linearGradient><rect width="${w}" height="${h}" fill="url(#g)"/></svg>`);
+  };
+  function lens(el, band = 16, strength = 34) {
+    if (!canLens || !el) return;
+    if (!lensDefs) {
+      lensDefs = document.createElementNS(SVG_NS, 'svg');
+      lensDefs.setAttribute('aria-hidden', 'true');
+      lensDefs.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+      document.body.append(lensDefs);
+    }
+    const filter = document.createElementNS(SVG_NS, 'filter');
+    filter.id = `glass-lens-${++lensCount}`;
+    for (const [name, value] of Object.entries({ x: 0, y: 0, filterUnits: 'userSpaceOnUse', primitiveUnits: 'userSpaceOnUse', 'color-interpolation-filters': 'sRGB' })) filter.setAttribute(name, value);
+    filter.innerHTML = `<feImage result="x" preserveAspectRatio="none"/><feImage result="y" preserveAspectRatio="none"/><feComposite in="x" in2="y" operator="arithmetic" k2="1" k3="1" result="map"/><feDisplacementMap in="SourceGraphic" in2="map" scale="${strength}" xChannelSelector="R" yChannelSelector="G"/>`;
+    lensDefs.append(filter);
+    const [mapX, mapY] = filter.querySelectorAll('feImage');
+    const draw = () => {
+      const w = Math.round(el.offsetWidth), h = Math.round(el.offsetHeight);
+      if (!w || !h) return;
+      for (const node of [filter, mapX, mapY]) { node.setAttribute('width', w); node.setAttribute('height', h); }
+      mapX.setAttribute('href', edgeMap(w, h, 'x', band));
+      mapY.setAttribute('href', edgeMap(w, h, 'y', band));
+    };
+    draw();
+    new ResizeObserver(draw).observe(el);
+    el.style.setProperty('--lens', `url(#${filter.id})`);
+  }
+
+  // 결과 바: 결과 카드의 큰 숫자가 화면 밖일 때 아래에 떠서 실시간 결과를 보여 준다(데스크톱은 CSS가 숨긴다).
+  // 누르면 결과 카드로 간다. "값 · 등급"이면 등급을 배지로 보여 준다. 스크린리더에는 입력이 멈춘 뒤 한 번만 읽힌다.
+  let dock = null, live = null, liveTimer = 0, miniText = '', resultVisible = true;
+  function paintDock() {
+    const [value, ...rest] = miniText.split(' · ');
+    dock.querySelector('.dock-label').textContent = document.querySelector('.result-card .result-label')?.textContent || '결과';
+    dock.querySelector('.dock-value').textContent = value;
+    const badge = dock.querySelector('.dock-badge');
+    badge.textContent = rest.join(' · ');
+    badge.hidden = !rest.length;
+    dock.setAttribute('aria-label', `결과 보기: ${miniText}`);
+    const show = Boolean(miniText) && !resultVisible;
+    dock.dataset.show = String(show);
+    dock.inert = !show;
   }
   window.setMiniResult = text => {
-    if (!mini) {
+    if (!dock) {
       const card = document.querySelector('.result-card');
-      mini = document.createElement('button');
-      mini.type = 'button';
-      mini.className = 'mini-result';
-      mini.hidden = true;
-      mini.addEventListener('click', () => card?.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'center' }));
-      document.querySelector('.appbar-inner')?.insertBefore(mini, document.querySelector('.theme-toggle'));
-      live = document.createElement('p');
-      live.className = 'sr-only';
+      dock = make('button', 'dock glass');
+      dock.type = 'button';
+      dock.innerHTML = '<span class="dock-text"><span class="dock-label"></span><span class="dock-value"></span></span><span class="dock-badge" hidden></span><span class="dock-go" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></span>';
+      dock.addEventListener('click', () => card?.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'start' }));
+      document.body.append(dock);
+      lens(dock, 18, 40);
+      live = make('p', 'sr-only');
       live.setAttribute('aria-live', 'polite');
       document.body.append(live);
-      if (card && 'IntersectionObserver' in window) {
-        new IntersectionObserver(([entry]) => { cardVisible = entry.isIntersecting; paintMini(); }, { rootMargin: '-64px 0px 0px 0px' }).observe(card);
+      const target = card?.querySelector('.result-main') || card;
+      if (target && 'IntersectionObserver' in window) {
+        new IntersectionObserver(([entry]) => { resultVisible = entry.isIntersecting; paintDock(); }, { rootMargin: '-70px 0px -90px 0px' }).observe(target);
       }
     }
     miniText = text;
-    paintMini();
+    paintDock();
     clearTimeout(liveTimer);
     liveTimer = setTimeout(() => { live.textContent = text; }, 600);
   };
@@ -243,7 +288,7 @@
     addEventListener('load', () => navigator.serviceWorker.register('/app-sw.js').catch(() => {}));
   }
 
-  function init() { setupThemeToggle(); setupToolMenu(); }
+  function init() { setupThemeToggle(); setupToolMenu(); lens(document.querySelector('.appbar-inner'), 14, 30); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();

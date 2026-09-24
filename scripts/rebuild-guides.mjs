@@ -204,8 +204,8 @@ function render(g) {
   <meta name="twitter:title" content="${g.title}">
   <meta name="twitter:description" content="${g.description}">
   <meta name="twitter:image" content="https://naver1.cloud/og.png">
-  <meta name="theme-color" content="#FAF7F0" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#14161D" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#F4F5F8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0F1117" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="../../icon-192.png">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
