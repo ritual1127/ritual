@@ -92,7 +92,10 @@
 
     <div class="calc">
       <section class="card result-card" id="resultCard" data-state="empty" aria-labelledby="resultLabel">
-        <p class="result-label" id="resultLabel">내 최종점수</p>
+        <div class="result-head">
+          <p class="result-label" id="resultLabel">내 최종점수</p>
+          <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
+        </div>
         <div class="result-main">
           <p class="result-number"><span class="result-value"><span class="marker" id="finalValue">—</span></span><span class="result-unit">점</span></p>
           <span class="grade" id="finalGrade" hidden></span>
@@ -107,6 +110,16 @@
       </section>
 
       <form class="input-stack" id="gradeForm" novalidate>
+        <section class="card" aria-labelledby="presetTitle">
+          <div class="card-head"><div><h2 id="presetTitle">반영비율 빠른 선택</h2><p class="card-sub">수행평가 : 정기고사 비율을 고르면 칸마다 나눠 채워요.</p></div></div>
+          <div class="chip-grid" role="group" aria-label="수행평가 대 정기고사 비율">
+            <button type="button" class="chip chip-btn" data-preset="20" aria-pressed="false">20 : 80</button>
+            <button type="button" class="chip chip-btn" data-preset="30" aria-pressed="false">30 : 70</button>
+            <button type="button" class="chip chip-btn" data-preset="40" aria-pressed="false">40 : 60</button>
+            <button type="button" class="chip chip-btn" data-preset="50" aria-pressed="false">50 : 50</button>
+          </div>
+        </section>
+
         <section class="card" aria-labelledby="performanceTitle">
           <div class="card-head">
             <div><h2 id="performanceTitle">수행평가</h2><p class="card-sub">평가마다 받은 점수와 반영비율</p></div>
@@ -141,8 +154,8 @@
             <div class="meter-track"><div class="meter-fill" id="weightFill"></div></div>
           </div>
           <div class="card-foot">
+            <button type="button" class="btn-ghost btn-sm" id="fillRestBtn" hidden></button>
             <p class="field-hint">입력한 값은 이 기기에만 저장돼요.</p>
-            <button type="button" class="btn-ghost btn-sm" id="resetBtn">초기화</button>
           </div>
         </section>
       </form>
@@ -184,6 +197,8 @@
       const form = $('gradeForm');
       const card = $('resultCard');
       const isRow = item => item && typeof item === 'object';
+      const cheer = achievement(card, '참 잘했어요');
+      let lastGrade = '';
 
       function load() {
         try {
@@ -215,6 +230,7 @@
         $(kind + 'Empty').hidden = state[kind].length > 0;
         $(kind + 'Rows').previousElementSibling.hidden = state[kind].length === 0;
       }
+      const renderAll = () => { renderRows('performance'); renderRows('exam'); };
 
       const num = text => (text === '' ? null : Number(text));
       const inRange = value => value === null || (Number.isFinite(value) && value >= 0 && value <= 100);
@@ -224,11 +240,14 @@
         card.dataset.state = stateName;
         card.dataset.grade = grade;
         $('resultLabel').textContent = label;
-        $('finalValue').textContent = value === null ? '—' : formatNumber(value);
+        rollNumber($('finalValue'), value === null ? '—' : formatNumber(value));
         const badge = $('finalGrade');
         badge.hidden = !grade;
         badge.dataset.grade = grade;
         badge.replaceChildren(grade, Object.assign(document.createElement('small'), { textContent: '등급' }));
+        if (grade && grade !== lastGrade) stampIn(badge);
+        lastGrade = grade;
+        cheer(stateName === 'done' && grade === 'A');
         $('scoreFill').style.transform = `scaleX(${value === null ? 0 : Math.min(value, 100) / 100})`;
         $('resultNote').textContent = note;
         $('resultMeta').textContent = meta;
@@ -251,12 +270,22 @@
           : `${formatNumber(total)}% · ${formatNumber(100 - total)}% 더 필요`;
       }
 
+      const groupSum = kind => state[kind].reduce((sum, row) => sum + (Number(row.weight) || 0), 0);
+
       function update() {
         save();
         const rows = [...state.performance, ...state.exam].map(({ score, weight }) => ({ score: num(score), weight: num(weight) }));
         form.querySelectorAll('input[data-field]').forEach(input => input.setAttribute('aria-invalid', String(!inRange(num(input.value)))));
         const weightTotal = rows.reduce((sum, row) => sum + (Number.isFinite(row.weight) ? row.weight : 0), 0);
         renderMeter(weightTotal);
+        form.querySelectorAll('[data-preset]').forEach(chip => {
+          const perf = Number(chip.dataset.preset);
+          chip.setAttribute('aria-pressed', String(Math.abs(groupSum('performance') - perf) < .01 && Math.abs(groupSum('exam') - (100 - perf)) < .01));
+        });
+        const blankWeights = rows.filter(row => row.weight === null).length;
+        const rest = 100 - weightTotal;
+        $('fillRestBtn').hidden = !(blankWeights === 1 && rest > .001 && rows.every(row => inRange(row.weight)));
+        $('fillRestBtn').textContent = `빈 비율 칸에 남은 ${formatNumber(rest)}% 넣기`;
         const filled = rows.filter(row => row.score !== null);
         // 점수만 있고 비율이 빈 행도 빈칸이다. 조용히 빼고 계산하면 입력한 점수가 사라진다.
         const complete = filled.filter(row => row.weight !== null);
@@ -290,21 +319,58 @@
         state[kind][index][field] = event.target.value;
         update();
       });
+      function applyPreset(perf) {
+        for (const kind of Object.keys(KINDS)) if (!state[kind].length) state[kind].push({ score: '', weight: '' });
+        splitWeights(perf, state.performance.length).forEach((weight, i) => { state.performance[i].weight = String(weight); });
+        splitWeights(100 - perf, state.exam.length).forEach((weight, i) => { state.exam[i].weight = String(weight); });
+        renderAll();
+        update();
+      }
+
       form.addEventListener('click', event => {
+        const preset = event.target.closest('[data-preset]');
+        if (preset) return applyPreset(Number(preset.dataset.preset));
         const button = event.target.closest('[data-count]');
         if (!button) return;
         const kind = button.dataset.count;
         const next = Math.min(10, Math.max(0, state[kind].length + Number(button.dataset.delta)));
-        const defaults = DEFAULTS()[kind];
-        while (state[kind].length < next) state[kind].push(defaults[state[kind].length] || { score: '', weight: '' });
-        state[kind].length = next;
-        renderRows(kind);
+        if (next > state[kind].length) {
+          const defaults = DEFAULTS()[kind];
+          while (state[kind].length < next) state[kind].push(defaults[state[kind].length] || { score: '', weight: '' });
+          renderRows(kind);
+          $(kind + 'Rows').lastElementChild.classList.add('is-new');
+        } else if (next < state[kind].length) {
+          const [removed] = state[kind].splice(next);
+          renderRows(kind);
+          if (removed.score !== '') {
+            showToast(`${KINDS[kind]} ${next + 1}번을 지웠어요`, { action: '되돌리기', onAction: () => {
+              state[kind].push(removed);
+              renderRows(kind);
+              $(kind + 'Rows').lastElementChild.classList.add('is-new');
+              update();
+            } });
+          }
+        }
         update();
       });
-      armReset($('resetBtn'), () => { state = DEFAULTS(); renderRows('performance'); renderRows('exam'); update(); });
 
-      renderRows('performance');
-      renderRows('exam');
+      $('fillRestBtn').addEventListener('click', () => {
+        const all = [...state.performance, ...state.exam];
+        const filled = all.reduce((sum, row) => sum + (row.weight === '' ? 0 : Number(row.weight)), 0);
+        all.find(row => row.weight === '').weight = formatNumber(100 - filled);
+        renderAll();
+        update();
+      });
+
+      $('resetBtn').addEventListener('click', () => {
+        const before = JSON.stringify(state);
+        state = DEFAULTS();
+        renderAll();
+        update();
+        showToast('입력을 초기화했어요', { action: '되돌리기', onAction: () => { state = JSON.parse(before); renderAll(); update(); } });
+      });
+
+      renderAll();
       update();
     })();
   </script>

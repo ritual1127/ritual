@@ -156,6 +156,21 @@
     if (animate && changed) stampIn(sticker);
   };
 
+  // 달성 여부를 받아 0.6초 동안 유지될 때만 스티커·축하를 바꾼다. 입력 도중 잠깐 A를 벗어났다 돌아와도 다시 터지지 않는다.
+  window.achievement = (card, text) => {
+    let settled = null, timer = 0;
+    return achieved => {
+      clearTimeout(timer);
+      if (settled === null) { settled = achieved; setSticker(card, achieved ? text : '', false); return; }
+      timer = setTimeout(() => {
+        if (achieved === settled) return;
+        settled = achieved;
+        setSticker(card, achieved ? text : '', true);
+        if (achieved) celebrate(card);
+      }, 600);
+    };
+  };
+
   const CONFETTI = ['--hl', '--primary', '--gA', '--gB', '--gC', '--gD'];
   window.celebrate = card => {
     if (reduceMotion()) return;
