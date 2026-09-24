@@ -206,25 +206,31 @@
     setTimeout(() => layer.remove(), longest + 120);
   };
 
-  // 되돌리기 알림: 한 번에 하나, 상단바 아래, 5초 뒤 사라진다.
+  // 되돌리기 알림: 한 번에 하나, 상단바 아래, 5초 뒤 사라진다. 포커스나 마우스가 머무는 동안은 기다린다.
   let toast = null, toastTimer = 0;
+  const hideToast = () => toast.classList.remove('is-shown');
+  const holdToast = () => clearTimeout(toastTimer);
+  const releaseToast = () => { clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, 5000); };
   window.showToast = (message, { action, onAction } = {}) => {
     if (!toast) {
       toast = make('div', 'toast');
       toast.setAttribute('role', 'status');
+      toast.addEventListener('focusin', holdToast);
+      toast.addEventListener('mouseenter', holdToast);
+      toast.addEventListener('focusout', releaseToast);
+      toast.addEventListener('mouseleave', releaseToast);
       document.body.append(toast);
     }
     clearTimeout(toastTimer);
-    const hide = () => toast.classList.remove('is-shown');
     toast.replaceChildren(make('span', '', message));
     if (action) {
       const button = make('button', '', action);
       button.type = 'button';
-      button.addEventListener('click', () => { hide(); onAction(); });
+      button.addEventListener('click', () => { hideToast(); onAction(); });
       toast.append(button);
     }
     toast.classList.add('is-shown');
-    toastTimer = setTimeout(hide, 5000);
+    releaseToast();
   };
 
   // 제목 아래 펜 낙서 밑줄. 고정 SVG 문자열만 넣는다.
