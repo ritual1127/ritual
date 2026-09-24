@@ -1,0 +1,49 @@
+<!doctype html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  html, body { margin: 0; }
+  body {
+    width: 1200px; height: 630px; overflow: hidden; position: relative; background: #F5F5F7;
+    font-family: 'Pretendard Variable', sans-serif; color: #1D1D1F; letter-spacing: -.02em;
+  }
+  .left { position: absolute; left: 88px; top: 96px; width: 600px; }
+  .brand { display: flex; align-items: center; gap: 18px; }
+  .brand svg { width: 76px; height: 76px; flex: none; }
+  .word { font-size: 44px; font-weight: 600; }
+  h1 { margin: 52px 0 0; font-size: 60px; font-weight: 600; line-height: 1.12; letter-spacing: -.025em; }
+  p { margin: 22px 0 0; font-size: 27px; font-weight: 400; color: #6E6E73; }
+  .url { position: absolute; left: 88px; bottom: 64px; font-size: 26px; color: #0066CC; }
+  .card {
+    position: absolute; right: 88px; top: 136px; width: 336px; padding: 32px;
+    background: #FFFFFF; border: 1px solid #E0E0E0; border-radius: 18px;
+    box-shadow: rgba(0, 0, 0, .22) 3px 5px 30px 0;
+  }
+  .label { font-size: 20px; font-weight: 600; color: #6E6E73; }
+  .num { display: flex; align-items: center; gap: 14px; margin-top: 10px; }
+  .value { font-size: 84px; font-weight: 600; letter-spacing: -.03em; line-height: 1; }
+  .unit { font-size: 28px; font-weight: 600; color: #6E6E73; align-self: flex-end; margin-bottom: 8px; }
+  .grade { display: grid; place-items: center; width: 62px; height: 62px; margin-left: auto; border: 3px solid #1D1D1F; border-radius: 50%; font-size: 30px; font-weight: 600; }
+  .bar { position: relative; height: 6px; margin-top: 26px; border-radius: 99px; background: #E8E8ED; overflow: hidden; }
+  .bar i { position: absolute; inset: 0 5.9% 0 0; background: #1D1D1F; }
+  .note { margin-top: 20px; font-size: 23px; font-weight: 600; }
+  .sub { margin-top: 4px; font-size: 18px; color: #6E6E73; }
+</style>
+<body>
+  <div class="left">
+    <div class="brand">
+      <svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="115" fill="#1D1D1F"/><text x="214" y="362" text-anchor="middle" font-family="Pretendard Variable" font-weight="700" font-size="300" letter-spacing="-6" fill="#FFFFFF">A</text><path d="M350 160v92M304 206h92" fill="none" stroke="#FFFFFF" stroke-width="30" stroke-linecap="round"/></svg>
+      <div class="word">성적계산기</div>
+    </div>
+    <h1>입력하는 순간,<br>최종점수가 나와요.</h1>
+    <p>수행·지필 · 목표점수 · 내신등급 · 학점(GPA)</p>
+  </div>
+  <div class="url">naver1.cloud</div>
+  <div class="card">
+    <div class="label">내 최종점수</div>
+    <div class="num"><span class="value">94.1</span><span class="unit">점</span><span class="grade">A</span></div>
+    <div class="bar"><i></i></div>
+    <div class="note">A등급 구간이에요</div>
+    <div class="sub">반영비율 100% · 입력 4/4</div>
+  </div>
+</body>

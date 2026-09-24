@@ -1,7 +1,7 @@
-// 모든 페이지 공통: 테마, 도구 메뉴, 서비스워커, 계산기 입력 보조, 결과 바, 리퀴드 글래스 굴절, 모션(롤링·도장·축하), 되돌리기 알림
+// 모든 페이지 공통: 테마, 내비게이션 바(휴대폰 하단·크기 변화, 도구 메뉴, 실시간 결과), 유리 굴절, 서비스워커, 계산기 입력 보조, 모션, 되돌리기 알림
 (function () {
   const root = document.documentElement;
-  const PAPER = { light: '#F4F5F8', dark: '#0F1117' };
+  const PAPER = { light: '#F5F5F7', dark: '#000000' };
   const media = matchMedia('(prefers-color-scheme: dark)');
 
   function savedTheme() { try { return localStorage.getItem('theme'); } catch { return null; } }
@@ -25,16 +25,26 @@
     media.addEventListener('change', () => applyTheme(savedTheme()));
   }
 
-  // 모바일 도구 메뉴: 캡슐의 현재 도구 버튼으로 여닫는다(데스크톱은 CSS가 탭으로 펼친다).
+  // 도구 메뉴: 휴대폰은 하단 바 위로 열리는 시트(데스크톱은 CSS가 상단 링크로 펼친다).
+  // 바 가운데는 결과가 있으면 결과 카드로 가고, 없으면(현재 도구명) 메뉴를 연다.
   function setupToolMenu() {
     const bar = document.querySelector('.appbar-inner');
     const button = bar?.querySelector('.tool-menu-btn');
     if (!button) return;
+    const main = bar.querySelector('.bar-main');
     const setOpen = open => {
       bar.dataset.menu = open ? 'open' : 'closed';
       button.setAttribute('aria-expanded', String(open));
+      if (open) bar.dataset.mini = 'false';
     };
-    button.addEventListener('click', () => setOpen(button.getAttribute('aria-expanded') !== 'true'));
+    const toggle = () => setOpen(button.getAttribute('aria-expanded') !== 'true');
+    button.addEventListener('click', toggle);
+    if (main && !main.hasAttribute('aria-label')) main.setAttribute('aria-label', `도구 메뉴, 현재 ${main.dataset.label}`);
+    main?.addEventListener('click', () => {
+      if (!main.classList.contains('has-result')) return toggle();
+      setOpen(false);
+      document.querySelector('.result-card')?.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'start' });
+    });
     document.addEventListener('keydown', event => {
       if (event.key !== 'Escape' || button.getAttribute('aria-expanded') !== 'true') return;
       setOpen(false);
@@ -42,6 +52,42 @@
     });
     document.addEventListener('click', event => { if (!bar.contains(event.target)) setOpen(false); });
     addEventListener('pageshow', () => setOpen(false));
+  }
+
+  // 휴대폰 하단 바 크기: 아래로 스크롤하거나 입력 중이면 작은 알약, 위로 스크롤하거나 맨 위면 원래 크기.
+  // 작은 상태에서 누르면 먼저 커지고, 그 탭은 버튼 동작으로 넘기지 않는다.
+  function setupBarSize() {
+    const bar = document.querySelector('.appbar-inner');
+    if (!bar) return;
+    const phone = matchMedia('(max-width: 959px)');
+    const isField = el => el?.matches?.('.page input, .page select, .page textarea');
+    let lastY = scrollY, typing = false;
+    const setMini = mini => { bar.dataset.mini = String(mini && bar.dataset.menu !== 'open'); };
+    addEventListener('scroll', () => {
+      if (!phone.matches) return;
+      const y = scrollY, dy = y - lastY;
+      if (y < 24) { lastY = y; setMini(typing); return; }
+      if (Math.abs(dy) < 10) return;
+      lastY = y;
+      setMini(typing || dy > 0);
+    }, { passive: true });
+    document.addEventListener('focusin', event => {
+      if (!phone.matches || !isField(event.target)) return;
+      typing = true;
+      setMini(true);
+    });
+    // 칸 사이를 옮겨 다닐 때 깜빡이지 않게, 입력칸을 완전히 떠난 뒤에만 되돌린다.
+    document.addEventListener('focusout', event => {
+      if (!isField(event.target)) return;
+      typing = false;
+      setTimeout(() => { if (!typing && !isField(document.activeElement)) setMini(false); }, 250);
+    });
+    bar.addEventListener('click', event => {
+      if (bar.dataset.mini !== 'true') return;
+      event.preventDefault();
+      event.stopPropagation();
+      setMini(false);
+    }, true);
   }
 
   // 계산기 입력 보조: 포커스 시 전체 선택, Enter로 다음 칸, blur 시 범위 보정
@@ -69,7 +115,7 @@
     input.dispatchEvent(new Event('input', { bubbles: true }));
   });
 
-  // 리퀴드 글래스 굴절: 가장자리 띠에서 뒤 화면이 휘어 보이게 요소 크기에 맞춘 SVG 변위 필터를 만든다.
+  // 유리 가장자리 굴절: 가장자리 띠에서 뒤 화면이 휘어 보이게 요소 크기에 맞춘 SVG 변위 필터를 만든다.
   // backdrop-filter에 SVG 필터를 거는 건 크로미움만 되므로 거기서만 켠다. 나머지는 CSS의 흐림 유리로 남는다.
   const SVG_NS = 'http://www.w3.org/2000/svg';
   const canLens = 'ResizeObserver' in window && !!navigator.userAgentData?.brands?.some(brand => brand.brand === 'Chromium');
@@ -98,7 +144,8 @@
       const w = Math.round(el.offsetWidth), h = Math.round(el.offsetHeight);
       if (!w || !h) return;
       for (const node of [filter, mapX, mapY]) { node.setAttribute('width', w); node.setAttribute('height', h); }
-      mapX.setAttribute('href', edgeMap(w, h, 'x', band));
+      // 화면 폭을 꽉 채운 바(데스크톱)는 좌우 끝이 화면 끝이라 세로 방향만 굴절시킨다.
+      mapX.setAttribute('href', edgeMap(w, h, 'x', w >= innerWidth - 2 ? 0 : band));
       mapY.setAttribute('href', edgeMap(w, h, 'y', band));
     };
     draw();
@@ -106,40 +153,27 @@
     el.style.setProperty('--lens', `url(#${filter.id})`);
   }
 
-  // 결과 바: 결과 카드의 큰 숫자가 화면 밖일 때 아래에 떠서 실시간 결과를 보여 준다(데스크톱은 CSS가 숨긴다).
-  // 누르면 결과 카드로 간다. "값 · 등급"이면 등급을 배지로 보여 준다. 스크린리더에는 입력이 멈춘 뒤 한 번만 읽힌다.
-  let dock = null, live = null, liveTimer = 0, miniText = '', resultVisible = true;
-  function paintDock() {
-    const [value, ...rest] = miniText.split(' · ');
-    dock.querySelector('.dock-label').textContent = document.querySelector('.result-card .result-label')?.textContent || '결과';
-    dock.querySelector('.dock-value').textContent = value;
-    const badge = dock.querySelector('.dock-badge');
-    badge.textContent = rest.join(' · ');
-    badge.hidden = !rest.length;
-    dock.setAttribute('aria-label', `결과 보기: ${miniText}`);
-    const show = Boolean(miniText) && !resultVisible;
-    dock.dataset.show = String(show);
-    dock.inert = !show;
-  }
+  // 바 가운데: 결과가 없으면 현재 도구명, 있으면 결과 라벨과 값. "값 · 등급"이면 등급을 원 배지로 보여 준다.
+  // 스크린리더에는 입력이 멈춘 뒤 한 번만 읽힌다.
+  let live = null, liveTimer = 0;
   window.setMiniResult = text => {
-    if (!dock) {
-      const card = document.querySelector('.result-card');
-      dock = make('button', 'dock glass');
-      dock.type = 'button';
-      dock.innerHTML = '<span class="dock-text"><span class="dock-label"></span><span class="dock-value"></span></span><span class="dock-badge" hidden></span><span class="dock-go" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></span>';
-      dock.addEventListener('click', () => card?.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'start' }));
-      document.body.append(dock);
-      lens(dock, 18, 40);
+    const main = document.querySelector('.bar-main');
+    if (main) {
+      const [value, ...rest] = text.split(' · ');
+      const label = text ? document.querySelector('.result-card .result-label')?.textContent || '결과' : main.dataset.label;
+      const badge = main.querySelector('.bar-badge');
+      main.classList.toggle('has-result', Boolean(text));
+      main.querySelector('.bar-label').textContent = label;
+      main.querySelector('.bar-value').textContent = text ? value : '';
+      badge.textContent = rest.join(' · ');
+      badge.hidden = !rest.length;
+      main.setAttribute('aria-label', text ? `결과 보기: ${label} ${text}` : `도구 메뉴, 현재 ${label}`);
+    }
+    if (!live) {
       live = make('p', 'sr-only');
       live.setAttribute('aria-live', 'polite');
       document.body.append(live);
-      const target = card?.querySelector('.result-main') || card;
-      if (target && 'IntersectionObserver' in window) {
-        new IntersectionObserver(([entry]) => { resultVisible = entry.isIntersecting; paintDock(); }, { rootMargin: '-70px 0px -90px 0px' }).observe(target);
-      }
     }
-    miniText = text;
-    paintDock();
     clearTimeout(liveTimer);
     liveTimer = setTimeout(() => { live.textContent = text; }, 600);
   };
@@ -221,7 +255,7 @@
     };
   };
 
-  const CONFETTI = ['--hl', '--primary', '--gA', '--gB', '--gC', '--gD'];
+  const CONFETTI = ['--c1', '--c2', '--c3', '--c4', '--c5', '--c6'];
   window.celebrate = card => {
     if (reduceMotion()) return;
     navigator.vibrate?.(18);
@@ -256,7 +290,7 @@
     setTimeout(() => layer.remove(), longest + 120);
   };
 
-  // 되돌리기 알림: 한 번에 하나, 상단바 아래, 5초 뒤 사라진다. 포커스나 마우스가 머무는 동안은 기다린다.
+  // 되돌리기 알림: 한 번에 하나, 화면 위쪽, 5초 뒤 사라진다. 포커스나 마우스가 머무는 동안은 기다린다.
   let toast = null, toastTimer = 0;
   const hideToast = () => toast.classList.remove('is-shown');
   const holdToast = () => clearTimeout(toastTimer);
@@ -288,7 +322,7 @@
     addEventListener('load', () => navigator.serviceWorker.register('/app-sw.js').catch(() => {}));
   }
 
-  function init() { setupThemeToggle(); setupToolMenu(); lens(document.querySelector('.appbar-inner'), 14, 30); }
+  function init() { setupThemeToggle(); setupToolMenu(); setupBarSize(); lens(document.querySelector('.appbar-inner'), 14, 30); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
