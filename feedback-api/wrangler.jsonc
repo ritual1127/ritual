@@ -16,10 +16,11 @@
   "vectorize": [
     { "binding": "VEC", "index_name": "seongjeok-kb", "remote": true }
   ],
+  // 학교 와이파이처럼 여러 학생이 IP 하나를 같이 쓰는 경우를 생각해 넉넉히 둔다(IP당 1분 한도).
   "ratelimits": [
-    { "name": "CHAT_RL", "namespace_id": "4101", "simple": { "limit": 10, "period": 60 } },
+    { "name": "CHAT_RL", "namespace_id": "4101", "simple": { "limit": 30, "period": 60 } },
     { "name": "FORM_RL", "namespace_id": "4102", "simple": { "limit": 3, "period": 60 } },
-    { "name": "TRACK_RL", "namespace_id": "4103", "simple": { "limit": 60, "period": 60 } }
+    { "name": "TRACK_RL", "namespace_id": "4103", "simple": { "limit": 300, "period": 60 } }
   ],
   "triggers": {
     "crons": ["30 2 * * *"]
