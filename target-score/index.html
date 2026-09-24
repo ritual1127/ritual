@@ -58,12 +58,21 @@
 
     <div class="calc">
       <section class="card result-card" id="resultCard" data-state="empty" aria-labelledby="requiredLabel">
-        <p class="result-label" id="requiredLabel">필요한 점수</p>
+        <div class="result-head">
+          <p class="result-label" id="requiredLabel">필요한 점수</p>
+          <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
+        </div>
         <div class="result-main">
           <p class="result-number"><span class="result-value"><span class="marker" id="requiredValue">—</span></span><span class="result-unit">점</span></p>
         </div>
         <p class="result-note" id="requiredNote">목표, 받은 점수, 비율을 채우면 바로 계산돼요.</p>
         <p class="result-meta" id="requiredMeta"></p>
+        <div class="whatif" id="whatIf" hidden>
+          <label class="whatif-label" for="whatIfRange">만약 <span id="whatIfExam">기말고사</span>에서 <b id="whatIfScore">0</b>점 받으면</label>
+          <input class="range" id="whatIfRange" type="range" min="0" max="100" step="1" value="0">
+          <div class="whatif-ticks" id="whatIfTicks" aria-hidden="true"></div>
+          <p class="whatif-result"><span>최종 <b id="whatIfFinal">—</b>점</span><span class="chip" id="whatIfGrade"></span></p>
+        </div>
         <div id="gradeTableWrap" hidden>
           <hr class="result-divider">
           <div class="table-wrap">
@@ -127,8 +136,8 @@
             <div class="meter-track"><div class="meter-fill" id="weightFill"></div></div>
           </div>
           <div class="card-foot">
+            <button type="button" class="btn-ghost btn-sm" id="fillRemainingBtn" hidden></button>
             <p class="field-hint">입력한 값은 이 기기에만 저장돼요.</p>
-            <button type="button" class="btn-ghost btn-sm" id="resetBtn">초기화</button>
           </div>
         </section>
       </form>
@@ -171,6 +180,8 @@
       const form = $('targetForm');
       const card = $('resultCard');
       const str = value => String(value ?? '');
+      const cheer = achievement(card, '목표 달성');
+      let whatIfTouched = false, whatIfCtx = null;
 
       function load() {
         try {
@@ -265,7 +276,7 @@
       function show(stateName, { value = null, note = '', meta = '', mini = '' }) {
         const wasDone = card.dataset.state === 'done';
         card.dataset.state = stateName;
-        $('requiredValue').textContent = value === null ? '—' : formatNumber(value);
+        rollNumber($('requiredValue'), value === null ? '—' : formatNumber(value));
         $('requiredNote').textContent = note;
         $('requiredMeta').textContent = meta;
         if (stateName === 'done' && !wasDone) {
@@ -276,13 +287,52 @@
         setMiniResult(mini);
       }
 
+      // 만약에 슬라이더: 사용자가 움직이기 전에는 필요 점수(올림)를 따라간다.
+      function renderWhatIf() {
+        const { completed, remaining, need, exam } = whatIfCtx;
+        const range = $('whatIfRange');
+        if (!whatIfTouched) range.value = String(Math.min(100, Math.max(0, Math.ceil(need - 1e-9))));
+        const score = Number(range.value);
+        const final = projectedScore(completed, remaining, score);
+        const grade = gradeFor(final);
+        $('whatIfExam').textContent = exam;
+        $('whatIfScore').textContent = String(score);
+        $('whatIfFinal').textContent = formatNumber(final);
+        $('whatIfGrade').textContent = `${grade}등급`;
+        $('whatIfGrade').dataset.grade = grade;
+        range.style.setProperty('--pct', `${score}%`);
+        range.setAttribute('aria-valuetext', `${exam} ${score}점, 최종 ${formatNumber(final)}점 ${grade}등급`);
+        $('whatIfTicks').replaceChildren(...['A', 'B', 'C', 'D']
+          .map(g => ({ g, answer: requiredScore(GOAL[g], completed, remaining) }))
+          .filter(({ answer }) => answer.status === 'possible')
+          .map(({ g, answer }) => {
+            const tick = Object.assign(document.createElement('span'), { textContent: g });
+            tick.dataset.grade = g;
+            tick.style.left = `${answer.score}%`;
+            return tick;
+          }));
+      }
+
+      function renderFill() {
+        const weights = state.completed.map(row => num(row.weight)).filter(value => value !== null);
+        const fit = roundFloat(100 - weights.reduce((sum, value) => sum + value, 0));
+        const button = $('fillRemainingBtn');
+        button.hidden = !(weights.every(inRange) && fit > 0 && fit <= 100 && num(state.remaining.weight) !== fit);
+        button.textContent = `남은 시험 비율을 ${formatNumber(fit)}%로 맞추기`;
+        button.dataset.fit = formatNumber(fit);
+      }
+
       function update() {
         save();
         form.querySelectorAll('input[type="number"]').forEach(input => input.setAttribute('aria-invalid', String(!inRange(num(input.value)))));
         renderGoal();
         renderMeter();
+        renderFill();
         const result = evaluate();
-        $('gradeTableWrap').hidden = result.kind !== 'ok' || result.answer.status === 'no-remaining';
+        const live = result.kind === 'ok' && result.answer.status !== 'no-remaining';
+        $('gradeTableWrap').hidden = !live;
+        $('whatIf').hidden = !live;
+        cheer(result.kind === 'ok' && result.answer.status === 'reached');
         if (result.kind === 'range') return show('warn', { note: '점수와 비율은 0~100 사이로 입력해 주세요.' });
         if (result.kind === 'blank') return show('empty', { note: '목표, 받은 점수, 비율을 채우면 바로 계산돼요.' });
         if (result.kind === 'weight') return show('warn', { note: `본 평가와 남은 시험 비율을 더하면 100%가 되어야 해요. (현재 ${formatNumber(result.total)}%)` });
@@ -293,6 +343,8 @@
         const meta = `지금까지 반영 ${formatNumber(completed)}점 · ${exam} 비율 ${formatNumber(remaining)}%`;
         if (answer.status === 'no-remaining') return show('warn', { note: '남은 시험 비율이 0%라 계산할 수 없어요.', meta });
         renderGradeTable(completed, remaining);
+        whatIfCtx = { completed, remaining, need: answer.score, exam };
+        renderWhatIf();
         if (answer.status === 'reached') return show('done', { value: 0, note: `이미 ${goal} 달성! 0점을 받아도 최종 ${formatNumber(completed)}점이에요.`, meta, mini: '목표 달성' });
         const need = ceil2(answer.score);
         if (answer.status === 'impossible') return show('bad', { value: need, note: `100점을 받아도 최종 ${formatNumber(completed + remaining)}점이에요. 목표를 조금 낮춰 보세요.`, meta, mini: `필요 ${formatNumber(need)}점` });
@@ -315,17 +367,42 @@
         const remove = event.target.closest('[data-remove]');
         if (mode) state.mode = mode.dataset.mode;
         else if (grade) state.grade = grade.dataset.grade;
-        else if (remove) { state.completed.splice(Number(remove.closest('.row').dataset.index), 1); renderRows(); }
+        else if (remove) {
+          const index = Number(remove.closest('.row').dataset.index);
+          const [removed] = state.completed.splice(index, 1);
+          renderRows();
+          if (removed.name.trim() || removed.score !== '' || removed.weight !== '') {
+            showToast('평가를 지웠어요', { action: '되돌리기', onAction: () => {
+              state.completed.splice(index, 0, removed);
+              renderRows();
+              $('completedRows').children[index].classList.add('is-new');
+              update();
+            } });
+          }
+        }
         else return;
+        update();
+      });
+      $('whatIfRange').addEventListener('input', () => { whatIfTouched = true; renderWhatIf(); });
+      $('fillRemainingBtn').addEventListener('click', () => {
+        state.remaining.weight = $('fillRemainingBtn').dataset.fit;
+        $('remainingWeight').value = state.remaining.weight;
         update();
       });
       $('addCompleted').addEventListener('click', () => {
         state.completed.push({ name: '', score: '', weight: '' });
         renderRows();
+        $('completedRows').lastElementChild.classList.add('is-new');
         update();
         $('completedRows').lastElementChild.querySelector('input').focus();
       });
-      armReset($('resetBtn'), () => { state = DEFAULTS(); fill(); });
+      $('resetBtn').addEventListener('click', () => {
+        const before = JSON.stringify(state);
+        state = DEFAULTS();
+        whatIfTouched = false;
+        fill();
+        showToast('입력을 초기화했어요', { action: '되돌리기', onAction: () => { state = JSON.parse(before); fill(); } });
+      });
 
       function fill() {
         $('target').value = state.target;
