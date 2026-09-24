@@ -7,10 +7,10 @@
   svg { display: block; transform: translateZ(0); }
 </style>
 <body>
-<script src="glass-logo.js"></script>
+<script src="brand-logo.js"></script>
 <script>
   // ?size-shape : shape = square(풀블리드, 마스커블 안전영역) | round(파비콘, iOS 아이콘 모서리)
   const [size, shape] = location.search.slice(1).split('-');
-  document.body.innerHTML = glassLogo(shape === 'round' ? 115 : 0).replace('<svg ', `<svg width="${size}" height="${size}" `);
+  document.body.innerHTML = brandLogo(shape === 'round' ? 115 : 0).replace('<svg ', `<svg width="${size}" height="${size}" `);
 </script>
 </body>

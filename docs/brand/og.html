@@ -7,25 +7,25 @@
   body { width: 1200px; height: 630px; overflow: hidden; position: relative; background: #F5F5F7; font-family: 'Pretendard Variable', sans-serif; color: #1D1D1F; letter-spacing: -.02em; }
   .left { position: absolute; left: 88px; top: 92px; width: 600px; }
   .brand { display: flex; align-items: center; gap: 20px; }
-  .brand .icon { width: 84px; height: 84px; flex: none; filter: drop-shadow(0 10px 18px rgba(60, 50, 200, .3)); }
+  .brand .icon { width: 84px; height: 84px; flex: none; }
   .brand .icon svg { width: 100%; height: 100%; display: block; }
   .word { font-size: 44px; font-weight: 600; }
   h1 { margin: 50px 0 0; font-size: 60px; font-weight: 600; line-height: 1.12; letter-spacing: -.025em; }
   p { margin: 22px 0 0; font-size: 27px; color: #6E6E73; }
   .url { position: absolute; left: 88px; bottom: 62px; font-size: 26px; color: #0066CC; }
-  .tile { position: absolute; right: 80px; top: 118px; width: 360px; padding: 30px; border-radius: 28px; background: #1D1D1F; color: #F5F5F7; box-shadow: rgba(0, 0, 0, .22) 3px 5px 30px 0; }
-  .label { font-size: 19px; font-weight: 600; color: #A1A1A6; }
+  .tile { position: absolute; right: 80px; top: 118px; width: 360px; padding: 30px; border-radius: 24px; background: #FFFFFF; color: #1D1D1F; border: 1px solid #E0E0E0; box-shadow: rgba(0, 0, 0, .12) 3px 5px 30px 0; }
+  .label { font-size: 19px; font-weight: 600; color: #6E6E73; }
   .row { display: flex; align-items: center; gap: 22px; margin-top: 16px; }
   .ring { position: relative; width: 190px; height: 190px; flex: none; }
   .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
   .ring .num { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
   .ring b { font-size: 46px; font-weight: 600; letter-spacing: -.03em; line-height: 1; }
-  .ring small { display: block; margin-top: 4px; font-size: 17px; color: #A1A1A6; }
-  .grade { width: 62px; height: 62px; display: grid; place-items: center; border: 3px solid #F5F5F7; border-radius: 50%; font-size: 30px; font-weight: 600; }
+  .ring small { display: block; margin-top: 4px; font-size: 17px; color: #6E6E73; }
+  .grade { width: 62px; height: 62px; display: grid; place-items: center; border: 3px solid #1D1D1F; border-radius: 50%; font-size: 30px; font-weight: 600; }
   .note { margin-top: 18px; font-size: 22px; font-weight: 600; }
 </style>
 <body>
-<script src="glass-logo.js"></script>
+<script src="brand-logo.js"></script>
   <div class="left">
     <div class="brand"><div class="icon" id="icon"></div><div class="word">성적계산기</div></div>
     <h1>입력하는 순간,<br>최종점수가 나와요.</h1>
@@ -37,7 +37,7 @@
     <div class="row">
       <div class="ring">
         <svg viewBox="0 0 120 120"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFB340"/><stop offset="1" stop-color="#FF6A00"/></linearGradient></defs>
-          <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="15"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(0,0,0,.07)" stroke-width="15"/>
           <circle cx="60" cy="60" r="50" fill="none" stroke="url(#rg)" stroke-width="15" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="43.67" style="filter: drop-shadow(0 0 6px rgba(255,122,0,.55))"/>
         </svg>
         <div class="num"><div><b>86.1</b><small>점</small></div></div>
@@ -46,5 +46,5 @@
     </div>
     <div class="note">A까지 3.9점 남았어요</div>
   </div>
-<script>document.getElementById('icon').innerHTML = glassLogo(115, 'o');</script>
+<script>document.getElementById('icon').innerHTML = brandLogo(115);</script>
 </body>

@@ -151,12 +151,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
 }
 .tool-menu-btn .icon { width: 24px; height: 24px; }
 .tool-menu-btn:hover, .theme-toggle:hover { background: var(--chip); }
-/* 휴대폰: 테마 버튼은 도구 시트 맨 아래 한 줄 */
-.tools .theme-toggle {
-  grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: auto; height: 48px; margin: 4px 6px 0; border-radius: 16px; background: var(--chip); font-size: 15px;
-}
-.theme-label { white-space: nowrap; }
+
 .appbar-inner[data-menu="open"] .tool-menu-btn { background: var(--chip); }
 .theme-toggle .icon-sun, .theme-toggle[aria-pressed="true"] .icon-moon { display: none; }
 .theme-toggle[aria-pressed="true"] .icon-sun { display: block; }
@@ -201,7 +196,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
   html { scroll-padding-bottom: calc(106px + env(safe-area-inset-bottom, 0px)); }
   /* 아래로 스크롤하거나 입력 중이면 작은 알약으로 */
   .appbar-inner[data-mini="true"] { width: 232px; height: 48px; border-radius: 24px; padding: 0 6px; }
-  .appbar-inner[data-mini="true"] .tool-menu-btn { width: 0; opacity: 0; pointer-events: none; }
+  .appbar-inner[data-mini="true"] .tool-menu-btn, .appbar-inner[data-mini="true"] .theme-toggle { width: 0; opacity: 0; pointer-events: none; }
   .appbar-inner[data-mini="true"] .bar-main { height: 38px; }
   .appbar-inner[data-mini="true"] .bar-main.has-result .bar-label { font-size: 11px; }
   .appbar-inner[data-mini="true"] .bar-label { font-size: 15px; }
@@ -235,9 +230,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
   .tool[aria-current="page"] .app-icon { box-shadow: inset 0 1px 1px rgba(255, 255, 255, .6), 0 1px 3px rgba(0, 0, 0, .18); }
   .tool[aria-current="page"] .tool-name { color: var(--ink); }
   .tools-sep { display: block; width: 1px; height: 18px; margin: 0 8px; background: var(--divider); }
-  .tools .theme-toggle { margin: 0 0 0 auto; width: 40px; height: 40px; border-radius: 50%; background: transparent; }
-  .tools .theme-toggle:hover { background: var(--chip); }
-  .theme-label { display: none; }
+  .theme-toggle { margin-left: auto; width: 40px; height: 40px; }
 }
 
 /* ── 페이지 골격 ──────────────────────────────── */
@@ -662,7 +655,21 @@ details.faq p { padding: 0 0 16px; margin: 0; font-size: 15px; line-height: 1.6;
   transition: opacity .2s, transform .32s var(--spring), visibility .2s;
 }
 .toast.is-shown { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
-.toast button { flex: none; min-height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--button); color: var(--on-primary); font-size: 14px; }
+.toast button {
+  position: relative; z-index: 0; flex: none; min-height: 40px; padding: 0 18px; border: 0; border-radius: 999px;
+  background: transparent; color: #fff; font-size: 14px; font-weight: 600; text-shadow: 0 1px 1px rgba(0, 40, 120, .25);
+}
+.toast button::before, .toast button::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; }
+.toast button::before {
+  background: linear-gradient(180deg, rgba(40, 140, 255, .72), rgba(0, 100, 230, .78));
+  -webkit-backdrop-filter: blur(8px) saturate(1.8); backdrop-filter: blur(8px) saturate(1.8);
+  box-shadow: 0 6px 14px -6px rgba(0, 90, 220, .55);
+}
+.toast button::after {
+  background: linear-gradient(180deg, rgba(255, 255, 255, .42), rgba(255, 255, 255, 0) 55%);
+  box-shadow: inset 1px 1.5px 0 -.3px rgba(255, 255, 255, .85), inset -1px -1px 0 -.3px rgba(255, 255, 255, .35);
+}
+.toast button:active { transform: scale(.95); }
 @media (min-width: 960px) { .toast { top: 84px; } }
 .is-new { animation: row-in .35s var(--ease) both; }
 
