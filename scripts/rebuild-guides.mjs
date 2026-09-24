@@ -226,7 +226,7 @@ ${SHELL}
 
 ${sections}
 
-      <p class="cta"><a class="btn" href="${g.cta}">${g.ctaText} →</a></p>
+      <p class="cta"><a class="btn" href="${g.cta}">${g.ctaText}</a></p>
 
       <h2>이어서 확인하기</h2>
       <ul class="link-list">

@@ -156,7 +156,7 @@ function renderSchoolPicker(container, onReady) {
   if (school) {
     const card = el('div', 'school-card');
     const info = el('div', 'school-info');
-    info.append(el('span', 'school-meta', '우리 학교'), el('strong', '', school.schoolName), el('span', 'school-meta', school.officeName || ''));
+    info.append(el('strong', '', school.schoolName), el('span', 'school-meta', school.officeName || ''));
     const actions = el('div', 'school-actions');
     const share = el('button', 'btn-ghost btn-sm', '링크 공유');
     const change = el('button', 'btn-ghost btn-sm', '학교 변경');
@@ -178,8 +178,7 @@ function renderSchoolPicker(container, onReady) {
     return;
   }
 
-  const title = el('h2', 'card-title', '학교를 먼저 찾아 주세요');
-  const hint = el('p', 'card-sub', '한 번 고르면 이 기기에 저장돼서 다음부터 바로 보여요.');
+  const title = el('h2', 'card-title', '학교 찾기');
   const form = el('form', 'school-search mt');
   form.setAttribute('role', 'search');
   const label = el('label', 'sr-only', '학교 이름');
@@ -191,7 +190,7 @@ function renderSchoolPicker(container, onReady) {
   const results = el('div', 'school-results');
   results.setAttribute('aria-live', 'polite');
   form.append(label, input, submit);
-  container.replaceChildren(title, hint, form, results);
+  container.replaceChildren(title, form, results);
   form.addEventListener('submit', async event => {
     event.preventDefault();
     const name = input.value.trim();

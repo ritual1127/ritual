@@ -187,7 +187,6 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .page-narrow { max-width: 720px; }
 .page-head { margin: 4px 0 22px; }
 .page-head h1 { font-size: 22px; font-weight: 800; letter-spacing: -.03em; line-height: 1.3; }
-.eyebrow, .page-head .lede { display: none; }
 
 .calc { display: grid; gap: 0; align-items: start; }
 .input-stack { display: grid; gap: 0; margin: 0; min-width: 0; }
@@ -205,9 +204,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .input-stack > .card { padding: 22px 0; border-top: 1px solid var(--line); }
 .card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 6px; min-height: 40px; }
 .card-head h2, .card-title { font-size: 15px; font-weight: 800; letter-spacing: -.02em; line-height: 1.35; }
-.card-sub { display: none; }
 .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
-.card-foot:empty, .card-foot .field-hint:only-child { display: none; }
 .empty-line { padding: 8px 0; color: var(--ink-3); font-size: 14.5px; }
 main.page-narrow > .card + .card { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--line); }
 
@@ -502,13 +499,11 @@ details.faq p { padding: 0 0 14px; margin: 0; line-height: 1.75; }
 /* ── 가이드 허브 ──────────────────────────────── */
 .topic { margin-top: 30px; }
 .topic-head h2 { font-size: 15px; font-weight: 800; color: var(--ink-3); letter-spacing: -.01em; }
-.topic-head p { display: none; }
 .topic-grid { display: grid; margin-top: 6px; border-top: 1px solid var(--line); }
 .topic-card { display: grid; gap: 2px; padding: 14px 0; border-bottom: 1px solid var(--line); color: var(--ink); text-decoration: none; }
 .topic-card:hover h3 { text-decoration: underline; text-underline-offset: 3px; }
 .topic-card h3 { font-size: 16.5px; font-weight: 750; letter-spacing: -.02em; }
 .topic-card p { font-size: 14.5px; color: var(--ink-2); }
-.topic-card small { display: none; }
 @media (min-width: 760px) {
   .topic-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
 }
