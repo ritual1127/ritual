@@ -71,7 +71,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <div class="calc">
       <section class="card result-card" id="resultCard" data-state="empty" aria-labelledby="gpaLabel">
-        <p class="result-label" id="gpaLabel">평점평균 (GPA)</p>
+        <div class="result-head">
+          <p class="result-label" id="gpaLabel">평점평균 (GPA)</p>
+          <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
+        </div>
         <div class="result-main">
           <p class="result-number"><span class="result-value"><span class="marker" id="gpaValue">—</span></span><span class="result-unit" id="gpaUnit">/ 4.5</span></p>
         </div>
@@ -107,7 +110,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <button type="button" class="btn-ghost btn-add" id="addRowBtn">+ 과목 추가</button>
           <div class="card-foot">
             <p class="field-hint">입력한 값은 이 기기에만 저장돼요.</p>
-            <button type="button" class="btn-ghost btn-sm" id="resetBtn">초기화</button>
           </div>
         </section>
 
@@ -156,6 +158,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const defaultRows = () => (matchMedia('(max-width: 600px)').matches ? [blankRow()] : [blankRow(), blankRow(), blankRow()]);
       const text = value => (value === null || value === undefined || Number.isNaN(value) ? '' : String(value));
       const num = value => (value === '' ? null : Number(value));
+      const cheer = achievement(card, '참 잘했어요');
 
       let scale = '4.5';
       try { if (GPA_SCALES[localStorage.getItem('gpaScale')]) scale = localStorage.getItem('gpaScale'); } catch {}
@@ -207,7 +210,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       function show(stateName, { value = '—', ratio = 0, note = '', meta = '', mini = '' }) {
         const wasDone = card.dataset.state === 'done';
         card.dataset.state = stateName;
-        $('gpaValue').textContent = value;
+        rollNumber($('gpaValue'), value);
         $('gpaFill').style.setProperty('--ratio', ratio);
         $('gpaNote').textContent = note;
         $('gpaMeta').textContent = meta;
@@ -237,6 +240,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           });
           return tr;
         }));
+        cheer(gpa !== null && gpa / Number(scale) >= .9);
         if (!total) return show('empty', { note: '학점을 입력하면 바로 계산돼요.' });
         if (gpa === null) return show('warn', { note: 'P 과목만 있어 평점을 계산할 수 없어요.', meta: `총 이수 ${formatNumber(total)}학점 · 평점 반영 0학점` });
         const percent = gpa / Number(scale) * 100;
@@ -267,18 +271,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           renderScale();
           renderRows();
         } else if (remove) {
-          rows.splice(Number(remove.closest('.course').dataset.index), 1);
+          const index = Number(remove.closest('.course').dataset.index);
+          const [removed] = rows.splice(index, 1);
           renderRows();
+          if (removed.name.trim() || removed.credit !== '') {
+            showToast('과목을 지웠어요', { action: '되돌리기', onAction: () => {
+              rows.splice(index, 0, removed);
+              renderRows();
+              $('rows').children[index].classList.add('is-new');
+              update();
+            } });
+          }
         } else return;
         update();
       });
       $('addRowBtn').addEventListener('click', () => {
         rows.push(blankRow());
         renderRows();
+        $('rows').lastElementChild.classList.add('is-new');
         update();
         $('rows').lastElementChild.querySelector('input').focus();
       });
-      armReset($('resetBtn'), () => { rows = defaultRows(); renderRows(); update(); });
+      $('resetBtn').addEventListener('click', () => {
+        const before = JSON.stringify(rows);
+        rows = defaultRows();
+        renderRows();
+        update();
+        showToast('입력을 초기화했어요', { action: '되돌리기', onAction: () => { rows = JSON.parse(before); renderRows(); update(); } });
+      });
 
       renderScale();
       renderRows();

@@ -59,7 +59,10 @@
 
     <div class="calc">
       <section class="card result-card" id="resultCard" data-state="empty" aria-labelledby="convertedLabel">
-        <p class="result-label" id="convertedLabel">환산한 GPA</p>
+        <div class="result-head">
+          <p class="result-label" id="convertedLabel">환산한 GPA</p>
+          <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
+        </div>
         <div class="result-main">
           <p class="result-number"><span class="result-value"><span class="marker" id="convertedValue">—</span></span><span class="result-unit" id="convertedUnit">/ 4.3</span></p>
         </div>
@@ -140,7 +143,7 @@
         const ratio = valid ? value / from : 0;
         const wasDone = card.dataset.state === 'done';
         card.dataset.state = valid ? 'done' : blank ? 'empty' : 'warn';
-        $('convertedValue').textContent = valid ? fixedNumber(result) : '—';
+        rollNumber($('convertedValue'), valid ? fixedNumber(result) : '—');
         $('fromFill').style.setProperty('--ratio', ratio);
         $('toFill').style.setProperty('--ratio', ratio);
         $('fromText').textContent = valid ? `${formatNumber(value)} / ${formatNumber(from)}` : '';
@@ -155,6 +158,14 @@
         }
         setMiniResult(valid ? `${fixedNumber(result)} / ${formatNumber(to)}` : '');
       }
+
+      const DEFAULTS = { value: '3.8', from: '4.5', to: '4.3' };
+      const setAll = values => { Object.entries(values).forEach(([key, value]) => { inputs[key].value = value; }); update(); };
+      $('resetBtn').addEventListener('click', () => {
+        const before = Object.fromEntries(Object.entries(inputs).map(([key, input]) => [key, input.value]));
+        setAll(DEFAULTS);
+        showToast('입력을 초기화했어요', { action: '되돌리기', onAction: () => setAll(before) });
+      });
 
       form.addEventListener('submit', event => event.preventDefault());
       form.addEventListener('input', update);

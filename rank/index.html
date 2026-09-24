@@ -71,7 +71,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <div class="calc">
       <section class="card result-card" id="resultCard" data-state="empty" aria-labelledby="avgLabel">
-        <p class="result-label" id="avgLabel">평균 등급</p>
+        <div class="result-head">
+          <p class="result-label" id="avgLabel">평균 등급</p>
+          <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
+        </div>
         <div class="result-main">
           <p class="result-number"><span class="result-value"><span class="marker" id="avgValue">—</span></span><span class="result-unit">등급</span></p>
         </div>
@@ -104,7 +107,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <button type="button" class="btn-ghost btn-add" id="addRowBtn">+ 과목 추가</button>
           <div class="card-foot">
             <p class="field-hint">입력한 값은 이 기기에만 저장돼요.</p>
-            <button type="button" class="btn-ghost btn-sm" id="resetBtn">초기화</button>
           </div>
         </section>
 
@@ -160,6 +162,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const defaultRows = () => (matchMedia('(max-width: 600px)').matches ? [blankRow()] : [blankRow(), blankRow(), blankRow()]);
       const text = value => (value === null || value === undefined || Number.isNaN(value) ? '' : String(value));
       const num = value => (value === '' ? null : Number(value));
+      const cheer = achievement(card, '1등급');
 
       function load() {
         let saved = [];
@@ -208,7 +211,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       function show(stateName, { value = '—', note = '', meta = '', mini = '' }) {
         const wasDone = card.dataset.state === 'done';
         card.dataset.state = stateName;
-        $('avgValue').textContent = value;
+        rollNumber($('avgValue'), value);
         $('avgNote').textContent = note;
         $('avgMeta').textContent = meta;
         if (stateName === 'done' && !wasDone) {
@@ -243,12 +246,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         $('resultTableWrap').hidden = !results.length;
         if (!results.length) {
+          cheer(false);
           renderCuts(0);
           return show(invalid ? 'warn' : 'empty', { note: invalid ? '석차 입력을 확인해 주세요.' : '수강자 수와 석차를 넣으면 바로 계산돼요.' });
         }
         const units = results.reduce((sum, r) => sum + r.unit, 0);
         const avg = results.reduce((sum, r) => sum + r.grade * r.unit, 0) / units;
         renderCuts(Math.round(avg));
+        cheer(avg < 1.5);
         $('resultBody').replaceChildren(...results.map(r => {
           const tr = document.createElement('tr');
           const chip = Object.assign(document.createElement('span'), { className: 'chip', textContent: `${r.grade}등급` });
@@ -278,17 +283,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const systemButton = event.target.closest('[data-system]');
         const remove = event.target.closest('[data-remove]');
         if (systemButton) system = Number(systemButton.dataset.system);
-        else if (remove) { rows.splice(Number(remove.closest('.subject').dataset.index), 1); renderRows(); }
+        else if (remove) {
+          const index = Number(remove.closest('.subject').dataset.index);
+          const [removed] = rows.splice(index, 1);
+          renderRows();
+          if (removed.name.trim() || removed.total !== '' || removed.rank !== '') {
+            showToast('과목을 지웠어요', { action: '되돌리기', onAction: () => {
+              rows.splice(index, 0, removed);
+              renderRows();
+              $('rows').children[index].classList.add('is-new');
+              update();
+            } });
+          }
+        }
         else return;
         update();
       });
       $('addRowBtn').addEventListener('click', () => {
         rows.push(blankRow());
         renderRows();
+        $('rows').lastElementChild.classList.add('is-new');
         update();
         $('rows').lastElementChild.querySelector('input').focus();
       });
-      armReset($('resetBtn'), () => { rows = defaultRows(); renderRows(); update(); });
+      $('resetBtn').addEventListener('click', () => {
+        const before = JSON.stringify(rows);
+        rows = defaultRows();
+        renderRows();
+        update();
+        showToast('입력을 초기화했어요', { action: '되돌리기', onAction: () => { rows = JSON.parse(before); renderRows(); update(); } });
+      });
 
       renderRows();
       update();
