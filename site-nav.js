@@ -55,7 +55,7 @@
   }
 
   // 휴대폰 하단 바 크기: 아래로 스크롤하거나 입력 중이면 작은 알약, 위로 스크롤하거나 맨 위면 원래 크기.
-  // 작은 상태에서 누르면 먼저 커지고, 그 탭은 버튼 동작으로 넘기지 않는다.
+  // 작은 상태에서 누르면 커진다. 결과가 떠 있으면 그 탭으로 결과 카드까지 바로 간다(두 번 누를 필요 없게).
   function setupBarSize() {
     const bar = document.querySelector('.appbar-inner');
     if (!bar) return;
@@ -87,6 +87,9 @@
       event.preventDefault();
       event.stopPropagation();
       setMini(false);
+      if (bar.querySelector('.bar-main')?.classList.contains('has-result')) {
+        document.querySelector('.result-card')?.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'start' });
+      }
     }, true);
   }
 

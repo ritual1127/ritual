@@ -9,15 +9,13 @@ window.glassLogo = (rx, id = 'g') => {
   const aurora = `
     <rect width="512" height="512" fill="url(#${id}base)"/>
     <g filter="url(#${id}soft)">
-      <circle cx="118" cy="104" r="176" fill="#2BD9FF"/>
-      <circle cx="400" cy="120" r="150" fill="#7C5CFF"/>
-      <circle cx="430" cy="440" r="190" fill="#FF3DB4"/>
-      <circle cx="84" cy="440" r="150" fill="#2F5BFF"/>
+      <circle cx="110" cy="96" r="190" fill="#2F6BFF" opacity=".85"/>
+      <circle cx="430" cy="470" r="170" fill="#5B3BE6" opacity=".45"/>
     </g>`;
   return `
 <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="${id}base" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B2A9E"/><stop offset="1" stop-color="#3A137A"/></linearGradient>
+    <linearGradient id="${id}base" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14235E"/><stop offset="1" stop-color="#0A1033"/></linearGradient>
     <filter id="${id}soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="62"/></filter>
     <filter id="${id}frost" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="7"/><feColorMatrix type="saturate" values="1.5"/></filter>
     <filter id="${id}drop" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="16"/></filter>
@@ -54,10 +52,10 @@ window.glassLogo = (rx, id = 'g') => {
       </feSpecularLighting>
       <feComposite in="s" in2="SourceAlpha" operator="in"/>
     </filter>
-    <linearGradient id="${id}milk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".4"/><stop offset=".55" stop-color="#fff" stop-opacity=".12"/><stop offset="1" stop-color="#fff" stop-opacity=".08"/></linearGradient>
+    <linearGradient id="${id}milk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".86"/><stop offset=".55" stop-color="#fff" stop-opacity=".68"/><stop offset="1" stop-color="#fff" stop-opacity=".56"/></linearGradient>
     <linearGradient id="${id}fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity=".75"/></linearGradient>
     <linearGradient id="${id}bezel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".3" stop-color="#fff" stop-opacity=".08"/><stop offset="1" stop-color="#fff" stop-opacity=".2"/></linearGradient>
-    <radialGradient id="${id}sheen" cx=".3" cy="0" r=".9"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <radialGradient id="${id}sheen" cx=".3" cy="0" r=".9"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient>
     <mask id="${id}m" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">${shape('#fff')}</mask>
     <mask id="${id}fadeMask" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512"><rect width="512" height="512" fill="url(#${id}fade)"/></mask>
     <clipPath id="${id}tile"><rect width="512" height="512" rx="${rx}"/></clipPath>
@@ -66,15 +64,15 @@ window.glassLogo = (rx, id = 'g') => {
     ${aurora}
     <rect width="512" height="512" fill="url(#${id}sheen)"/>
     <g transform="${rx ? '' : 'translate(256 262) scale(.88) translate(-256 -262)'}">
-    <g transform="translate(6 20)" opacity=".5" filter="url(#${id}drop)">${shape('#0A0730')}</g>
+    <g transform="translate(6 20)" opacity=".7" filter="url(#${id}drop)">${shape('#0A0730')}</g>
     <g mask="url(#${id}m)">
       <g filter="url(#${id}frost)" transform="translate(256 256) scale(1.22) translate(-262 -268)">${aurora}</g>
       <rect width="512" height="512" fill="url(#${id}milk)"/>
     </g>
     <g filter="url(#${id}edge)" opacity=".58">${shape('#fff')}</g>
     <g filter="url(#${id}bevel)" opacity=".95">${shape('#fff')}</g>
-    <g filter="url(#${id}rimc)" opacity=".6" transform="translate(-3 -1)">${shape('#fff')}</g>
-    <g filter="url(#${id}rimp)" opacity=".6" transform="translate(3 1)">${shape('#fff')}</g>
+    <g filter="url(#${id}rimc)" opacity=".25" transform="translate(-2 -1)">${shape('#fff')}</g>
+    <g filter="url(#${id}rimp)" opacity=".25" transform="translate(2 1)">${shape('#fff')}</g>
     <g mask="url(#${id}fadeMask)"><g filter="url(#${id}rimf)" opacity=".9">${shape('#fff')}</g></g>
     </g>
     ${rx ? `<rect x="4" y="4" width="504" height="504" rx="${rx - 4}" fill="none" stroke="url(#${id}bezel)" stroke-width="6"/>` : ''}
