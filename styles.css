@@ -115,13 +115,13 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
 }
 
 /* ── 앱 아이콘: 도구마다 색 유리 스퀘어클 + 흰 기호 ── */
-[data-app="score"] { --app-a: #FFB340; --app-b: #FF6A00; --app-glow: rgba(255, 122, 0, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20l4-1L18.5 8.5a2.1 2.1 0 0 0-3-3L5 16l-1 4z'/%3E%3Cpath d='M13.5 7.5l3 3'/%3E%3C/svg%3E"); }
-[data-app="target"] { --app-a: #FF7A8A; --app-b: #FF2D55; --app-glow: rgba(255, 45, 85, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8'/%3E%3Ccircle cx='12' cy='12' r='4.2'/%3E%3Ccircle cx='12' cy='12' r='.9' fill='white'/%3E%3C/svg%3E"); }
-[data-app="rank"] { --app-a: #64D2FF; --app-b: #0A7AFF; --app-glow: rgba(10, 122, 255, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 19v-6M12 19V6M18 19v-9' stroke-width='3'/%3E%3C/svg%3E"); }
-[data-app="gpa"] { --app-a: #D08CFF; --app-b: #8E44F0; --app-glow: rgba(142, 68, 240, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 9.5 12 5l9.5 4.5L12 14z'/%3E%3Cpath d='M6.5 11.8v3.9c0 1.4 2.5 2.8 5.5 2.8s5.5-1.4 5.5-2.8v-3.9M21.5 9.5v5'/%3E%3C/svg%3E"); }
-[data-app="convert"] { --app-a: #5EF0D8; --app-b: #00A3B5; --app-glow: rgba(0, 163, 181, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8.5h15M15 4.5l4 4-4 4M20 15.5H5M9 11.5l-4 4 4 4'/%3E%3C/svg%3E"); }
-[data-app="food"] { --app-a: #7BE38A; --app-b: #2BB14A; --app-glow: rgba(43, 177, 74, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 3v6.5a2 2 0 0 0 4 0V3M9 11.5V21M17 21V3c-2.2 1.4-3 4.2-3 7h3'/%3E%3C/svg%3E"); }
-[data-app="class"] { --app-a: #9D9FFF; --app-b: #5856D6; --app-glow: rgba(88, 86, 214, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='5' width='17' height='15' rx='3'/%3E%3Cpath d='M3.5 10h17M8 3v4M16 3v4'/%3E%3C/svg%3E"); }
+[data-app="score"] { --app-ink: #C85400; --app-a: #FFB340; --app-b: #FF6A00; --app-glow: rgba(255, 122, 0, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20l4-1L18.5 8.5a2.1 2.1 0 0 0-3-3L5 16l-1 4z'/%3E%3Cpath d='M13.5 7.5l3 3'/%3E%3C/svg%3E"); }
+[data-app="target"] { --app-ink: #D81B45; --app-a: #FF7A8A; --app-b: #FF2D55; --app-glow: rgba(255, 45, 85, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8'/%3E%3Ccircle cx='12' cy='12' r='4.2'/%3E%3Ccircle cx='12' cy='12' r='.9' fill='white'/%3E%3C/svg%3E"); }
+[data-app="rank"] { --app-ink: #0A66D6; --app-a: #64D2FF; --app-b: #0A7AFF; --app-glow: rgba(10, 122, 255, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 19v-6M12 19V6M18 19v-9' stroke-width='3'/%3E%3C/svg%3E"); }
+[data-app="gpa"] { --app-ink: #7A3BE0; --app-a: #D08CFF; --app-b: #8E44F0; --app-glow: rgba(142, 68, 240, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 9.5 12 5l9.5 4.5L12 14z'/%3E%3Cpath d='M6.5 11.8v3.9c0 1.4 2.5 2.8 5.5 2.8s5.5-1.4 5.5-2.8v-3.9M21.5 9.5v5'/%3E%3C/svg%3E"); }
+[data-app="convert"] { --app-ink: #00808F; --app-a: #5EF0D8; --app-b: #00A3B5; --app-glow: rgba(0, 163, 181, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8.5h15M15 4.5l4 4-4 4M20 15.5H5M9 11.5l-4 4 4 4'/%3E%3C/svg%3E"); }
+[data-app="food"] { --app-ink: #1E8A38; --app-a: #7BE38A; --app-b: #2BB14A; --app-glow: rgba(43, 177, 74, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 3v6.5a2 2 0 0 0 4 0V3M9 11.5V21M17 21V3c-2.2 1.4-3 4.2-3 7h3'/%3E%3C/svg%3E"); }
+[data-app="class"] { --app-ink: #4B49C8; --app-a: #9D9FFF; --app-b: #5856D6; --app-glow: rgba(88, 86, 214, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='5' width='17' height='15' rx='3'/%3E%3Cpath d='M3.5 10h17M8 3v4M16 3v4'/%3E%3C/svg%3E"); }
 .app-icon {
   position: relative; flex: none; display: inline-block; width: 30px; height: 30px; border-radius: 26%; overflow: hidden;
   background: var(--app-glyph) center / 56% no-repeat, linear-gradient(165deg, var(--app-a), var(--app-b));
@@ -169,7 +169,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
 .bar-value { font-size: 18px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .bar-value:empty { display: none; }
 .bar-main.has-result .bar-label { font-size: 12px; font-weight: 400; letter-spacing: -.01em; color: var(--ink-2); }
-.bar-badge { flex: none; width: 32px; height: 32px; display: grid; place-items: center; border: 1.5px solid currentColor; border-radius: 50%; font-size: 15px; font-weight: 600; letter-spacing: 0; }
+.bar-badge { flex: none; min-width: 30px; height: 28px; padding: 0 9px; display: grid; place-items: center; border-radius: 999px; background: linear-gradient(160deg, var(--app-a, #8E8E93), var(--app-b, #636366)); color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .25); font-size: 14px; font-weight: 700; letter-spacing: 0; }
 
 /* 도구 메뉴: 휴대폰에서는 바 위로 열리는 앱 아이콘 격자(유리 시트) */
 .tools {
@@ -202,7 +202,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
   .appbar-inner[data-mini="true"] .bar-label { font-size: 15px; }
   .appbar-inner[data-mini="true"] .bar-value { font-size: 16px; }
   .appbar-inner[data-mini="true"] .bar-ring { width: 24px; height: 24px; }
-  .appbar-inner[data-mini="true"] .bar-badge { width: 26px; height: 26px; font-size: 13px; }
+  .appbar-inner[data-mini="true"] .bar-badge { min-width: 26px; height: 24px; padding: 0 8px; font-size: 13px; }
 }
 @media (max-width: 340px) {
   .appbar { left: 8px; right: 8px; }
@@ -303,7 +303,8 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
   border-color: var(--focus); box-shadow: inset 0 0 0 1px var(--focus); font-weight: 600;
 }
 .grade-pick { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
-.grade-pick button { min-width: 0; min-height: 50px; padding: 0; font-size: 19px; font-weight: 600; }
+.grade-pick button { min-width: 0; min-height: 50px; padding: 0; border-radius: 13px; font-size: 19px; font-weight: 600; }
+.grade-pick button[aria-pressed="true"] { border-color: transparent; box-shadow: 0 6px 14px -8px var(--app-glow, rgba(0, 0, 0, .3)); background: linear-gradient(160deg, var(--app-a), var(--app-b)); color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
 .chip-btn { flex: none; min-height: 40px; }
 .chip.chip-btn { min-height: 40px; padding: 0 16px; background: var(--canvas); border: 1px solid var(--divider); color: var(--ink); }
 
@@ -432,11 +433,12 @@ select.input {
 .result-card:not([data-state="done"]) .result-value { color: var(--ink-3); }
 .result-card[data-state="bad"] .result-value { color: var(--bad); }
 .grade {
-  position: relative; --tilt: 0deg; display: inline-grid; place-items: center; width: 52px; height: 52px;
-  border: 2px solid var(--ink); border-radius: 50%; color: var(--ink);
-  font-size: 24px; font-weight: 600; line-height: 1; letter-spacing: 0;
+  position: relative; --tilt: 0deg; display: inline-flex; align-items: baseline; gap: 1px;
+  color: var(--app-ink, var(--ink)); font-size: 34px; font-weight: 700; line-height: 1; letter-spacing: -.01em;
 }
-.grade small { display: none; }
+.grade small { font-size: 18px; font-weight: 600; color: var(--ink); }
+:root[data-theme="dark"] .grade { color: var(--app-a, var(--ink)); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .grade { color: var(--app-a, var(--ink)); } }
 .result-note { margin-top: 14px; font-size: 17px; font-weight: 600; color: var(--ink); }
 .result-card[data-state="warn"] .result-note, .result-card[data-state="bad"] .result-note { color: var(--bad); }
 .result-card[data-state="empty"] .result-note { color: var(--ink-2); font-weight: 400; }
@@ -498,6 +500,8 @@ details.formula p { margin-top: 4px; padding: 12px 14px; border-radius: 11px; ba
 .table tr:last-child td { border-bottom: 0; }
 .table .num { text-align: right; white-space: nowrap; }
 .table tr.is-hit td { font-weight: 600; color: var(--ink); background: var(--parchment); }
+.table .chip[data-grade] { width: 30px; min-height: 30px; padding: 0; justify-content: center; border-radius: 9px; background: var(--fill); color: var(--ink-2); font-weight: 700; }
+.table tr.is-hit .chip[data-grade] { background: linear-gradient(160deg, var(--app-a), var(--app-b)); color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
 .table td.good { font-weight: 600; }
 .table td.bad { color: var(--bad); }
 
@@ -525,7 +529,7 @@ details.formula p { margin-top: 4px; padding: 12px 14px; border-radius: 11px; ba
 .whatif-ticks span { position: absolute; top: 0; transform: translateX(-50%); font-size: 12px; color: var(--ink-2); }
 .whatif-result { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; margin-top: 4px; font-size: 15px; color: var(--ink-2); }
 .whatif-result b { font-size: 19px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
-.whatif-result .chip { background: var(--canvas); color: var(--ink); font-weight: 600; box-shadow: inset 0 0 0 1px var(--divider); }
+.whatif-result .chip { background: linear-gradient(160deg, var(--app-a), var(--app-b)); color: #fff; font-weight: 700; text-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
 .whatif-result .chip:empty { display: none; }
 
 /* ── 설명(SEO) · FAQ ──────────────────────────── */
