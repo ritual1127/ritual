@@ -6,16 +6,10 @@
   svg { display: block; transform: translateZ(0); }
 </style>
 <body>
+<script src="glass-logo.js"></script>
 <script>
   // ?size-shape : shape = square(풀블리드, 마스커블 안전영역) | round(파비콘, iOS 아이콘 모서리)
   const [size, shape] = location.search.slice(1).split('-');
-  const rx = shape === 'round' ? 115 : 0;
-  // 잉크 스퀘어클 위 흰 A와 위첨자 +. 형광·그라데이션 없음.
-  document.body.innerHTML = `
-  <svg width="${size}" height="${size}" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-    <rect width="512" height="512" rx="${rx}" fill="#1D1D1F"/>
-    <text x="214" y="362" text-anchor="middle" font-family="Pretendard Variable" font-weight="700" font-size="300" letter-spacing="-6" fill="#FFFFFF">A</text>
-    <path d="M350 160v92M304 206h92" fill="none" stroke="#FFFFFF" stroke-width="30" stroke-linecap="round"/>
-  </svg>`;
+  document.body.innerHTML = glassLogo(shape === 'round' ? 115 : 0).replace('<svg ', `<svg width="${size}" height="${size}" `);
 </script>
 </body>
