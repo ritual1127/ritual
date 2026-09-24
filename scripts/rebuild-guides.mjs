@@ -144,7 +144,7 @@ const guides = [
 const SHELL = `  <a class="skip-link" href="#main">본문 바로가기</a>
   <header class="appbar">
     <div class="appbar-inner glass" data-mini="false">
-      <a class="logo" href="/"><img class="logo-icon" src="/favicon.png?v=3" alt="" width="28" height="28"><span class="logo-text">성적계산기</span></a>
+      <a class="logo" href="/"><img class="logo-icon" src="/favicon.png?v=4" alt="" width="28" height="28"><span class="logo-text">성적계산기</span></a>
       <button type="button" class="tool-menu-btn" aria-expanded="false" aria-controls="toolMenu" aria-label="도구 메뉴"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.8"/></svg></button>
       <nav class="tools glass" id="toolMenu" aria-label="도구">
         <a class="tool" href="/"><span class="app-icon" data-app="score" aria-hidden="true"></span><span class="tool-name">수행·지필</span></a>
@@ -199,15 +199,15 @@ function render(g) {
   <meta property="og:title" content="${g.title}">
   <meta property="og:description" content="${g.description}">
   <meta property="og:url" content="${url}">
-  <meta property="og:image" content="https://naver1.cloud/og.png?v=3">
+  <meta property="og:image" content="https://naver1.cloud/og.png?v=4">
   <meta property="og:locale" content="ko_KR">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${g.title}">
   <meta name="twitter:description" content="${g.description}">
-  <meta name="twitter:image" content="https://naver1.cloud/og.png?v=3">
+  <meta name="twitter:image" content="https://naver1.cloud/og.png?v=4">
   <meta name="theme-color" content="#F5F5F7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-  <link rel="icon" href="../../icon-192.png?v=3">
+  <link rel="icon" href="../../icon-192.png?v=4">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="../../styles.css?v=20260924b">
