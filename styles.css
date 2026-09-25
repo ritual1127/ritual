@@ -791,18 +791,24 @@ details.faq p { padding: 0 0 16px; margin: 0; font-size: 15px; line-height: 1.6;
     position: fixed; z-index: 35; left: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 2px; padding: 5px; border-radius: 27px;
   }
   .assist-dock-btn {
-    display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px 0 6px; border: 0; border-radius: 999px;
+    display: flex; align-items: center; height: 44px; padding: 0 6px; border: 0; border-radius: 999px;
     background: transparent; color: var(--ink); font-size: 15px; font-weight: 600; letter-spacing: -.02em; transition: background-color .15s, transform .15s var(--ease);
   }
+  /* 평소엔 아이콘만, 도크에 마우스를 올리거나 키보드로 들어오면 글씨가 옆으로 펼쳐진다 */
+  .assist-dock-label {
+    max-width: 0; overflow: hidden; white-space: nowrap; opacity: 0; transform: translateX(-8px);
+    transition: max-width .38s var(--spring), margin .38s var(--spring), opacity .22s var(--ease), transform .38s var(--spring);
+  }
+  .assist-dock:hover .assist-dock-label, .assist-dock:has(:focus-visible) .assist-dock-label {
+    max-width: 6em; margin: 0 10px 0 8px; opacity: 1; transform: none; transition-delay: 0s, 0s, .06s, 0s;
+  }
+  .assist-dock-btn + .assist-dock-btn .assist-dock-label { transition-delay: .04s; }
+  .assist-dock:hover .assist-dock-btn + .assist-dock-btn .assist-dock-label,
+  .assist-dock:has(:focus-visible) .assist-dock-btn + .assist-dock-btn .assist-dock-label { transition-delay: .04s, .04s, .1s, .04s; }
   .assist-dock-btn:hover, .assist-dock-btn[aria-pressed="true"] { background: var(--chip); }
   .assist-dock-btn .app-icon { width: 32px; height: 32px; }
   /* 세로 도크(높이 100px) 바로 위에 뜬다 */
   .assist-panel { inset: auto auto 130px 20px; width: 400px; height: min(640px, calc(100vh - 222px)); }
-}
-/* 좁은 PC 화면에서는 도크를 아이콘만 남겨 본문을 덜 가린다 */
-@media (min-width: 960px) and (max-width: 1359px) {
-  .assist-dock-label { display: none; }
-  .assist-dock-btn { width: 44px; padding: 0; justify-content: center; }
 }
 
 /* ── 푸터 ─────────────────────────────────────── */
