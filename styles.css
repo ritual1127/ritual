@@ -811,6 +811,8 @@ details.faq p { padding: 0 0 16px; margin: 0; font-size: 15px; line-height: 1.6;
 .footer-links { display: flex; flex-wrap: wrap; align-items: center; }
 .footer-links a { display: inline-flex; align-items: center; min-height: 36px; color: var(--ink-80); font-size: 12px; }
 .footer-links a + a::before { content: ""; width: 1px; height: 12px; margin: 0 10px; background: var(--divider); }
+/* 좁은 화면에서는 링크가 두 줄로 넘어가 줄 첫머리에 구분선이 남으므로 구분선 대신 간격을 둔다 */
+@media (max-width: 733px) { .footer-links { column-gap: 20px; } .footer-links a + a::before { content: none; } }
 @media (min-width: 734px) { .site-footer { padding: 24px 24px 40px; } }
 
 /* ── 모션 ─────────────────────────────────────── */
