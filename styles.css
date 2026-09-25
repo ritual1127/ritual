@@ -215,7 +215,9 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
   /* 캡슐 위 틈으로 비치는 글자를 배경색으로 흐려 준다 */
   .appbar::before { content: ""; position: absolute; inset: 0 0 auto; height: 22px; z-index: -1; background: linear-gradient(var(--parchment) 45%, transparent); }
   .appbar-inner { --glass-bg: var(--glass-cap); --glass-blur: 10px; width: auto; max-width: 1080px; height: 58px; border-radius: 29px; padding: 0 10px 0 14px; gap: 2px; }
-  .logo { display: inline-flex; margin-right: 18px; }
+  .logo { display: inline-flex; margin-right: 8px; }
+  /* 로고와 도구 사이 구분선: 도구 묶음 사이의 .tools-sep과 같은 모양 */
+  .logo::after { content: ""; width: 1px; height: 18px; margin-left: 7px; background: var(--divider); }
   .tool-menu-btn, .bar-main { display: none; }
   .tools {
     position: static; flex: 1; display: flex; align-items: center; gap: 2px; padding: 0; border-radius: 0;
@@ -786,7 +788,7 @@ details.faq p { padding: 0 0 16px; margin: 0; font-size: 15px; line-height: 1.6;
   .tools-extra { display: none; }
   .assist-dock {
     --glass-bg: var(--glass-cap); --glass-blur: 10px; --glass-extra: var(--glass-lift);
-    position: fixed; z-index: 35; left: 20px; bottom: 20px; display: flex; gap: 2px; padding: 5px; border-radius: 999px;
+    position: fixed; z-index: 35; left: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 2px; padding: 5px; border-radius: 27px;
   }
   .assist-dock-btn {
     display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px 0 6px; border: 0; border-radius: 999px;
@@ -794,7 +796,8 @@ details.faq p { padding: 0 0 16px; margin: 0; font-size: 15px; line-height: 1.6;
   }
   .assist-dock-btn:hover, .assist-dock-btn[aria-pressed="true"] { background: var(--chip); }
   .assist-dock-btn .app-icon { width: 32px; height: 32px; }
-  .assist-panel { inset: auto auto 84px 20px; width: 400px; height: min(640px, calc(100vh - 176px)); }
+  /* 세로 도크(높이 100px) 바로 위에 뜬다 */
+  .assist-panel { inset: auto auto 130px 20px; width: 400px; height: min(640px, calc(100vh - 222px)); }
 }
 /* 좁은 PC 화면에서는 도크를 아이콘만 남겨 본문을 덜 가린다 */
 @media (min-width: 960px) and (max-width: 1359px) {
