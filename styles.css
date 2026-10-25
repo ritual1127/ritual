@@ -131,7 +131,6 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
   content: ""; position: absolute; inset: 0; border-radius: inherit;
   background: radial-gradient(130% 80% at 25% -10%, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 55%);
 }
-.app-icon-lg { width: 48px; height: 48px; }
 
 /* ── 내비게이션 바 하나: 휴대폰은 아래에 떠 있고, 데스크톱은 위에 떠 있는 캡슐 ── */
 .appbar { position: fixed; z-index: 30; left: 12px; right: 12px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); pointer-events: none; }
@@ -240,13 +239,17 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
 .page-narrow { max-width: 760px; }
 .page-head { display: flex; align-items: center; gap: 14px; min-height: 44px; margin: 0 0 24px; }
 .page-head h1 { flex: 1; min-width: 0; font-size: 28px; line-height: 1.14; letter-spacing: -.015em; }
+/* 도구 페이지 제목은 차분하게: 어떤 도구인지는 도구 줄(휴대폰)과 상단 바(PC)가 이미 보여 준다 */
+body[data-app] .page-head { margin-bottom: 12px; }
+body[data-app] .page-head h1 { font-size: 22px; line-height: 1.2; letter-spacing: -.012em; }
 .calc { display: grid; gap: 32px; align-items: start; }
 .input-stack { display: grid; gap: 36px; min-width: 0; margin: 0; }
 .calc > .google-auto-placed, .calc > ins.adsbygoogle { grid-column: 1 / -1; }
 @media (min-width: 734px) {
   .page { padding: 40px 24px 64px; }
   .page-head h1 { font-size: 40px; line-height: 1.1; letter-spacing: -.01em; }
-  .page-head .app-icon-lg { width: 64px; height: 64px; }
+  body[data-app] .page-head { margin-bottom: 20px; }
+  body[data-app] .page-head h1 { font-size: 30px; }
 }
 @media (min-width: 960px) {
   .page { padding-top: 48px; }
@@ -424,7 +427,6 @@ select.input {
 .result-card.has-ring .result-unit { font-size: 14px; }
 .result-card.has-ring .grade { grid-area: 1 / 2; justify-self: start; }
 .result-card.has-ring .sticker { grid-area: 2 / 1 / 3 / 3; justify-self: start; margin: 0; }
-.result-card.has-ring .scorebar, .result-card.has-ring > .ratio-track { display: none; }
 .result-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 22px; }
 .result-label { font-size: 14px; font-weight: 600; letter-spacing: -.016em; color: var(--ink-2); }
 .result-main { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin: 6px 0 2px; }
@@ -446,23 +448,6 @@ select.input {
 .result-card[data-state="empty"] .result-note { color: var(--ink-2); font-weight: 400; }
 .result-meta { margin-top: 4px; font-size: 14px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .result-divider { margin: 20px 0 0; border: 0; border-top: 1px solid var(--hairline); }
-
-.scorebar { margin-top: 16px; }
-.scorebar-track { position: relative; height: 4px; border-radius: 99px; background: var(--fill); overflow: hidden; }
-.scorebar-fill { position: absolute; inset: 0; background: var(--ink-3); transform-origin: left; transform: scaleX(0); transition: transform .4s var(--ease), background-color .2s; }
-.result-card[data-state="done"] .scorebar-fill { background: var(--ink); }
-.scorebar-track::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(90deg,
-    transparent calc(60% - 1px), var(--canvas) calc(60% - 1px) calc(60% + 1px),
-    transparent calc(60% + 1px) calc(70% - 1px), var(--canvas) calc(70% - 1px) calc(70% + 1px),
-    transparent calc(70% + 1px) calc(80% - 1px), var(--canvas) calc(80% - 1px) calc(80% + 1px),
-    transparent calc(80% + 1px) calc(90% - 1px), var(--canvas) calc(90% - 1px) calc(90% + 1px),
-    transparent calc(90% + 1px));
-}
-.scorebar-zones { display: grid; grid-template-columns: 60fr 10fr 10fr 10fr 10fr; margin-top: 6px; font-size: 12px; text-align: center; color: var(--ink-2); }
-.scorebar-zones span { color: inherit; }
-.scorebar-zones span:first-child { text-align: left; }
 
 details.formula { margin-top: 12px; }
 details.formula summary, details.faq summary { list-style: none; cursor: pointer; }
@@ -634,6 +619,13 @@ details.faq p { padding: 0 0 16px; margin: 0; font-size: 15px; line-height: 1.6;
 .week-table th:first-child, .week-table td:first-child { min-width: 40px; color: var(--ink-2); }
 .week-table th.is-today { color: var(--primary); }
 .week-table td.is-today { background: var(--parchment); font-weight: 600; }
+/* 휴대폰: 한 주 표를 화면 폭에 맞춘다(가로 스크롤 없이 칸 안에서 줄바꿈) */
+@media (max-width: 733px) {
+  .week-table { table-layout: fixed; font-size: 13px; }
+  .week-table th, .week-table td { min-width: 0; padding: 9px 2px; overflow-wrap: anywhere; word-break: break-all; }
+  .week-table th:first-child, .week-table td:first-child { width: 26px; min-width: 0; }
+  .week-table th { font-size: 11px; white-space: normal; }
+}
 .class-fields { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
 .switch-row { display: grid; gap: 4px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--hairline); }
 .switch { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; padding: 0; border: 0; background: none; font-size: 17px; text-align: left; }
@@ -811,17 +803,19 @@ details.faq p { padding: 0 0 16px; margin: 0; font-size: 15px; line-height: 1.6;
   .assist-panel { inset: auto auto 130px 20px; width: 400px; height: min(640px, calc(100vh - 222px)); }
 }
 
-/* ── 길찾기: 도구 페이지 제목 아래 도구 줄(휴대폰) · 페이지 끝 다른 도구 ── */
-.tool-strip { display: flex; gap: 8px; margin: -6px -16px 28px; padding: 2px 16px; overflow-x: auto; scrollbar-width: none; }
-.tool-strip::-webkit-scrollbar { display: none; }
-.tool-strip .tool {
-  flex: none; display: flex; align-items: center; gap: 7px; min-height: 40px; padding: 0 14px 0 6px;
-  border: 1px solid var(--hairline); border-radius: 999px; background: var(--canvas); color: var(--ink);
-}
-.tool-strip .tool .app-icon { width: 28px; height: 28px; border-radius: 8px; }
-.tool-strip .tool[aria-current="page"] { border-color: var(--focus); box-shadow: inset 0 0 0 1px var(--focus); }
+/* ── 길찾기: 도구 페이지 제목 아래 도구 줄(휴대폰, 한 줄에 7개 모두) · 페이지 끝 다른 도구 ── */
+.tool-strip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; margin: 0 -8px 26px; }
+.tool-strip .tool { display: grid; justify-items: center; gap: 5px; min-width: 0; padding: 7px 0 6px; border-radius: 14px; color: var(--ink-2); }
+.tool-strip .tool .app-icon { width: 34px; height: 34px; border-radius: 9px; }
+.tool-strip .tool-name { max-width: 100%; overflow: hidden; font-size: 11px; letter-spacing: -.04em; white-space: nowrap; }
+.tool-strip .tool[aria-current="page"] { background: var(--chip); }
 .tool-strip .tool[aria-current="page"] .app-icon { box-shadow: inset 0 1px 1px rgba(255, 255, 255, .6), inset 0 -2px 3px rgba(0, 0, 0, .14), 0 1px 3px rgba(0, 0, 0, .18); }
-.tool-strip .tool-name { font-size: 14px; }
+.tool-strip .tool[aria-current="page"] .tool-name { color: var(--ink); font-weight: 600; }
+@media (max-width: 360px) {
+  .tool-strip { margin-inline: -4px; }
+  .tool-strip .tool .app-icon { width: 30px; height: 30px; border-radius: 8px; }
+  .tool-strip .tool-name { font-size: 10px; letter-spacing: -.07em; }
+}
 @media (min-width: 960px) { .tool-strip { display: none; } }
 .more-tools { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--divider); }
 .more-tools h2 { font-size: 19px; letter-spacing: -.01em; }

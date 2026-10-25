@@ -74,7 +74,6 @@
 
   <main id="main" class="page">
     <header class="page-head">
-      <span class="app-icon app-icon-lg" data-app="score" aria-hidden="true"></span>
       <h1>성적 계산기</h1>
       <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
     </header>
@@ -127,10 +126,6 @@
         <div class="result-main">
           <p class="result-number"><span class="result-value"><span class="marker" id="finalValue">—</span></span><span class="result-unit">점</span></p>
           <span class="grade" id="finalGrade" hidden></span>
-        </div>
-        <div class="scorebar" aria-hidden="true">
-          <div class="scorebar-track"><span class="scorebar-fill" id="scoreFill"></span></div>
-          <div class="scorebar-zones"><span data-grade="E">E</span><span data-grade="D">D</span><span data-grade="C">C</span><span data-grade="B">B</span><span data-grade="A">A</span></div>
         </div>
         <p class="result-note" id="resultNote">점수를 입력하면 바로 계산돼요.</p>
         <p class="result-meta" id="resultMeta"></p>
@@ -225,7 +220,6 @@
         if (grade && grade !== lastGrade) stampIn(badge);
         lastGrade = grade;
         cheer(stateName === 'done' && grade === 'A');
-        $('scoreFill').style.transform = `scaleX(${value === null ? 0 : Math.min(value, 100) / 100})`;
         setRing(value === null ? 0 : value / 100);
         $('resultNote').textContent = note;
         $('resultMeta').textContent = meta;

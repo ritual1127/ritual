@@ -52,7 +52,6 @@
 
   <main id="main" class="page">
     <header class="page-head">
-      <span class="app-icon app-icon-lg" data-app="gpa" aria-hidden="true"></span>
       <h1>학점 계산기</h1>
       <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
     </header>
@@ -89,7 +88,6 @@
         <div class="result-main">
           <p class="result-number"><span class="result-value"><span class="marker" id="gpaValue">—</span></span><span class="result-unit" id="gpaUnit">/ 4.5</span></p>
         </div>
-        <div class="ratio-track mt" aria-hidden="true"><div class="ratio-fill" id="gpaFill"></div></div>
         <p class="result-note" id="gpaNote">학점을 입력하면 바로 계산돼요.</p>
         <p class="result-meta" id="gpaMeta"></p>
         <div id="resultTableWrap" hidden>
@@ -195,7 +193,6 @@
         const wasDone = card.dataset.state === 'done';
         card.dataset.state = stateName;
         rollNumber($('gpaValue'), value);
-        $('gpaFill').style.setProperty('--ratio', ratio);
         setRing(ratio);
         $('gpaNote').textContent = note;
         $('gpaMeta').textContent = meta;

@@ -375,8 +375,6 @@
     strip.setAttribute('aria-label', '도구 바로가기');
     strip.append(...links.map(link => link.cloneNode(true)));
     head.after(strip);
-    const current = strip.querySelector('[aria-current="page"]');
-    if (current) strip.scrollLeft = current.offsetLeft - (strip.clientWidth - current.offsetWidth) / 2;
 
     const more = make('section', 'more-tools');
     const title = make('h2', '', '다른 도구');

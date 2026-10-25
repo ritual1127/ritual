@@ -52,7 +52,6 @@
 
   <main id="main" class="page">
     <header class="page-head">
-      <span class="app-icon app-icon-lg" data-app="target" aria-hidden="true"></span>
       <h1>남은 시험에서 몇 점 받아야 할까?</h1>
       <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
     </header>
@@ -272,11 +271,12 @@
         }));
       }
 
-      function show(stateName, { value = null, note = '', meta = '', mini = '' }) {
+      // 링은 목표까지 이미 채운 비율(지금까지 반영 점수 ÷ 목표). 다 차면 목표 달성이다.
+      function show(stateName, { value = null, ratio = 0, note = '', meta = '', mini = '' }) {
         const wasDone = card.dataset.state === 'done';
         card.dataset.state = stateName;
         rollNumber($('requiredValue'), value === null ? '—' : formatNumber(value));
-        setRing(value === null ? 0 : value / 100);
+        setRing(ratio);
         $('requiredNote').textContent = note;
         $('requiredMeta').textContent = meta;
         if (stateName === 'done' && !wasDone) {
@@ -345,10 +345,10 @@
         renderGradeTable(completed, remaining);
         whatIfCtx = { completed, remaining, need: answer.score, exam };
         renderWhatIf();
-        if (answer.status === 'reached') return show('done', { value: 0, note: `이미 ${goal} 달성! 0점을 받아도 최종 ${formatNumber(completed)}점이에요.`, meta, mini: '목표 달성' });
+        if (answer.status === 'reached') return show('done', { value: 0, ratio: 1, note: `이미 ${goal} 달성! 0점을 받아도 최종 ${formatNumber(completed)}점이에요.`, meta, mini: '목표 달성' });
         const need = ceil2(answer.score);
-        if (answer.status === 'impossible') return show('bad', { value: need, note: `100점을 받아도 최종 ${formatNumber(completed + remaining)}점이에요. 목표를 조금 낮춰 보세요.`, meta, mini: `${formatNumber(need)}점` });
-        show('done', { value: need, note: `${exam}에서 ${formatNumber(need)}점 이상 받으면 ${goal} 달성!`, meta, mini: `${formatNumber(need)}점` });
+        if (answer.status === 'impossible') return show('bad', { value: need, ratio: completed / target, note: `100점을 받아도 최종 ${formatNumber(completed + remaining)}점이에요. 목표를 조금 낮춰 보세요.`, meta, mini: `${formatNumber(need)}점` });
+        show('done', { value: need, ratio: completed / target, note: `${exam}에서 ${formatNumber(need)}점 이상 받으면 ${goal} 달성!`, meta, mini: `${formatNumber(need)}점` });
       }
 
       form.addEventListener('submit', event => event.preventDefault());
