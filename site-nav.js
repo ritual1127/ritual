@@ -360,7 +360,27 @@
     head.after(strip);
   }
 
-  function init() { setupThemeToggle(); setupToolMenu(); setupBarSize(); setupToolLinks(); lens(document.querySelector('.appbar-inner'), 14, 30); }
+  // 하단 바 뒤로 결과 카드·비율 합계가 지나갈 때만 유리를 더 흐리게 한다. 화면 아래 바가 떠 있는 띠만 지켜본다.
+  function setupBarGlass() {
+    const bar = document.querySelector('.appbar-inner');
+    const busy = document.querySelectorAll('.result-card, .meter-card');
+    if (!bar || !busy.length || !('IntersectionObserver' in window)) return;
+    let io = null;
+    const hits = new Set();
+    const watch = () => {
+      io?.disconnect();
+      hits.clear();
+      io = new IntersectionObserver(entries => {
+        entries.forEach(entry => (entry.isIntersecting ? hits.add(entry.target) : hits.delete(entry.target)));
+        bar.dataset.over = hits.size ? 'busy' : '';
+      }, { rootMargin: `-${Math.max(0, innerHeight - 120)}px 0px 0px 0px` });
+      busy.forEach(el => io.observe(el));
+    };
+    watch();
+    addEventListener('resize', watch);
+  }
+
+  function init() { setupThemeToggle(); setupToolMenu(); setupBarSize(); setupBarGlass(); setupToolLinks(); lens(document.querySelector('.appbar-inner'), 14, 30); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
