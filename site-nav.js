@@ -160,8 +160,8 @@
       const w = Math.round(el.offsetWidth), h = Math.round(el.offsetHeight);
       if (!w || !h) return;
       for (const node of [filter, mapX, mapY]) { node.setAttribute('width', w); node.setAttribute('height', h); }
-      // 화면 폭을 꽉 채운 바(데스크톱)는 좌우 끝이 화면 끝이라 세로 방향만 굴절시킨다.
-      mapX.setAttribute('href', edgeMap(w, h, 'x', w >= innerWidth - 2 ? 0 : band));
+      // 화면 폭을 꽉 채운 바(데스크톱)는 좌우 끝이 화면 끝이라 세로 방향만 굴절시킨다(스크롤바 폭은 빼고 잰다).
+      mapX.setAttribute('href', edgeMap(w, h, 'x', w >= document.documentElement.clientWidth - 2 ? 0 : band));
       mapY.setAttribute('href', edgeMap(w, h, 'y', band));
     };
     draw();
