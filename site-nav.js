@@ -338,14 +338,25 @@
     addEventListener('load', () => navigator.serviceWorker.register('/app-sw.js').catch(() => {}));
   }
 
-  // 길찾기: 도구 페이지 제목 아래에 도구 줄(휴대폰). 목록은 내비게이션 링크를 복제해 쓴다.
+  // 길찾기(휴대폰): 제목 아래에 같은 묶음(계산기 5개, 급식·시간표 2개)만 글자로 보여 준다. 목록은 내비게이션에서 가져온다.
   function setupToolLinks() {
-    const links = [...document.querySelectorAll('#toolMenu .tool')];
+    const nav = document.getElementById('toolMenu');
     const head = document.querySelector('.page-head');
-    if (!links.length || !head || !document.body.dataset.app) return;
-    const strip = make('nav', 'tool-strip');
-    strip.setAttribute('aria-label', '도구 바로가기');
-    strip.append(...links.map(link => link.cloneNode(true)));
+    if (!nav || !head || !document.body.dataset.app) return;
+    const items = [...nav.children].filter(el => el.matches('.tool, .tools-sep')); // AI 도우미 줄(.tools-extra)은 뺀다
+    const cut = items.findIndex(el => el.classList.contains('tools-sep'));
+    const groups = cut < 0 ? [items] : [items.slice(0, cut), items.slice(cut + 1)];
+    const group = groups.find(list => list.some(link => link.hasAttribute('aria-current')));
+    if (!group || group.length < 2) return;
+    const strip = make('nav', 'tool-seg');
+    strip.setAttribute('aria-label', '같은 종류 도구');
+    strip.style.setProperty('--n', group.length);
+    strip.append(...group.map(link => {
+      const a = make('a', '', link.querySelector('.tool-name').textContent);
+      a.href = link.getAttribute('href');
+      if (link.hasAttribute('aria-current')) a.setAttribute('aria-current', 'page');
+      return a;
+    }));
     head.after(strip);
   }
 
