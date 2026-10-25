@@ -55,7 +55,7 @@ export function parseSnu(html) {
 }
 
 // KAIST: 식당마다 한 장, 조식·중식·석식이 칸으로. 식당마다 적는 법이 조금씩 달라서
-// 알레르기 번호("(5,6)"·"(1,5,6*)"·"어묵국5,6")·열량·안내 문구(*·★·●·-로 시작, " / "로 이은 줄)를 빼고, "고로케*케찹"의 *는 &로
+// 알레르기 번호("(5,6)"·"(1,5,6*)"·"어묵국5,6"·"감자스프2.5.6.")·열량("664Kcal"·"1043cal")·안내 문구(*·★·●·-로 시작, " / "로 이은 줄)를 빼고, "고로케*케찹"의 *는 &로
 export function parseKaist(html) {
   const table = (html.match(/<table class="table">([\s\S]*?)<\/table>/) || [])[1] || '';
   const heads = cells(table, 'th').map(th => lines(th)[0] || '');
@@ -63,8 +63,8 @@ export function parseKaist(html) {
   return heads.map((head, i) => {
     const label = LABELS.find(l => head.startsWith(l));
     const list = lines(tds[i])
-      .filter(s => !/^[*★●-]/.test(s) && !s.includes(' / ') && !/kcal|칼로리/i.test(s))
-      .map(s => s.replace(/\s*\((\d+,\s*)*\d+\*?\)/g, '').replace(/\s*\d{1,2}(,\s*\d{1,2})*$/, '').replace(/\*/g, '&').trim()).filter(Boolean);
+      .filter(s => !/^[*★●-]/.test(s) && !s.includes(' / ') && !/kcal|\d\s*cal\b|칼로리/i.test(s))
+      .map(s => s.replace(/\s*\((\d+,\s*)*\d+\*?\)/g, '').replace(/\s*\d{1,2}([,.]\s*\d{1,2})*[.,"']*$/, '').replace(/^["']+/, '').replace(/\*/g, '&').trim()).filter(Boolean);
     return label && { label, time: head.slice(label.length).trim(), menus: menusOf(list) };
   }).filter(meal => meal && meal.menus.length);
 }

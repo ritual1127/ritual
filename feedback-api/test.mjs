@@ -237,12 +237,12 @@ assert.match(messages[0].content, /\[자료 1\] 제목 \(\/rank\/\)\n본문/);
   ] }]);
 
   const kaist = `<table class="table"><thead><tr><th scope="col">조식 8:00~9:00</th><th scope="col">중식 11:20~13:30</th><th scope="col">석식 17:20~19:00</th></tr></thead><tbody><tr>
-<td>*하루과일 캠페인* <br/>천원의 아침밥(1,000원) / 대학생 대상<br/>쌀밥 <br/>시래기된장국(5,6) <br/>(664Kcal) <br/></td>
-<td><ul class="list-1st">자율코너(5,500원) <br/>어묵국5,6<br/>고로케*케찹 5,6,9<br/>[일품:6,500원]<br/>샤브칼국수(5, 6)</ul></td>
+<td>*하루과일 캠페인* <br/>천원의 아침밥(1,000원) / 대학생 대상<br/>쌀밥 <br/>시래기된장국(5,6) <br/>감자스프2.5.6. <br/>(664Kcal) <br/>1043cal<br/></td>
+<td><ul class="list-1st">자율코너(5,500원) <br/>"어묵국5,6<br/>고로케*케찹 5,6,9<br/>깍두기2,5,6,9,12,18"<br/>[일품:6,500원]<br/>샤브칼국수(5, 6)</ul></td>
 <td>자율배식<br/>(5,500원)<br/>오므라이스(1,5,6*)<br/>일품[6,500원]<br/>부타동</td></tr></tbody></table>`;
   assert.deepEqual(parseKaist(kaist), [
-    { label: '조식', time: '8:00~9:00', menus: [{ name: '', price: '', dishes: ['쌀밥', '시래기된장국'] }] },
-    { label: '중식', time: '11:20~13:30', menus: [{ name: '자율코너', price: '5,500원', dishes: ['어묵국', '고로케&케찹'] }, { name: '일품', price: '6,500원', dishes: ['샤브칼국수'] }] },
+    { label: '조식', time: '8:00~9:00', menus: [{ name: '', price: '', dishes: ['쌀밥', '시래기된장국', '감자스프'] }] },
+    { label: '중식', time: '11:20~13:30', menus: [{ name: '자율코너', price: '5,500원', dishes: ['어묵국', '고로케&케찹', '깍두기'] }, { name: '일품', price: '6,500원', dishes: ['샤브칼국수'] }] },
     { label: '석식', time: '17:20~19:00', menus: [{ name: '자율배식', price: '5,500원', dishes: ['오므라이스'] }, { name: '일품', price: '6,500원', dishes: ['부타동'] }] }
   ]);
 
