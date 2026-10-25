@@ -365,7 +365,30 @@
     addEventListener('load', () => navigator.serviceWorker.register('/app-sw.js').catch(() => {}));
   }
 
-  function init() { setupThemeToggle(); setupToolMenu(); setupBarSize(); lens(document.querySelector('.appbar-inner'), 14, 30); }
+  // 길찾기: 도구 페이지 제목 아래에 도구 줄(휴대폰), 페이지 끝에 다른 도구 모음. 목록은 내비게이션 링크를 복제해 쓴다.
+  function setupToolLinks() {
+    const links = [...document.querySelectorAll('#toolMenu .tool')];
+    const head = document.querySelector('.page-head');
+    const main = document.querySelector('main.page');
+    if (!links.length || !head || !main || !document.body.dataset.app) return;
+    const strip = make('nav', 'tool-strip');
+    strip.setAttribute('aria-label', '도구 바로가기');
+    strip.append(...links.map(link => link.cloneNode(true)));
+    head.after(strip);
+    const current = strip.querySelector('[aria-current="page"]');
+    if (current) strip.scrollLeft = current.offsetLeft - (strip.clientWidth - current.offsetWidth) / 2;
+
+    const more = make('section', 'more-tools');
+    const title = make('h2', '', '다른 도구');
+    title.id = 'moreToolsTitle';
+    more.setAttribute('aria-labelledby', title.id);
+    const grid = make('div', 'more-tools-grid');
+    grid.append(...links.filter(link => !link.hasAttribute('aria-current')).map(link => link.cloneNode(true)));
+    more.append(title, grid);
+    main.append(more);
+  }
+
+  function init() { setupThemeToggle(); setupToolMenu(); setupBarSize(); setupToolLinks(); lens(document.querySelector('.appbar-inner'), 14, 30); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
