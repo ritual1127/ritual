@@ -216,11 +216,14 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
 
 @media (min-width: 960px) {
   html { scroll-padding-top: 84px; }
-  /* PC: 바 배경은 화면 좌우 끝까지 닿는 유리 띠 하나(둥근 캡슐 대신 아래쪽 얇은 경계선만).
-     안의 로고·메뉴는 본문 폭(.page 1080px − 좌우 여백 24px)에 맞춰 가운데 정렬한다 */
-  .appbar { position: sticky; top: 0; left: auto; right: auto; bottom: auto; padding: 0; }
-  .appbar-inner { --glass-bg: var(--glass-cap); --glass-blur: 10px; --glass-extra: 0 1px 0 var(--glass-edge); width: 100%; max-width: none; height: 60px; border-radius: 0; padding: 0 max(24px, calc((100% - 1032px) / 2)); gap: 2px; }
-  .appbar-inner::after { display: none; }
+  .appbar { position: sticky; top: 0; left: auto; right: auto; bottom: auto; padding: 12px 12px 0; }
+  /* 캡슐 위 틈으로 비치는 글자를 배경색으로 흐려 준다 */
+  .appbar::before { content: ""; position: absolute; inset: 0 0 auto; height: 22px; z-index: -1; background: linear-gradient(var(--parchment) 45%, transparent); }
+  /* PC: 화면 좌우 끝에서 12px 안쪽까지 닿는 넓은 유리 캡슐. 로고·메뉴는 본문(.page 1080px − 여백 24px) 끝선에 맞춘다
+     (캡슐 좌우 틈은 이 패딩 식에서 상쇄된다) */
+  .appbar-inner { --glass-bg: var(--glass-cap); --glass-blur: 10px; width: auto; max-width: none; height: 58px; border-radius: 29px; padding: 0 max(12px, calc((100% - 1032px) / 2)); gap: 2px; }
+  /* 비스듬한 윤광을 비율로 두면 넓은 캡슐의 3분의 1을 덮으므로 왼쪽 끝 240px에만 */
+  .appbar-inner::after { background: linear-gradient(125deg, var(--glass-sheen), transparent 240px, transparent calc(100% - 240px), var(--glass-edge)); }
   .logo { display: inline-flex; margin-right: 8px; }
   /* 로고와 도구 사이 구분선: 도구 묶음 사이의 .tools-sep과 같은 모양 */
   .logo::after { content: ""; width: 1px; height: 18px; margin-left: 7px; background: var(--divider); }
