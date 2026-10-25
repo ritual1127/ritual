@@ -216,9 +216,10 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
 
 @media (min-width: 960px) {
   html { scroll-padding-top: 84px; }
-  /* PC: 바는 화면 좌우 끝까지 닿는 유리 띠 하나. 둥근 캡슐 대신 아래쪽 얇은 경계선만 둔다 */
+  /* PC: 바 배경은 화면 좌우 끝까지 닿는 유리 띠 하나(둥근 캡슐 대신 아래쪽 얇은 경계선만).
+     안의 로고·메뉴는 본문 폭(.page 1080px − 좌우 여백 24px)에 맞춰 가운데 정렬한다 */
   .appbar { position: sticky; top: 0; left: auto; right: auto; bottom: auto; padding: 0; }
-  .appbar-inner { --glass-bg: var(--glass-cap); --glass-blur: 10px; --glass-extra: 0 1px 0 var(--glass-edge); width: 100%; max-width: none; height: 60px; border-radius: 0; padding: 0 24px; gap: 2px; }
+  .appbar-inner { --glass-bg: var(--glass-cap); --glass-blur: 10px; --glass-extra: 0 1px 0 var(--glass-edge); width: 100%; max-width: none; height: 60px; border-radius: 0; padding: 0 max(24px, calc((100% - 1032px) / 2)); gap: 2px; }
   .appbar-inner::after { display: none; }
   .logo { display: inline-flex; margin-right: 8px; }
   /* 로고와 도구 사이 구분선: 도구 묶음 사이의 .tools-sep과 같은 모양 */
