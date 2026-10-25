@@ -192,7 +192,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
 
 @media (max-width: 959px) {
   body { padding-bottom: calc(94px + env(safe-area-inset-bottom, 0px)); }
-  /* 평소엔 맑은 유리. 결과 카드·비율 합계가 바 뒤를 지날 때만 더 흐리고 덜 비치게(iOS처럼 읽기 쉽게) */
+  /* 평소엔 맑은 유리. 결과 카드가 바 뒤를 지날 때만 더 흐리고 덜 비치게(iOS처럼 읽기 쉽게) */
   .appbar-inner { transition: width .42s var(--spring), height .42s var(--spring), border-radius .42s var(--spring), padding .42s var(--spring), --glass-blur .45s var(--ease), --glass-sat .45s var(--ease); }
   .appbar-inner::before { transition: background-color .45s var(--ease); }
   /* 크로미움에서 가장자리 굴절(SVG) 필터와 함께 쓰면 흐림을 16px 넘게 올려도 더 흐려지지 않고 22px에선 오히려 더 비친다(직접 잰 값). 그래서 흐림은 14px, 덜 비치게 하는 건 색 농도로 */

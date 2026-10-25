@@ -360,10 +360,10 @@
     head.after(strip);
   }
 
-  // 하단 바 뒤로 결과 카드·비율 합계가 지나갈 때만 유리를 더 흐리게 한다. 화면 아래 바가 떠 있는 띠만 지켜본다.
+  // 하단 바 뒤로 결과 카드가 지나갈 때만 유리를 더 흐리게 한다. 화면 아래 바가 떠 있는 띠만 지켜본다.
   function setupBarGlass() {
     const bar = document.querySelector('.appbar-inner');
-    const busy = document.querySelectorAll('.result-card, .meter-card');
+    const busy = document.querySelectorAll('.result-card');
     if (!bar || !busy.length || !('IntersectionObserver' in window)) return;
     let io = null;
     const hits = new Set();
