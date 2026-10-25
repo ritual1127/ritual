@@ -1,0 +1,34 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- 플레이 스토어 휴대폰 스크린샷 원본(1080x1920). ?shot=raw/파일이름(확장자 없이)&app=도구색&l1=첫 줄&l2=둘째 줄
+     raw/ 화면은 헤드리스 크롬으로 390x760(2배) 크기로 찍은 실제 앱 화면이다. -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../../../styles.css">
+<style>
+  html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; }
+  body {
+    position: relative; font-family: 'Pretendard Variable', sans-serif; color: #1D1D1F; letter-spacing: -.03em;
+    background: radial-gradient(120% 60% at 50% 0%, #FFFFFF 0%, #F5F5F7 60%) !important;
+  }
+  .head { position: absolute; left: 0; right: 0; top: 112px; display: grid; justify-items: center; gap: 28px; text-align: center; }
+  .head .app-icon { width: 76px; height: 76px; border-radius: 20px; }
+  h1 { margin: 0; font-size: 72px; font-weight: 700; line-height: 1.22; }
+  h1 em { font-style: normal; color: var(--app-ink); }
+  .phone { position: absolute; left: 50%; top: 452px; width: 740px; transform: translateX(-50%); padding: 12px; border-radius: 76px; background: #1D1D1F; box-shadow: 0 40px 80px -40px rgba(0, 0, 0, .45); }
+  .phone img { display: block; width: 716px; border-radius: 64px; }
+</style>
+<body>
+  <div class="head">
+    <span class="app-icon" id="icon" aria-hidden="true"></span>
+    <h1><span id="l1"></span><br><em id="l2"></em></h1>
+  </div>
+  <div class="phone"><img id="shot" alt=""></div>
+<script>
+  const q = new URLSearchParams(location.search);
+  document.getElementById('icon').dataset.app = q.get('app') || 'score';
+  document.body.dataset.app = q.get('app') || 'score';
+  document.getElementById('l1').textContent = q.get('l1') || '';
+  document.getElementById('l2').textContent = q.get('l2') || '';
+  document.getElementById('shot').src = 'raw/' + q.get('shot') + '.png';
+</script>
+</body>

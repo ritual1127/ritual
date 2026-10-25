@@ -1,13 +1,26 @@
 {
+  "id": "./index.html",
   "name": "성적 계산기",
   "short_name": "성적계산기",
+  "description": "수행평가·지필고사 최종 점수와 등급, 남은 시험 목표 점수, 내신 석차등급, 대학 학점, 급식·시간표를 한곳에서 바로 계산하고 확인해요.",
+  "lang": "ko",
+  "dir": "ltr",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#F5F5F7",
   "theme_color": "#F5F5F7",
+  "categories": ["education", "productivity", "utilities"],
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/monochrome-512.png", "sizes": "512x512", "type": "image/png", "purpose": "monochrome" }
+  ],
+  "shortcuts": [
+    { "name": "남은 시험 목표 점수", "short_name": "목표점수", "url": "/target-score/", "icons": [{ "src": "icons/shortcut-target.png", "sizes": "192x192", "type": "image/png" }] },
+    { "name": "내신 석차등급 계산", "short_name": "내신등급", "url": "/rank/", "icons": [{ "src": "icons/shortcut-rank.png", "sizes": "192x192", "type": "image/png" }] },
+    { "name": "학점(GPA) 계산", "short_name": "학점", "url": "/gpa/", "icons": [{ "src": "icons/shortcut-gpa.png", "sizes": "192x192", "type": "image/png" }] },
+    { "name": "오늘의 급식", "short_name": "급식", "url": "/todayfood/", "icons": [{ "src": "icons/shortcut-food.png", "sizes": "192x192", "type": "image/png" }] }
   ]
 }

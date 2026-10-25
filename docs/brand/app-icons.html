@@ -1,0 +1,37 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<!-- 안드로이드 앱·스토어용 아이콘 원본. 헤드리스 크롬으로 투명 배경 스크린샷을 찍어 PNG로 만든다.
+     ?kind=store&size=512        Play 스토어 고해상도 아이콘(풀블리드, 구글이 모서리를 깎는다)
+     ?kind=mono&size=512         안드로이드 13 테마 아이콘용 흰 글리프(투명 바탕, 시스템이 색을 입힌다)
+     ?kind=shortcut&app=target&size=192   길게 눌러 나오는 바로가기 아이콘(도구 색 풀블리드, 글리프는 안전 영역 안) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  html, body { margin: 0; background: transparent !important; overflow: hidden; }
+  svg, .tile { display: block; }
+  .tile { border-radius: 0 !important; box-shadow: none !important; background-size: 46%, cover !important; }
+  .tile::after { display: none; }
+</style>
+<body>
+<script src="brand-logo.js"></script>
+<script>
+  const q = new URLSearchParams(location.search);
+  const size = Number(q.get('size') || 512);
+  const kind = q.get('kind') || 'store';
+  if (kind === 'shortcut') {
+    const tile = document.createElement('span');
+    tile.className = 'app-icon tile';
+    tile.dataset.app = q.get('app');
+    tile.style.cssText = `width:${size}px;height:${size}px`;
+    document.body.append(tile);
+  } else {
+    let svg = brandLogo(0);
+    // 테마 아이콘은 모양만 쓰므로 파란 바탕을 빼고 글리프만 남긴다
+    if (kind === 'mono') svg = svg.replace(/<rect[^>]*\/>/, '');
+    document.body.innerHTML = svg.replace('<svg ', `<svg width="${size}" height="${size}" `);
+    // 스토어 아이콘은 32비트(알파 포함) PNG여야 해서 모서리 몇 픽셀만 투명하게 둔다(구글이 어차피 둥글게 깎는다)
+    if (kind === 'store') document.querySelector('svg').style.cssText = 'border-radius: 3px';
+  }
+</script>
+</body>

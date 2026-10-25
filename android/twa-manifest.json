@@ -1,0 +1,69 @@
+{
+  "packageId": "io.github.ritual1127.seongjeok",
+  "host": "naver1.cloud",
+  "name": "성적계산기",
+  "launcherName": "성적계산기",
+  "display": "standalone",
+  "themeColor": "#F5F5F7",
+  "themeColorDark": "#000000",
+  "navigationColor": "#F5F5F7",
+  "navigationColorDark": "#000000",
+  "navigationDividerColor": "#00000000",
+  "navigationDividerColorDark": "#00000000",
+  "backgroundColor": "#F5F5F7",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://naver1.cloud/icon-512.png",
+  "maskableIconUrl": "https://naver1.cloud/icon-512.png",
+  "monochromeIconUrl": "https://naver1.cloud/icons/monochrome-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./upload-key.jks",
+    "alias": "upload"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "남은 시험 목표 점수",
+      "shortName": "목표점수",
+      "url": "/target-score/",
+      "chosenIconUrl": "https://naver1.cloud/icons/shortcut-target.png"
+    },
+    {
+      "name": "내신 석차등급 계산",
+      "shortName": "내신등급",
+      "url": "/rank/",
+      "chosenIconUrl": "https://naver1.cloud/icons/shortcut-rank.png"
+    },
+    {
+      "name": "학점(GPA) 계산",
+      "shortName": "학점",
+      "url": "/gpa/",
+      "chosenIconUrl": "https://naver1.cloud/icons/shortcut-gpa.png"
+    },
+    {
+      "name": "오늘의 급식",
+      "shortName": "급식",
+      "url": "/todayfood/",
+      "chosenIconUrl": "https://naver1.cloud/icons/shortcut-food.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://naver1.cloud/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://naver1.cloud/",
+  "minSdkVersion": 21,
+  "orientation": "default",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

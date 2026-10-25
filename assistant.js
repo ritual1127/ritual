@@ -133,6 +133,18 @@
         go.addEventListener('click', () => { switchView('contact'); panel.querySelector('.assist-contact textarea').value = msg.offerContact; });
         foot.append(go);
       }
+      // 구글 플레이 생성형 AI 정책: 앱을 나가지 않고 부적절한 AI 답변을 신고할 수 있어야 한다. 문의하기에 질문·답을 채워 넘긴다.
+      if (msg.route === 'ai') {
+        const report = button('assist-more assist-report', '답변 신고');
+        report.setAttribute('aria-label', '이 AI 답변 신고하기');
+        report.addEventListener('click', () => {
+          switchView('contact');
+          const view = panel.querySelector('.assist-contact');
+          view.querySelector('[data-kind="bug"]')?.click();
+          view.querySelector('textarea').value = `[AI 답변 신고]\n질문: ${msg.q || ''}\n답변: ${msg.text.slice(0, 300)}\n신고 이유: `;
+        });
+        foot.append(report);
+      }
       if (foot.childNodes.length) row.append(foot);
     }
     if (animate && !reduceMotion()) row.classList.add('is-new');
@@ -230,7 +242,7 @@
     row.append(bodyEl);
     log.append(row);
     scrollDown();
-    const msg = { role: 'bot', text: '', route: 'ai', sources: [] };
+    const msg = { role: 'bot', text: '', route: 'ai', sources: [], q };
     let stopped = false;
     const finish = () => {
       row.remove();

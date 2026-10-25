@@ -3,3 +3,13 @@ og-source.png
 build-seo-content.mjs
 .wrangler/
 .dev.vars
+# 안드로이드: 서명 키·빌드 결과는 저장소에 넣지 않는다(키는 따로 안전하게 보관)
+*.keystore
+*.jks
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/*.apk
+android/*.aab
+android/*.idsig

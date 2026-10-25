@@ -372,7 +372,30 @@
     }, { rootMargin: '-84% 0px 0px 0px' }).observe(card);
   }
 
-  function init() { setupThemeToggle(); setupToolMenu(); setupBarSize(); setupBarGlass(); setupToolLinks(); lens(document.querySelector('.appbar-inner'), 14, 30); }
+  // 앱 알리기: 안드로이드 브라우저에서 앱(TWA) 밖일 때만 페이지 끝에 'Google Play에서 설치' 카드. 닫으면 다시 안 띄운다.
+  // 출시 전에는 PLAY_ID를 비워 두고, 출시하면 패키지 이름을 넣는다. referrer의 utm 값은 Play Console 획득 보고서에 잡힌다.
+  const PLAY_ID = '';
+  function setupAppPromo() {
+    const main = document.querySelector('main.page');
+    if (!PLAY_ID || !main || !/Android/i.test(navigator.userAgent)) return;
+    let inApp = document.referrer.startsWith('android-app://') || matchMedia('(display-mode: standalone)').matches;
+    try {
+      if (inApp) sessionStorage.setItem('inApp', '1');
+      if (inApp || sessionStorage.getItem('inApp') === '1' || localStorage.getItem('appPromo') === 'closed') return;
+    } catch { if (inApp) return; }
+    const card = make('aside', 'app-promo');
+    card.setAttribute('aria-label', '안드로이드 앱');
+    card.innerHTML = `<img src="/icon-192.png" alt="" width="40" height="40"><span><b>성적계산기 앱</b><small>홈 화면에서 바로, 급식 알림까지</small></span>`
+      + `<a class="btn btn-sm" href="https://play.google.com/store/apps/details?id=${PLAY_ID}&referrer=utm_source%3Dnaver1.cloud%26utm_medium%3Dsite%26utm_campaign%3Dpromo">설치</a>`
+      + '<button type="button" class="app-promo-close" aria-label="앱 안내 닫기">×</button>';
+    card.querySelector('.app-promo-close').addEventListener('click', () => {
+      card.remove();
+      try { localStorage.setItem('appPromo', 'closed'); } catch {}
+    });
+    main.append(card);
+  }
+
+  function init() { setupThemeToggle(); setupToolMenu(); setupBarSize(); setupBarGlass(); setupToolLinks(); setupAppPromo(); lens(document.querySelector('.appbar-inner'), 14, 30); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
