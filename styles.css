@@ -258,7 +258,6 @@ body[data-app] .page-head { margin-bottom: 12px; }
 body[data-app] .page-head h1 { font-size: 22px; line-height: 1.2; letter-spacing: -.012em; }
 .calc { display: grid; gap: 32px; align-items: start; }
 .input-stack { display: grid; gap: 36px; min-width: 0; margin: 0; }
-.calc > .google-auto-placed, .calc > ins.adsbygoogle { grid-column: 1 / -1; }
 @media (min-width: 734px) {
   .page { padding: 40px 24px 64px; }
   .page-head h1 { font-size: 40px; line-height: 1.1; letter-spacing: -.01em; }

@@ -14,7 +14,6 @@ Play Console,앱 콘텐츠: 개인정보처리방침·앱 액세스·광고·광
 Play Console,앱 콘텐츠: 콘텐츠 등급 설문,할 일,2026-10-28,store/app-content.md,예상 전체이용가
 Play Console,앱 콘텐츠: 타겟층(13세 이상),할 일,2026-10-28,store/app-content.md,13세 미만 넣지 않기
 Play Console,앱 콘텐츠: 데이터 보안,할 일,2026-10-28,store/app-content.md,
-Play Console,애드센스 자동 광고의 전면(비네트) 광고 끄기,할 일,2026-10-28,애드센스 > 광고 > 자동 광고,앱 심사의 방해 광고 위험 줄이기
 테스트,내부 테스트에 AAB 올리고 Play 앱 서명 동의,할 일,2026-10-28,android/app-release.aab,
 사이트,Play 앱 서명 키 지문으로 assetlinks.json 만들어 배포,할 일,2026-10-28,build-release.ps1 -PlayFingerprint,폰에서 주소창 사라지는지 확인
 테스트,내 폰에서 기능 확인(계산·바로가기·알림·오프라인·AI 신고),할 일,2026-10-28,,
