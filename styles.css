@@ -730,7 +730,7 @@ details.faq p { padding: 0 0 16px; margin: 0; font-size: 15px; line-height: 1.6;
 .assist-bubble strong { font-weight: 700; }
 .assist-bubble a { font-weight: 600; }
 .assist-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding-left: 4px; }
-.assist-tag { font-size: 12px; color: var(--ink-3); }
+.assist-tag { font-size: 12px; color: var(--ink-2); }
 .assist-src, .assist-more {
   display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border-radius: 999px;
   font-size: 13px; font-weight: 600; white-space: nowrap;
@@ -763,13 +763,13 @@ details.faq p { padding: 0 0 16px; margin: 0; font-size: 15px; line-height: 1.6;
 .assist-send .icon { width: 19px; height: 19px; stroke-width: 2.4; }
 .assist-send.is-stop { background: var(--ink); color: var(--canvas); }
 .assist-send:active, .assist-chip:active, .assist-more:active, .tools-row:active, .assist-dock-btn:active { transform: scale(.95); }
-.assist-note { margin: 8px 16px 12px; font-size: 12px; line-height: 1.45; color: var(--ink-3); text-align: center; }
+.assist-note { margin: 8px 16px 12px; font-size: 12px; line-height: 1.45; color: var(--ink-2); text-align: center; }
 .assist-contact { overflow-y: auto; overscroll-behavior: contain; padding: 6px 16px 4px; }
 .assist-contact form { display: grid; gap: 16px; }
 .assist-contact form[hidden] { display: none; }
 .assist-kinds button { min-height: 40px; padding: 0 12px; font-size: 14px; }
 .assist-textarea { height: auto; min-height: 132px; padding: 12px 14px; line-height: 1.5; resize: vertical; }
-.assist-optional { margin-left: 4px; font-weight: 400; color: var(--ink-3); }
+.assist-optional { margin-left: 4px; font-weight: 400; color: var(--ink-2); }
 .assist-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .assist-error { font-size: 14px; color: var(--bad); }
 .assist-submit { width: 100%; }

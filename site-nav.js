@@ -8,8 +8,8 @@
   let apiBase = null;
   try { apiBase = localStorage.getItem('apiBase'); } catch {}
   const API = window.SITE_API = apiBase || 'https://seongjeok-feedback-api.smilepea.workers.dev';
-  // 브라우저에서 '추적 안 함'이나 GPC를 켰으면 보내지 않는다.
-  const optOut = navigator.globalPrivacyControl === true || navigator.doNotTrack === '1';
+  // 브라우저에서 '추적 안 함'이나 GPC를 켰거나, 실제 주소가 아닌 곳(로컬 미리보기 등)이면 보내지 않는다.
+  const optOut = navigator.globalPrivacyControl === true || navigator.doNotTrack === '1' || location.hostname !== 'naver1.cloud';
   window.track = data => { if (optOut) return; try { navigator.sendBeacon(`${API}/t`, JSON.stringify({ path: location.pathname, ...data })); } catch {} };
   if (!location.pathname.startsWith('/admin')) window.track({ type: 'view', ref: document.referrer });
   // 계산 완료는 사용자가 직접 입력한 뒤 결과가 처음 나올 때 한 번만 센다(저장된 값을 불러온 건 빼고).

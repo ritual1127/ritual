@@ -33,7 +33,7 @@ function makeEnv(overrides = {}) {
   const vectors = new Map();
   return {
     DB: fakeD1(), FEEDBACK_KV: fakeKV(), PUSH_KV: fakeKV(),
-    ADMIN_PIN: '6121', ADMIN_SECRET: 'test-secret',
+    ADMIN_PIN: '2468', ADMIN_SECRET: 'test-secret',
     AI: {
       calls: [],
       async run(model, input) {
@@ -93,9 +93,9 @@ assert.equal(await verifyToken('other', token), null);
 assert.equal(await verifyToken('s', token.replace(/.$/, c => (c === 'A' ? 'B' : 'A'))), null);
 assert.equal(await verifyToken('s', await signToken('s', { exp: Date.now() - 1 })), null);
 assert.equal(await verifyToken('s', 'garbage'), null);
-assert.ok(await safeEqual('k', '6121', '6121'));
-assert.ok(!(await safeEqual('k', '6122', '6121')));
-assert.ok(!(await safeEqual('k', '', '6121')));
+assert.ok(await safeEqual('k', '2468', '2468'));
+assert.ok(!(await safeEqual('k', '2469', '2468')));
+assert.ok(!(await safeEqual('k', '', '2468')));
 
 assert.deepEqual(fuse([[{ id: 'a' }, { id: 'b' }], [{ id: 'b' }, { id: 'c' }]]).map(d => d.id), ['b', 'a', 'c']);
 assert.equal(pieceOf('data: {"choices":[{"delta":{"content":"가"}}],"response":""}'), '가');
@@ -161,8 +161,8 @@ assert.match(messages[0].content, /\[자료 1\] 제목 \(\/rank\/\)\n본문/);
     assert.equal(res.status, 401);
     assert.equal((await res.json()).left, i);
   }
-  assert.equal((await call(env, '/admin/login', { body: { pin: '6121' } })).status, 429, '같은 IP는 맞는 PIN이어도 잠겨 있어야 한다');
-  const login = await call(env, '/admin/login', { body: { pin: '6121' }, ip: '9.9.9.9' });
+  assert.equal((await call(env, '/admin/login', { body: { pin: '2468' } })).status, 429, '같은 IP는 맞는 PIN이어도 잠겨 있어야 한다');
+  const login = await call(env, '/admin/login', { body: { pin: '2468' }, ip: '9.9.9.9' });
   assert.equal(login.status, 200);
   const { token: adminToken } = await login.json();
   await call(env, '/t', { body: { type: 'view', path: '/' } });

@@ -1,0 +1,8 @@
+# GitHub Pages(Jekyll)에 올리지 않을 것: 설계 문서, Worker 소스·테스트, 빌드 스크립트.
+# 사이트에 필요한 건 HTML·CSS·JS·이미지·assistant/kb.json뿐이다.
+exclude:
+  - docs
+  - feedback-api
+  - scripts
+  - README.md
+  - package.json

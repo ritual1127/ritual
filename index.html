@@ -1,14 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <!-- Google Tag Manager -->
-  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer','GTM-W6QMCF2B');</script>
-  <!-- End Google Tag Manager -->
-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
   <title>성적 계산기 - 수행평가·지필고사 반영 점수 계산</title>
@@ -51,16 +43,12 @@
   <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png?v=6">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-  <link rel="stylesheet" href="styles.css?v=20260925c">
-  <script src="site-nav.js?v=20260925c"></script>
-  <script src="assistant.js?v=20260925c" defer></script>
+  <link rel="stylesheet" href="styles.css?v=20261025">
+  <script src="site-nav.js?v=20261025"></script>
+  <script src="assistant.js?v=20261025" defer></script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6088412169158396" crossorigin="anonymous"></script>
 </head>
 <body data-app="score">
-  <!-- Google Tag Manager (noscript) -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W6QMCF2B" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-  <!-- End Google Tag Manager (noscript) -->
-
   <a class="skip-link" href="#main">본문 바로가기</a>
   <header class="appbar">
     <div class="appbar-inner glass" data-mini="false">
@@ -109,16 +97,16 @@
 
         <section class="card step" aria-labelledby="examTitle">
           <div class="card-head">
-            <div><h2 id="examTitle">정기고사</h2></div>
-            <div class="stepper" role="group" aria-label="정기고사 개수">
-              <button type="button" data-count="exam" data-delta="-1" aria-label="정기고사 개수 줄이기">−</button>
+            <div><h2 id="examTitle">지필고사</h2></div>
+            <div class="stepper" role="group" aria-label="지필고사 개수">
+              <button type="button" data-count="exam" data-delta="-1" aria-label="지필고사 개수 줄이기">−</button>
               <output id="examCount" aria-live="polite">2</output>
-              <button type="button" data-count="exam" data-delta="1" aria-label="정기고사 개수 늘리기">+</button>
+              <button type="button" data-count="exam" data-delta="1" aria-label="지필고사 개수 늘리기">+</button>
             </div>
           </div>
           <div class="rows-head" aria-hidden="true"><span>번호</span><span>받은 점수</span><span>반영비율</span></div>
           <div class="rows" id="examRows"></div>
-          <p class="empty-line" id="examEmpty" hidden>정기고사가 없어요. + 버튼으로 추가할 수 있어요.</p>
+          <p class="empty-line" id="examEmpty" hidden>지필고사가 없어요. + 버튼으로 추가할 수 있어요.</p>
         </section>
 
         <section class="card meter-card" aria-label="반영비율 합계">
@@ -173,11 +161,11 @@
     </div>
   </template>
 
-  <script src="calc-core.js?v=20260925c"></script>
+  <script src="calc-core.js?v=20261025"></script>
   <script>
     (() => {
       const STORE = 'scoreCalc';
-      const KINDS = { performance: '수행평가', exam: '정기고사' };
+      const KINDS = { performance: '수행평가', exam: '지필고사' };
       const DEFAULTS = () => ({
         performance: [{ score: '', weight: '20' }, { score: '', weight: '20' }],
         exam: [{ score: '', weight: '30' }, { score: '', weight: '30' }]
@@ -276,7 +264,7 @@
         const blanks = rows.length - complete.length;
         const weightText = `반영비율 ${formatNumber(weightTotal)}% · 입력 ${filled.length}/${rows.length}`;
 
-        if (!rows.length) return show('empty', { note: '수행평가나 정기고사를 1개 이상 추가해 주세요.' });
+        if (!rows.length) return show('empty', { note: '수행평가나 지필고사를 1개 이상 추가해 주세요.' });
         if (!rows.every(row => inRange(row.score) && inRange(row.weight))) return show('warn', { note: '점수와 반영비율은 0~100 사이로 입력해 주세요.', meta: weightText });
         if (!filled.length) return show('empty', { note: '점수를 입력하면 바로 계산돼요.', meta: weightText });
 
