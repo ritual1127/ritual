@@ -220,15 +220,15 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
 
 @media (min-width: 960px) {
   html { scroll-padding-top: 84px; }
-  .appbar { position: sticky; top: 0; left: auto; right: auto; bottom: auto; padding: 12px 16px 0; }
+  .appbar { position: sticky; top: 0; left: auto; right: auto; bottom: auto; padding: 12px clamp(16px, 3vw, 48px) 0; }
   /* 캡슐 위 틈으로 비치는 글자를 배경색으로 흐려 준다 */
   .appbar::before { content: ""; position: absolute; inset: 0 0 auto; height: 22px; z-index: -1; background: linear-gradient(var(--parchment) 45%, transparent); }
-  /* PC: 화면 좌우 끝에서 16px 안쪽까지 닿는 넓은 유리 캡슐. 로고는 왼쪽 끝, 도구는 정가운데, 다크 모드 버튼은 오른쪽 끝.
-     양끝 여백 13px·8px은 로고·버튼 모서리가 캡슐 곡선과 같은 중심을 갖게 하는 값 */
-  .appbar-inner { --glass-bg: var(--glass-cap); --glass-blur: 10px; display: grid; grid-template-columns: 1fr auto 1fr; width: auto; max-width: none; height: 56px; border-radius: 28px; padding: 0 8px 0 13px; gap: 2px; }
+  /* PC: 화면 좌우 끝에서 3vw(16~48px) 안쪽까지 닿는 넓은 유리 캡슐. 로고는 왼쪽, 도구는 정가운데, 다크 모드 버튼은 오른쪽.
+     좌우 패딩은 같게 두어 도구가 정가운데 오고, 로고 아이콘과 다크 모드 아이콘(40px 버튼 가운데)은 캡슐 끝에서 똑같이 28px 안쪽(로고는 margin 10px 더) */
+  .appbar-inner { --glass-bg: var(--glass-cap); --glass-blur: 10px; display: grid; grid-template-columns: 1fr auto 1fr; width: auto; max-width: none; height: 56px; border-radius: 28px; padding: 0 18px; gap: 2px; }
   /* 비스듬한 윤광을 비율로 두면 넓은 캡슐의 3분의 1을 덮으므로 왼쪽 끝 240px에만 */
   .appbar-inner::after { background: linear-gradient(125deg, var(--glass-sheen), transparent 240px, transparent calc(100% - 240px), var(--glass-edge)); }
-  .logo { display: inline-flex; justify-self: start; }
+  .logo { display: inline-flex; justify-self: start; margin-left: 10px; }
   .tool-menu-btn, .bar-main { display: none; }
   .tools {
     position: static; display: flex; align-items: center; gap: 2px; padding: 0; border-radius: 0;
