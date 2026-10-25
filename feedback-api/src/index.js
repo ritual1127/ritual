@@ -1,4 +1,5 @@
 import { handleAdmin } from "./admin.js";
+import { handleCampusMeal } from "./campus.js";
 import { handleChat } from "./chat.js";
 import { DAY, corsHeaders } from "./lib.js";
 import { handleContact, handleTrack } from "./track.js";
@@ -51,8 +52,9 @@ async function sendEmptyPush(subscription, env) {
   });
 }
 
-// AI 도우미·문의·통계·관리자(새 기능). 응답마다 CORS 헤더를 붙인다.
+// AI 도우미·문의·통계·관리자·대학 학식(새 기능). 응답마다 CORS 헤더를 붙인다.
 async function route(request, env, ctx, url) {
+  if (url.pathname === "/campus-meal" && request.method === "GET") return handleCampusMeal(request, env, url);
   if (url.pathname === "/t" && request.method === "POST") return handleTrack(request, env, ctx);
   if (url.pathname === "/contact" && request.method === "POST") return handleContact(request, env);
   if (url.pathname === "/chat" && request.method === "POST") return handleChat(request, env, ctx);

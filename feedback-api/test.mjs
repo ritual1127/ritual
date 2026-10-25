@@ -5,6 +5,7 @@ import { DatabaseSync } from 'node:sqlite';
 import worker from './src/index.js';
 import { cleanPath, deviceOf, isBot, kstNow, refSite, safeEqual, signToken, verifyToken, dayOffset } from './src/lib.js';
 import { buildMessages, fuse, pieceOf, relay } from './src/chat.js';
+import { parseKaist, parseKnu, parsePnu, parseSnu } from './src/campus.js';
 
 const dir = new URL('.', import.meta.url);
 
@@ -90,7 +91,8 @@ assert.equal(dayOffset('2026-03-01', -1), '2026-02-28');
 const token = await signToken('s', { exp: Date.now() + 1000 });
 assert.ok(await verifyToken('s', token));
 assert.equal(await verifyToken('other', token), null);
-assert.equal(await verifyToken('s', token.replace(/.$/, c => (c === 'A' ? 'B' : 'A'))), null);
+// 서명 첫 글자를 바꾼다(마지막 글자는 남는 비트만 바뀌어 같은 값으로 풀릴 수 있다)
+assert.equal(await verifyToken('s', token.replace(/\.(.)/, (_, c) => `.${c === 'A' ? 'B' : 'A'}`)), null);
 assert.equal(await verifyToken('s', await signToken('s', { exp: Date.now() - 1 })), null);
 assert.equal(await verifyToken('s', 'garbage'), null);
 assert.ok(await safeEqual('k', '2468', '2468'));
@@ -221,6 +223,68 @@ assert.match(messages[0].content, /\[자료 1\] 제목 \(\/rank\/\)\n본문/);
   assert.equal(body.sources[0].u, '/rank/');
   assert.equal(broken.DB.db.prepare('SELECT route FROM chats').get().route, 'none');
   assert.equal((await call(env, '/chat', { body: { q: '   ' } })).status, 400);
+}
+
+// ── 대학 학식: 학교 페이지 모양을 줄인 조각으로 읽는 법을 확인한다 ──
+{
+  const snu = `<table class="menu-table"><thead><tr><td class="title">식당</td></tr></thead><tbody>
+<tr><td class="title">학생회관식당 (880-5543)</td><td class="breakfast">쇠고기채소죽 : 3,000원<br />※ 운영시간 : 08:00~10:00</td><td class="lunch">갈비탕(#) : 6,000원<br />&lt;+세미뷔페&gt;<br />그린샐러드<br />&lt;뷔페 특성상 조기품절<br />양해 부탁드립니다&gt;</td><td class="dinner">&lt;셀프코너&gt; 7,000원<br />목살필라프</td></tr>
+<tr><td class="title">* 버거운버거</td><td class="breakfast">버거 : 5,000원</td><td class="lunch"></td><td class="dinner"></td></tr></tbody></table>`;
+  assert.deepEqual(parseSnu(snu), [{ name: '학생회관식당', meals: [
+    { label: '조식', time: '08:00~10:00', menus: [{ name: '쇠고기채소죽', price: '3,000원', dishes: [] }] },
+    { label: '중식', time: '', menus: [{ name: '갈비탕', price: '6,000원', dishes: [] }, { name: '+세미뷔페', price: '', dishes: ['그린샐러드'] }] },
+    { label: '석식', time: '', menus: [{ name: '셀프코너', price: '7,000원', dishes: ['목살필라프'] }] }
+  ] }]);
+
+  const kaist = `<table class="table"><thead><tr><th scope="col">조식 8:00~9:00</th><th scope="col">중식 11:20~13:30</th><th scope="col">석식 17:20~19:00</th></tr></thead><tbody><tr>
+<td>*하루과일 캠페인* <br/>천원의 아침밥(1,000원) / 대학생 대상<br/>쌀밥 <br/>시래기된장국(5,6) <br/>(664Kcal) <br/></td>
+<td><ul class="list-1st">자율코너(5,500원) <br/>어묵국5,6<br/>고로케*케찹 5,6,9<br/>[일품:6,500원]<br/>샤브칼국수(5, 6)</ul></td>
+<td>자율배식<br/>(5,500원)<br/>오므라이스(1,5,6*)<br/>일품[6,500원]<br/>부타동</td></tr></tbody></table>`;
+  assert.deepEqual(parseKaist(kaist), [
+    { label: '조식', time: '8:00~9:00', menus: [{ name: '', price: '', dishes: ['쌀밥', '시래기된장국'] }] },
+    { label: '중식', time: '11:20~13:30', menus: [{ name: '자율코너', price: '5,500원', dishes: ['어묵국', '고로케&케찹'] }, { name: '일품', price: '6,500원', dishes: ['샤브칼국수'] }] },
+    { label: '석식', time: '17:20~19:00', menus: [{ name: '자율배식', price: '5,500원', dishes: ['오므라이스'] }, { name: '일품', price: '6,500원', dishes: ['부타동'] }] }
+  ]);
+
+  const pnu = `<table><thead><tr><th scope="col">구분</th><th scope="col"><div class="day">월</div><div class="date">2026.10.26</div></th><th scope="col"><div class="day">화</div><div class="date">2026.10.27</div></th></tr></thead><tbody>
+<tr><th scope="row">중식<br>11:00-14:00</th><td><ul><li><h3 class="menu-tit01 ">정식-5,000원</h3><p>월요일밥</p></li></ul></td><td><ul><li><h3 class="menu-tit01 ">정식-6,500원</h3><p>백미밥<br/>미역국<br/></p></li></ul></td></tr>
+<tr><th scope="row">석식<br>17:00~18:30</th><td></td><td></td></tr></tbody></table>`;
+  assert.deepEqual(parsePnu(pnu, '2026-10-27'), [{ label: '중식', time: '11:00~14:00', menus: [{ name: '정식', price: '6,500원', dishes: ['백미밥', '미역국'] }] }]);
+  assert.deepEqual(parsePnu(pnu, '2026-10-30'), []);
+
+  const knu = `<table><thead><tr><th scope="col">분류</th><th scope="col">화<p class="week_t">(10/27) </p></th><th scope="col">수<p class="week_t">(10/28) </p></th></tr></thead></table>
+<div class="week_table"><p class="title">중식</p><table class="tstyle_me"><tbody><tr>
+<td scope="row"><ul class="menu_im"><li class="first">투움바함박스테이크★<br />(11:00~13:30)<p>흰밥<br />배추김치★</p><p>￦ 6,000</p></li><li>라면<br />(9:00~11:00,<br />13:00~15:30)<p></p><p>￦ 2,800</p></li></ul></td>
+<td scope="row"><ul class="menu_im"><li>수요일메뉴<p></p><p>￦ 1,000</p></li></ul></td></tr></tbody></table></div>
+<div class="week_table"><p class="title">석식</p><table class="tstyle_me"><tbody><tr>
+<td scope="row"><div class="button_m bt_me01">정식</div><ul class="menu_im"><li class="first"><p>기장밥<br /> 포기김치<br /> 운영시간<br /> 17:00~18:30</p><p>￦ 6,000</p></li></ul></td><td></td></tr></tbody></table></div>`;
+  assert.deepEqual(parseKnu(knu, '2026-10-27'), [
+    { label: '중식', time: '11:00~13:30', menus: [
+      { name: '투움바함박스테이크', price: '6,000원', dishes: ['흰밥', '배추김치'] },
+      { name: '라면 (9:00~11:00, 13:00~15:30)', price: '2,800원', dishes: [] }
+    ] },
+    { label: '석식', time: '17:00~18:30', menus: [{ name: '정식', price: '6,000원', dishes: ['기장밥', '포기김치'] }] }
+  ]);
+
+  // 요청 검사와 학교 페이지 실패 처리(네트워크 대신 가짜 fetch)
+  const env = makeEnv();
+  const today = kstNow().day;
+  assert.equal((await call(env, `/campus-meal?u=nope&date=${today}`, { method: 'GET' })).status, 400);
+  assert.equal((await call(env, '/campus-meal?u=snu&date=1999-01-01', { method: 'GET' })).status, 400);
+  const realFetch = globalThis.fetch;
+  try {
+    globalThis.fetch = async () => new Response(snu);
+    const res = await call(env, `/campus-meal?u=snu&date=${today}`, { method: 'GET' });
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get('Access-Control-Allow-Origin'), 'https://naver1.cloud');
+    assert.equal((await res.json()).places[0].name, '학생회관식당');
+    globalThis.fetch = async () => new Response('', { status: 503 });
+    const failed = await call(env, `/campus-meal?u=kaist&date=${today}`, { method: 'GET' });
+    assert.equal(failed.status, 502);
+    assert.match((await failed.json()).link, /kaist\.ac\.kr/);
+  } finally {
+    globalThis.fetch = realFetch;
+  }
 }
 
 // ── 기존 기능(좋아요·푸시 구독)은 그대로 ──

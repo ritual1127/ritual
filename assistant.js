@@ -3,7 +3,7 @@
 // 엔진(assistant-core.js)·계산(calc-core.js)·지식(assistant/kb.json)은 패널을 처음 열 때만 불러온다.
 (function () {
   if (location.pathname.startsWith('/admin')) return;
-  const V = '20261025';
+  const V = '20261025g';
   const API = window.SITE_API || 'https://seongjeok-feedback-api.smilepea.workers.dev';
   const STORE = 'assistChat';
   const SUGGEST = ['200명 중 15등이면 몇 등급?', '5등급제 등급 비율 알려줘', '내일 급식 뭐야?', '기말에서 몇 점 받아야 A야?'];
