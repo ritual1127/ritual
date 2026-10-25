@@ -12,7 +12,6 @@ const decode = s => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot
 export const lines = html => decode(String(html || '').replace(/<!--[\s\S]*?-->/g, '').replace(/<br\s*\/?>|<\/(p|li|h\d|div)>/gi, '\n').replace(/<[^>]+>/g, ''))
   .split('\n').map(s => s.replace(/\s+/g, ' ').trim()).filter(Boolean);
 const cells = (html, tag) => [...String(html || '').matchAll(new RegExp(`<${tag}\\b[^>]*>([\\s\\S]*?)</${tag}>`, 'gi'))].map(m => m[1]);
-const won = s => `${s.replace(/[^\d,]/g, '')}원`;
 
 // "갈비탕 : 6,000원"·"자율코너(5,500원)"·"일품[6,500원]"·"[일품:6,500원]"·"<셀프코너> 7,000원"·"<+세미뷔페>"·"(한식)"은 메뉴(묶음) 이름,
 // 가격만 있는 줄("자율배식" 다음 "(5,500원)")은 바로 앞 줄을 그 가격의 메뉴 이름으로 올린다. 나머지 줄은 앞 메뉴의 반찬이고,
@@ -89,37 +88,6 @@ export function parsePnu(html, date) {
   }).filter(meal => meal && meal.menus.length);
 }
 
-// 경북대: 식당마다 고른 날부터 6일이 한 장, 끼니마다 표가 따로. 메뉴(li)는 이름·(시간)·반찬·가격 순이고,
-// 정식 식당은 이름 없이 반찬 칸에 "운영시간 11:15~13:30"까지 적어서 칸 머리("정식")를 이름으로 쓴다.
-// 시간은 "(13:00~15:30)"이 줄바꿈으로 갈리거나 "17:00~1900"처럼 적힌 것도 있어 이름·반찬 전체에서 찾아 뺀다
-const HOURS = /\(?\s*(\d{1,2}:\d{2})\s*~\s*(\d{1,2}):?(\d{2})\s*\)?/g;
-const withoutHours = text => text.replace(HOURS, '').split('\n').map(s => s.replace(/★|운영시간/g, '').trim()).filter(s => s && !/^[(),\s]+$/.test(s));
-export function parseKnu(html, date) {
-  const col = [...html.matchAll(/class="week_t">\s*\((\d{2}\/\d{2})\)/g)].map(m => m[1]).indexOf(date.slice(5).replace('-', '/'));
-  if (col < 0) return [];
-  const meals = [];
-  for (const section of html.matchAll(/<p class="title">\s*(조식|중식|석식)\s*<\/p>\s*<table[\s\S]*?<\/table>/g)) {
-    const menus = [];
-    let time = '';
-    for (const row of cells(section[0].split(/<tbody>/i)[1], 'tr')) {
-      const td = cells(row, 'td')[col] || '';
-      const kind = lines((td.match(/<div class="button_m[^"]*">([\s\S]*?)<\/div>/) || [])[1])[0] || '';
-      for (const li of cells(td, 'li')) {
-        const head = lines(li.split(/<p>/i)[0]).join('\n');
-        const ps = cells(li, 'p');
-        const body = lines(ps[0]).join('\n');
-        const hours = [...`${head}\n${body}`.matchAll(HOURS)].map(m => `${m[1]}~${m[2]}:${m[3]}`).join(', ');
-        if (hours && !time) time = hours;
-        const name = withoutHours(head).join(', ') || kind;
-        const cost = lines(ps[1])[0];
-        menus.push({ name: hours && hours !== time ? `${name} (${hours})` : name, price: cost ? won(cost) : '', dishes: withoutHours(body) });
-      }
-    }
-    if (menus.length) meals.push({ label: section[1], time, menus });
-  }
-  return meals;
-}
-
 async function page(url) {
   const res = await fetch(url, { headers: { 'User-Agent': UA }, cf: { cacheTtl: 3600, cacheEverything: true } });
   if (!res.ok) throw new Error(`${new URL(url).host} ${res.status}`);
@@ -135,7 +103,6 @@ async function each(list, load) {
 
 const KAIST = 'https://www.kaist.ac.kr/kr/html/campus/053001.html';
 const PNU = 'https://www.pusan.ac.kr/kor/CMS/MenuMgr/menuListOnBuilding.do?mCode=MN202';
-const KNU = 'https://coop.knu.ac.kr/sub03/sub01_01.html';
 
 export const CAMPUSES = {
   snu: {
@@ -154,12 +121,6 @@ export const CAMPUSES = {
     link: () => PNU,
     load: date => each([['R001', 'PG002', '금정회관 학생 식당'], ['R004', 'PH002', '학생회관 학생 식당'], ['R001', 'PG001', '금정회관 교직원 식당']],
       async ([building, code, name]) => ({ name, meals: parsePnu(await page(`${PNU}&campus_gb=PUSAN&building_gb=${building}&restaurant_code=${code}&menu_date=${date}`), date) }))
-  },
-  knu: {
-    name: '경북대학교',
-    link: () => KNU,
-    load: date => each([[35, '정보센터식당'], [37, '카페테리아 첨성'], [86, '공학관 학생식당'], [46, 'GP감꽃식당'], [36, '복지관 교직원식당'], [85, '공학관 교직원식당']],
-      async ([shop, name]) => ({ name, meals: parseKnu(await page(`${KNU}?shop_sqno=${shop}&selDate=${date}`), date) }))
   }
 };
 

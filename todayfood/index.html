@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
   <title>오늘의 급식·학식 - 우리학교 급식표 조회 | 성적 계산기</title>
-  <meta name="description" content="학교 이름만 검색하면 오늘의 급식(조식·중식·석식) 메뉴를 바로 확인하고, 서울대·KAIST·부산대·경북대 학식도 볼 수 있는 무료 급식표 조회 서비스입니다.">
+  <meta name="description" content="학교 이름만 검색하면 오늘의 급식(조식·중식·석식) 메뉴를 바로 확인하고, 서울대·KAIST·부산대 학식도 볼 수 있는 무료 급식표 조회 서비스입니다.">
   <meta name="keywords" content="오늘의 급식, 급식표, 학교 급식, 급식 메뉴 조회, 우리학교 급식, 대학 학식, 학식 메뉴">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://naver1.cloud/todayfood/">
@@ -91,7 +91,7 @@
       let slots = [];
       let requestId = 0;
       // 대학 학식: 서버(feedback-api)가 학교 홈페이지 식단을 읽어 식당별로 모아 준다
-      const CAMPUSES = [['snu', '서울대학교'], ['kaist', 'KAIST'], ['pnu', '부산대학교'], ['knu', '경북대학교']];
+      const CAMPUSES = [['snu', '서울대학교'], ['kaist', 'KAIST'], ['pnu', '부산대학교']];
       const stored = key => { try { return localStorage.getItem(key); } catch { return null; } };
       const store = (key, value) => { try { value ? localStorage.setItem(key, value) : localStorage.removeItem(key); } catch {} };
       const queryCampus = new URLSearchParams(location.search).get('u');
@@ -269,7 +269,7 @@
             button.onclick = () => { campus = id; store('campus', id); renderCampusPicker(); };
             picks.append(button);
           }
-          box.replaceChildren(el('h2', 'card-title', '대학 고르기'), picks, el('p', 'campus-note', '지금은 이 네 학교의 학식을 볼 수 있어요. 다른 대학이 필요하면 문의하기로 알려 주세요.'));
+          box.replaceChildren(el('h2', 'card-title', '대학 고르기'), picks, el('p', 'campus-note', '지금은 이 세 학교의 학식을 볼 수 있어요. 다른 대학이 필요하면 문의하기로 알려 주세요.'));
           return;
         }
         const card = el('div', 'school-card');

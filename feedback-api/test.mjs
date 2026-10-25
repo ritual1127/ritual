@@ -5,7 +5,7 @@ import { DatabaseSync } from 'node:sqlite';
 import worker from './src/index.js';
 import { cleanPath, deviceOf, isBot, kstNow, refSite, safeEqual, signToken, verifyToken, dayOffset } from './src/lib.js';
 import { buildMessages, fuse, pieceOf, relay } from './src/chat.js';
-import { parseKaist, parseKnu, parsePnu, parseSnu } from './src/campus.js';
+import { parseKaist, parsePnu, parseSnu } from './src/campus.js';
 
 const dir = new URL('.', import.meta.url);
 
@@ -251,20 +251,6 @@ assert.match(messages[0].content, /\[자료 1\] 제목 \(\/rank\/\)\n본문/);
 <tr><th scope="row">석식<br>17:00~18:30</th><td></td><td></td></tr></tbody></table>`;
   assert.deepEqual(parsePnu(pnu, '2026-10-27'), [{ label: '중식', time: '11:00~14:00', menus: [{ name: '정식', price: '6,500원', dishes: ['백미밥', '미역국'] }] }]);
   assert.deepEqual(parsePnu(pnu, '2026-10-30'), []);
-
-  const knu = `<table><thead><tr><th scope="col">분류</th><th scope="col">화<p class="week_t">(10/27) </p></th><th scope="col">수<p class="week_t">(10/28) </p></th></tr></thead></table>
-<div class="week_table"><p class="title">중식</p><table class="tstyle_me"><tbody><tr>
-<td scope="row"><ul class="menu_im"><li class="first">투움바함박스테이크★<br />(11:00~13:30)<p>흰밥<br />배추김치★</p><p>￦ 6,000</p></li><li>라면<br />(9:00~11:00,<br />13:00~15:30)<p></p><p>￦ 2,800</p></li></ul></td>
-<td scope="row"><ul class="menu_im"><li>수요일메뉴<p></p><p>￦ 1,000</p></li></ul></td></tr></tbody></table></div>
-<div class="week_table"><p class="title">석식</p><table class="tstyle_me"><tbody><tr>
-<td scope="row"><div class="button_m bt_me01">정식</div><ul class="menu_im"><li class="first"><p>기장밥<br /> 포기김치<br /> 운영시간<br /> 17:00~18:30</p><p>￦ 6,000</p></li></ul></td><td></td></tr></tbody></table></div>`;
-  assert.deepEqual(parseKnu(knu, '2026-10-27'), [
-    { label: '중식', time: '11:00~13:30', menus: [
-      { name: '투움바함박스테이크', price: '6,000원', dishes: ['흰밥', '배추김치'] },
-      { name: '라면 (9:00~11:00, 13:00~15:30)', price: '2,800원', dishes: [] }
-    ] },
-    { label: '석식', time: '17:00~18:30', menus: [{ name: '정식', price: '6,000원', dishes: ['기장밥', '포기김치'] }] }
-  ]);
 
   // 요청 검사와 학교 페이지 실패 처리(네트워크 대신 가짜 fetch)
   const env = makeEnv();
