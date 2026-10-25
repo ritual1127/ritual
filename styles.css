@@ -126,6 +126,8 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
 [data-app="convert"] { --app-ink: #00808F; --app-a: #5EF0D8; --app-b: #00A3B5; --app-glow: rgba(0, 163, 181, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8.5h15M15 4.5l4 4-4 4M20 15.5H5M9 11.5l-4 4 4 4'/%3E%3C/svg%3E"); }
 [data-app="food"] { --app-ink: #1E8A38; --app-a: #7BE38A; --app-b: #2BB14A; --app-glow: rgba(43, 177, 74, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 3v6.5a2 2 0 0 0 4 0V3M9 11.5V21M17 21V3c-2.2 1.4-3 4.2-3 7h3'/%3E%3C/svg%3E"); }
 [data-app="class"] { --app-ink: #4B49C8; --app-a: #9D9FFF; --app-b: #5856D6; --app-glow: rgba(88, 86, 214, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='5' width='17' height='15' rx='3'/%3E%3Cpath d='M3.5 10h17M8 3v4M16 3v4'/%3E%3C/svg%3E"); }
+/* 도구 색 알약 바탕(등급·배지·선택 칩 공용). 흰 글씨 대비를 지키려고 도구 색의 진한 쪽(--app-ink)으로 당긴다: 위 3.5:1, 아래 4.5:1 안팎 */
+[data-app] { --app-pill: linear-gradient(160deg, color-mix(in srgb, var(--app-b) 50%, var(--app-ink)), var(--app-ink)); }
 .app-icon {
   position: relative; flex: none; display: inline-block; width: 30px; height: 30px; border-radius: 26%; overflow: hidden;
   background: var(--app-glyph) center / 56% no-repeat, linear-gradient(165deg, var(--app-a), var(--app-b));
@@ -168,11 +170,11 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
 .bar-value { font-size: 18px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .bar-value:empty { display: none; }
 .bar-main.has-result .bar-label { font-size: 12px; font-weight: 400; letter-spacing: -.01em; color: var(--ink-2); }
-.bar-badge { flex: none; min-width: 30px; height: 28px; padding: 0 9px; display: grid; place-items: center; border-radius: 999px; background: linear-gradient(160deg, var(--app-a, #8E8E93), var(--app-b, #636366)); color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .25); font-size: 14px; font-weight: 700; letter-spacing: 0; }
+.bar-badge { flex: none; min-width: 30px; height: 28px; padding: 0 9px; display: grid; place-items: center; border-radius: 999px; background: var(--app-pill, linear-gradient(160deg, #8E8E93, #636366)); color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .25); font-size: 14px; font-weight: 700; letter-spacing: 0; }
 
 /* 도구 메뉴: 휴대폰에서는 바 위로 열리는 앱 아이콘 격자(유리 시트) */
 .tools {
-  --glass-bg: var(--glass-sheet); --glass-blur: 22px; --glass-extra: var(--glass-lift); --lens: initial;
+  --glass-bg: var(--glass-sheet); --glass-blur: 22px; --glass-sat: 1.9; --glass-extra: var(--glass-lift); --lens: initial;
   position: absolute; left: 0; right: 0; bottom: calc(100% + 10px);
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px 4px; padding: 18px 8px 14px; border-radius: 30px;
   opacity: 0; visibility: hidden; transform: translateY(12px) scale(.96); transform-origin: bottom center;
@@ -313,7 +315,7 @@ body[data-app] .page-head h1 { font-size: 22px; line-height: 1.2; letter-spacing
 }
 .grade-pick { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .grade-pick button { min-width: 0; min-height: 50px; padding: 0; border-radius: 13px; font-size: 19px; font-weight: 600; }
-.grade-pick button[aria-pressed="true"] { border-color: transparent; box-shadow: 0 6px 14px -8px var(--app-glow, rgba(0, 0, 0, .3)); background: linear-gradient(160deg, var(--app-a), var(--app-b)); color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
+.grade-pick button[aria-pressed="true"] { border-color: transparent; box-shadow: 0 6px 14px -8px var(--app-glow, rgba(0, 0, 0, .3)); background: var(--app-pill); color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
 .chip-btn { flex: none; min-height: 40px; }
 .chip.chip-btn { min-height: 40px; padding: 0 16px; background: var(--canvas); border: 1px solid var(--divider); color: var(--ink); }
 
@@ -429,7 +431,7 @@ select.input {
 /* 등급은 도구 색 알약(라이트·다크 같은 모양) */
 .grade {
   display: inline-flex; align-items: center; gap: 2px; height: 36px; padding: 0 14px; border-radius: 999px;
-  background: linear-gradient(160deg, var(--app-a), var(--app-b)); color: #fff; font-size: 20px; font-weight: 700; line-height: 1; letter-spacing: -.01em;
+  background: var(--app-pill); color: #fff; font-size: 20px; font-weight: 700; line-height: 1; letter-spacing: -.01em;
   text-shadow: 0 1px 2px rgba(0, 0, 0, .22); box-shadow: inset 0 1px 1px rgba(255, 255, 255, .45), 0 6px 14px -8px var(--app-glow, rgba(0, 0, 0, .3));
 }
 .grade small { font-size: 14px; font-weight: 600; }
@@ -478,7 +480,7 @@ details.formula p { margin-top: 4px; padding: 12px 14px; border-radius: 11px; ba
 .table .num { text-align: right; white-space: nowrap; }
 .table tr.is-hit td { font-weight: 600; color: var(--ink); background: var(--parchment); }
 .table .chip[data-grade] { width: 30px; min-height: 30px; padding: 0; justify-content: center; border-radius: 9px; background: var(--fill); color: var(--ink-2); font-weight: 700; }
-.table tr.is-hit .chip[data-grade] { background: linear-gradient(160deg, var(--app-a), var(--app-b)); color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
+.table tr.is-hit .chip[data-grade] { background: var(--app-pill); color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
 .table td.good { font-weight: 600; }
 .table td.bad { color: var(--bad); }
 
@@ -506,7 +508,7 @@ details.formula p { margin-top: 4px; padding: 12px 14px; border-radius: 11px; ba
 .whatif-ticks span { position: absolute; top: 0; transform: translateX(-50%); font-size: 12px; color: var(--ink-2); }
 .whatif-result { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; margin-top: 4px; font-size: 15px; color: var(--ink-2); }
 .whatif-result b { font-size: 19px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
-.whatif-result .chip { background: linear-gradient(160deg, var(--app-a), var(--app-b)); color: #fff; font-weight: 700; text-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
+.whatif-result .chip { background: var(--app-pill); color: #fff; font-weight: 700; text-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
 .whatif-result .chip:empty { display: none; }
 
 /* ── 설명(SEO) · FAQ ──────────────────────────── */

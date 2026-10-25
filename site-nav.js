@@ -8,8 +8,9 @@
   let apiBase = null;
   try { apiBase = localStorage.getItem('apiBase'); } catch {}
   const API = window.SITE_API = apiBase || 'https://seongjeok-feedback-api.smilepea.workers.dev';
-  // 브라우저에서 '추적 안 함'이나 GPC를 켰거나, 실제 주소가 아닌 곳(로컬 미리보기 등)이면 보내지 않는다.
-  const optOut = navigator.globalPrivacyControl === true || navigator.doNotTrack === '1' || location.hostname !== 'naver1.cloud';
+  // 브라우저에서 '추적 안 함'이나 GPC를 켰거나, 내 컴퓨터·같은 와이파이에서 띄운 미리보기면 보내지 않는다.
+  const local = location.protocol === 'file:' || /^(localhost|127\.|10\.|192\.168\.|\[::1\])/.test(location.hostname);
+  const optOut = navigator.globalPrivacyControl === true || navigator.doNotTrack === '1' || local;
   window.track = data => { if (optOut) return; try { navigator.sendBeacon(`${API}/t`, JSON.stringify({ path: location.pathname, ...data })); } catch {} };
   if (!location.pathname.startsWith('/admin')) window.track({ type: 'view', ref: document.referrer });
   // 계산 완료는 사용자가 직접 입력한 뒤 결과가 처음 나올 때 한 번만 센다(저장된 값을 불러온 건 빼고).
@@ -360,24 +361,15 @@
     head.after(strip);
   }
 
-  // 하단 바 뒤로 결과 카드가 지나갈 때만 유리를 더 흐리게 한다. 화면 아래 바가 떠 있는 띠만 지켜본다.
+  // 하단 바 뒤로 결과 카드가 지나갈 때만 유리를 더 흐리게 한다. 화면 아래 16%(바가 떠 있는 띠)만 지켜본다.
+  // 비율로 잡아 두면 주소창이 숨었다 나타나 화면 높이가 바뀌어도 다시 만들 필요가 없다.
   function setupBarGlass() {
     const bar = document.querySelector('.appbar-inner');
-    const busy = document.querySelectorAll('.result-card');
-    if (!bar || !busy.length || !('IntersectionObserver' in window)) return;
-    let io = null;
-    const hits = new Set();
-    const watch = () => {
-      io?.disconnect();
-      hits.clear();
-      io = new IntersectionObserver(entries => {
-        entries.forEach(entry => (entry.isIntersecting ? hits.add(entry.target) : hits.delete(entry.target)));
-        bar.dataset.over = hits.size ? 'busy' : '';
-      }, { rootMargin: `-${Math.max(0, innerHeight - 120)}px 0px 0px 0px` });
-      busy.forEach(el => io.observe(el));
-    };
-    watch();
-    addEventListener('resize', watch);
+    const card = document.querySelector('.result-card');
+    if (!bar || !card || !('IntersectionObserver' in window)) return;
+    new IntersectionObserver(entries => {
+      bar.dataset.over = entries[entries.length - 1].isIntersecting ? 'busy' : '';
+    }, { rootMargin: '-84% 0px 0px 0px' }).observe(card);
   }
 
   function init() { setupThemeToggle(); setupToolMenu(); setupBarSize(); setupBarGlass(); setupToolLinks(); lens(document.querySelector('.appbar-inner'), 14, 30); }
