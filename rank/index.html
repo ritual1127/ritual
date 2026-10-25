@@ -191,11 +191,10 @@
         }));
       }
 
-      function show(stateName, { value = '—', ratio = 0, note = '', meta = '', mini = '' }) {
+      function show(stateName, { value = '—', note = '', meta = '', mini = '' }) {
         const wasDone = card.dataset.state === 'done';
         card.dataset.state = stateName;
         rollNumber($('avgValue'), value);
-        setRing(ratio);
         $('avgNote').textContent = note;
         $('avgMeta').textContent = meta;
         if (stateName === 'done' && !wasDone) {
@@ -250,7 +249,6 @@
         }));
         show('done', {
           value: fixedNumber(avg),
-          ratio: (system - avg) / (system - 1),
           note: invalid ? `석차 입력이 잘못된 과목 ${invalid}개는 빼고 계산했어요.` : '과목별 등급에 단위수를 곱해 평균을 냈어요.',
           meta: `단위수 합 ${formatNumber(units)} · 과목 ${results.length}개 · ${system}등급제`,
           mini: `${fixedNumber(avg)}등급`

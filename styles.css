@@ -32,7 +32,6 @@
   --glass-rim-2: rgba(255, 255, 255, .55);
   --glass-sheen: rgba(255, 255, 255, .5);
   --glass-lift: 0 12px 32px -12px rgba(0, 0, 0, .28), 0 2px 8px -3px rgba(0, 0, 0, .12);
-  --ring-track: rgba(0, 0, 0, .07);
   --ease: cubic-bezier(.25, .1, .25, 1);
   --spring: cubic-bezier(.32, 1.2, .42, 1);
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Apple SD Gothic Neo", "Pretendard Variable", Pretendard, system-ui, "Segoe UI", "Malgun Gothic", sans-serif;
@@ -47,7 +46,7 @@
     --good: #30D158; --bad: #FF453A; --bad-soft: #3A1715;
     --glass-float: rgba(44, 44, 48, .42); --glass-cap: rgba(44, 44, 48, .5); --glass-sheet: rgba(30, 30, 33, .74);
     --glass-edge: rgba(255, 255, 255, .08); --glass-rim: rgba(255, 255, 255, .45); --glass-rim-2: rgba(255, 255, 255, .16); --glass-sheen: rgba(255, 255, 255, .12);
-    --glass-lift: 0 12px 32px -10px rgba(0, 0, 0, .75), 0 2px 8px -3px rgba(0, 0, 0, .5); --ring-track: rgba(255, 255, 255, .09);
+    --glass-lift: 0 12px 32px -10px rgba(0, 0, 0, .75), 0 2px 8px -3px rgba(0, 0, 0, .5);
   }
 }
 :root[data-theme="dark"] {
@@ -59,7 +58,7 @@
   --good: #30D158; --bad: #FF453A; --bad-soft: #3A1715;
   --glass-float: rgba(44, 44, 48, .42); --glass-cap: rgba(44, 44, 48, .5); --glass-sheet: rgba(30, 30, 33, .74);
   --glass-edge: rgba(255, 255, 255, .08); --glass-rim: rgba(255, 255, 255, .45); --glass-rim-2: rgba(255, 255, 255, .16); --glass-sheen: rgba(255, 255, 255, .12);
-  --glass-lift: 0 12px 32px -10px rgba(0, 0, 0, .75), 0 2px 8px -3px rgba(0, 0, 0, .5); --ring-track: rgba(255, 255, 255, .09);
+  --glass-lift: 0 12px 32px -10px rgba(0, 0, 0, .75), 0 2px 8px -3px rgba(0, 0, 0, .5);
 }
 
 /* ── 기본 ─────────────────────────────────────── */
@@ -159,10 +158,6 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
   border: 0; border-radius: 23px; background: transparent; color: var(--ink); text-align: center; transition: background-color .15s;
 }
 .bar-main:hover { background: var(--chip); }
-.bar-ring { flex: none; width: 28px; height: 28px; }
-.bar-main:not(.has-result) .bar-ring { display: none; }
-.bar-ring .ring-fill { stroke-width: 18; filter: none; }
-.bar-ring .ring-track { stroke-width: 18; }
 .bar-text { display: grid; min-width: 0; line-height: 1.15; }
 .bar-label { font-size: 16px; font-weight: 600; letter-spacing: -.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bar-value { font-size: 18px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -200,7 +195,6 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
   .appbar-inner[data-mini="true"] .bar-main.has-result .bar-label { font-size: 11px; }
   .appbar-inner[data-mini="true"] .bar-label { font-size: 15px; }
   .appbar-inner[data-mini="true"] .bar-value { font-size: 16px; }
-  .appbar-inner[data-mini="true"] .bar-ring { width: 24px; height: 24px; }
   .appbar-inner[data-mini="true"] .bar-badge { min-width: 26px; height: 24px; padding: 0 8px; font-size: 13px; }
 }
 @media (max-width: 340px) {
@@ -413,36 +407,22 @@ select.input {
 
 /* ── 결과 카드: 테마를 따르는 카드 + 도구 색 활동 링 ── */
 .result-card { position: relative; scroll-margin-top: 16px; color: var(--ink); }
-.result-card.has-ring .result-main { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px 20px; margin-top: 12px; }
-.ring { grid-area: 1 / 1; position: relative; width: 172px; height: 172px; }
-.ring-svg { display: block; width: 100%; height: 100%; overflow: visible; transform: rotate(-90deg); }
-.ring-track { fill: none; stroke: var(--ring-track); stroke-width: 15; }
-.ring-fill { fill: none; stroke: url(#ringGrad); stroke-width: 15; stroke-linecap: round; transition: stroke-dashoffset 1s var(--spring); filter: drop-shadow(0 0 6px var(--app-glow, transparent)); }
-.ring stop:first-child { stop-color: var(--app-a, #8E8E93); }
-.ring stop:last-child { stop-color: var(--app-b, #636366); }
-.ring-tick { stroke: var(--canvas); stroke-width: 2.5; }
-.ring.is-full .ring-svg { animation: ring-close 1s var(--spring); }
-.result-card.has-ring .result-number { grid-area: 1 / 1; justify-self: center; z-index: 1; flex-direction: column; align-items: center; gap: 0; }
-.result-card.has-ring .result-value { font-size: 40px; }
-.result-card.has-ring .result-unit { font-size: 14px; }
-.result-card.has-ring .grade { grid-area: 1 / 2; justify-self: start; }
-.result-card.has-ring .sticker { grid-area: 2 / 1 / 3 / 3; justify-self: start; margin: 0; }
 .result-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 22px; }
 .result-label { font-size: 14px; font-weight: 600; letter-spacing: -.016em; color: var(--ink-2); }
-.result-main { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin: 6px 0 2px; }
+.result-main { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; margin: 8px 0 2px; }
 .result-number { display: inline-flex; align-items: baseline; gap: 4px; }
-.result-value { font-size: clamp(48px, 13vw, 56px); font-weight: 600; line-height: 1.07; letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--ink); }
-.result-unit { font-size: 21px; font-weight: 600; color: var(--ink-2); }
+.result-value { font-size: clamp(52px, 16vw, 64px); font-weight: 600; line-height: 1.07; letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--ink); }
+.result-unit { font-size: 24px; font-weight: 600; color: var(--ink-2); }
 .marker { position: relative; }
 .result-card:not([data-state="done"]) .result-value { color: var(--ink-3); }
 .result-card[data-state="bad"] .result-value { color: var(--bad); }
+/* 등급은 도구 색 알약(라이트·다크 같은 모양) */
 .grade {
-  position: relative; --tilt: 0deg; display: inline-flex; align-items: baseline; gap: 1px;
-  color: var(--app-ink, var(--ink)); font-size: 34px; font-weight: 700; line-height: 1; letter-spacing: -.01em;
+  display: inline-flex; align-items: center; gap: 2px; height: 36px; padding: 0 14px; border-radius: 999px;
+  background: linear-gradient(160deg, var(--app-a), var(--app-b)); color: #fff; font-size: 20px; font-weight: 700; line-height: 1; letter-spacing: -.01em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .22); box-shadow: inset 0 1px 1px rgba(255, 255, 255, .45), 0 6px 14px -8px var(--app-glow, rgba(0, 0, 0, .3));
 }
-.grade small { font-size: 18px; font-weight: 600; color: var(--ink); }
-:root[data-theme="dark"] .grade { color: var(--app-a, var(--ink)); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .grade { color: var(--app-a, var(--ink)); } }
+.grade small { font-size: 14px; font-weight: 600; }
 .result-note { margin-top: 14px; font-size: 17px; font-weight: 600; color: var(--ink); }
 .result-card[data-state="warn"] .result-note, .result-card[data-state="bad"] .result-note { color: var(--bad); }
 .result-card[data-state="empty"] .result-note { color: var(--ink-2); font-weight: 400; }
@@ -817,13 +797,6 @@ details.faq p { padding: 0 0 16px; margin: 0; font-size: 15px; line-height: 1.6;
   .tool-strip .tool-name { font-size: 10px; letter-spacing: -.07em; }
 }
 @media (min-width: 960px) { .tool-strip { display: none; } }
-.more-tools { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--divider); }
-.more-tools h2 { font-size: 19px; letter-spacing: -.01em; }
-.more-tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 16px 4px; margin-top: 16px; }
-.more-tools .tool { display: grid; justify-items: center; align-content: start; gap: 7px; min-height: 0; padding: 6px 0; border-radius: 16px; background: none; color: var(--ink); }
-.more-tools .tool:hover { background: var(--chip); color: var(--ink); }
-.more-tools .tool .app-icon { width: 52px; height: 52px; border-radius: 26%; }
-.more-tools .tool-name { font-size: 13px; }
 
 /* ── 푸터 ─────────────────────────────────────── */
 .site-footer {
@@ -845,11 +818,6 @@ details.faq p { padding: 0 0 16px; margin: 0; font-size: 15px; line-height: 1.6;
   100% { transform: scale(1); }
 }
 @keyframes row-in { from { opacity: 0; transform: translateY(-6px); } }
-@keyframes ring-close {
-  0% { transform: rotate(-90deg) scale(1); }
-  40% { transform: rotate(-90deg) scale(1.07); filter: brightness(1.25); }
-  100% { transform: rotate(-90deg) scale(1); }
-}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .01ms !important; animation-iteration-count: 1 !important; animation-delay: 0s !important;

@@ -145,7 +145,6 @@
         rollNumber($('convertedValue'), valid ? fixedNumber(result) : '—');
         $('fromFill').style.setProperty('--ratio', ratio);
         $('toFill').style.setProperty('--ratio', ratio);
-        setRing(ratio);
         $('fromText').textContent = valid ? `${formatNumber(value)} / ${formatNumber(from)}` : '';
         $('toText').textContent = valid ? `${fixedNumber(result)} / ${formatNumber(to)}` : '';
         $('convertedNote').textContent = blank ? 'GPA와 만점을 넣으면 바로 환산돼요.'

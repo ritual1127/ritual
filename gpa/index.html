@@ -189,11 +189,10 @@
         }));
       }
 
-      function show(stateName, { value = '—', ratio = 0, note = '', meta = '', mini = '' }) {
+      function show(stateName, { value = '—', note = '', meta = '', mini = '' }) {
         const wasDone = card.dataset.state === 'done';
         card.dataset.state = stateName;
         rollNumber($('gpaValue'), value);
-        setRing(ratio);
         $('gpaNote').textContent = note;
         $('gpaMeta').textContent = meta;
         if (stateName === 'done' && !wasDone) {
@@ -228,7 +227,6 @@
         const percent = gpa / Number(scale) * 100;
         show('done', {
           value: fixedNumber(gpa),
-          ratio: gpa / Number(scale),
           note: `만점 대비 ${formatNumber(percent, 1)}%`,
           meta: `총 이수 ${formatNumber(total)}학점 · 평점 반영 ${formatNumber(graded)}학점`,
           mini: `${fixedNumber(gpa)} / ${scale}`

@@ -220,7 +220,6 @@
         if (grade && grade !== lastGrade) stampIn(badge);
         lastGrade = grade;
         cheer(stateName === 'done' && grade === 'A');
-        setRing(value === null ? 0 : value / 100);
         $('resultNote').textContent = note;
         $('resultMeta').textContent = meta;
         $('formulaBox').hidden = !formula;

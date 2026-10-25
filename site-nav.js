@@ -194,33 +194,6 @@
     liveTimer = setTimeout(() => { live.textContent = text; }, 600);
   };
 
-  // 결과 링(애플 워치 활동 링처럼): 결과 카드와 하단 바에 도구 색으로 결과 비율(0~1)을 채운다.
-  // ticks는 링 위 경계 눈금(예: 등급 기준). 다 차면 링이 한 번 빛난다.
-  const RING = 2 * Math.PI * 50;
-  let ringParts = null;
-  window.setRing = (ratio, { ticks = [] } = {}) => {
-    const card = document.querySelector('.result-card');
-    const main = card?.querySelector('.result-main');
-    if (!main) return;
-    if (!ringParts) {
-      const at = t => { const a = t * 2 * Math.PI; return [60 + Math.cos(a) * 41, 60 + Math.sin(a) * 41, 60 + Math.cos(a) * 59, 60 + Math.sin(a) * 59].map(n => n.toFixed(2)); };
-      const svg = (cls, extra = '') => `<svg class="${cls}" viewBox="0 0 120 120" aria-hidden="true" focusable="false">${extra}<circle class="ring-track" cx="60" cy="60" r="50"/><circle class="ring-fill" cx="60" cy="60" r="50" stroke-dasharray="${RING.toFixed(2)}" stroke-dashoffset="${RING.toFixed(2)}"/>`;
-      const big = make('div', 'ring');
-      big.innerHTML = svg('ring-svg', '<defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0"/><stop offset="1"/></linearGradient></defs>')
-        + ticks.map(t => { const [x1, y1, x2, y2] = at(t); return `<line class="ring-tick" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`; }).join('') + '</svg>';
-      main.prepend(big);
-      card.classList.add('has-ring');
-      const bar = document.querySelector('.bar-main');
-      const small = bar ? make('span', 'bar-ring') : null;
-      if (small) { small.innerHTML = svg('ring-svg') + '</svg>'; bar.prepend(small); }
-      ringParts = { big, fills: [big, small].filter(Boolean).map(el => el.querySelector('.ring-fill')) };
-      void big.offsetWidth; // 빈 링에서 채워지며 시작하도록 첫 상태를 확정한다
-    }
-    const r = Math.max(0, Math.min(1, Number(ratio) || 0));
-    ringParts.fills.forEach(fill => { fill.style.strokeDashoffset = (RING * (1 - r)).toFixed(2); });
-    ringParts.big.classList.toggle('is-full', r >= .999);
-  };
-
   const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   const make = (tag, className, text) => {
     const node = document.createElement(tag);
@@ -365,25 +338,15 @@
     addEventListener('load', () => navigator.serviceWorker.register('/app-sw.js').catch(() => {}));
   }
 
-  // 길찾기: 도구 페이지 제목 아래에 도구 줄(휴대폰), 페이지 끝에 다른 도구 모음. 목록은 내비게이션 링크를 복제해 쓴다.
+  // 길찾기: 도구 페이지 제목 아래에 도구 줄(휴대폰). 목록은 내비게이션 링크를 복제해 쓴다.
   function setupToolLinks() {
     const links = [...document.querySelectorAll('#toolMenu .tool')];
     const head = document.querySelector('.page-head');
-    const main = document.querySelector('main.page');
-    if (!links.length || !head || !main || !document.body.dataset.app) return;
+    if (!links.length || !head || !document.body.dataset.app) return;
     const strip = make('nav', 'tool-strip');
     strip.setAttribute('aria-label', '도구 바로가기');
     strip.append(...links.map(link => link.cloneNode(true)));
     head.after(strip);
-
-    const more = make('section', 'more-tools');
-    const title = make('h2', '', '다른 도구');
-    title.id = 'moreToolsTitle';
-    more.setAttribute('aria-labelledby', title.id);
-    const grid = make('div', 'more-tools-grid');
-    grid.append(...links.filter(link => !link.hasAttribute('aria-current')).map(link => link.cloneNode(true)));
-    more.append(title, grid);
-    main.append(more);
   }
 
   function init() { setupThemeToggle(); setupToolMenu(); setupBarSize(); setupToolLinks(); lens(document.querySelector('.appbar-inner'), 14, 30); }
