@@ -133,8 +133,10 @@
 
   // 유리 가장자리 굴절: 가장자리 띠에서 뒤 화면이 휘어 보이게 요소 크기에 맞춘 SVG 변위 필터를 만든다.
   // backdrop-filter에 SVG 필터를 거는 건 크로미움만 되므로 거기서만 켠다. 나머지는 CSS의 흐림 유리로 남는다.
+  // 휴대폰 폭에서는 끈다: 바가 스크롤·입력마다 크기를 바꿔 매 프레임 변위 지도를 다시 그리느라 입력과 스크롤이 버벅인다.
   const SVG_NS = 'http://www.w3.org/2000/svg';
-  const canLens = 'ResizeObserver' in window && !!navigator.userAgentData?.brands?.some(brand => brand.brand === 'Chromium');
+  const canLens = 'ResizeObserver' in window && !!navigator.userAgentData?.brands?.some(brand => brand.brand === 'Chromium')
+    && !matchMedia('(max-width: 959px)').matches;
   let lensDefs = null, lensCount = 0;
   // 가운데는 128(변위 없음), 가장자리로 갈수록 0·255로 기울어 바깥쪽을 끌어온다. R은 가로, G는 세로.
   const edgeMap = (w, h, axis, band) => {
