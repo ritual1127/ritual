@@ -77,6 +77,8 @@ body {
 }
 h1, h2, h3, p, ul, ol, figure, dl, dd { margin: 0; }
 h1, h2, h3 { font-weight: 600; }
+h1, h2, h3, summary { text-wrap: balance; }
+p, li { text-wrap: pretty; }
 ul, ol { padding: 0; }
 a { color: var(--primary); text-decoration: none; }
 a:hover { text-decoration: underline; }
@@ -250,7 +252,8 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
 }
 /* 좁은 PC: 도구 8개가 로고·다크 모드 버튼을 밀어내지 않게 간격만 줄인다 */
 @media (min-width: 960px) and (max-width: 1179px) {
-  .tools { gap: 0; }
+  .appbar-inner { grid-template-columns: auto 1fr auto; }
+  .tools { gap: 0; justify-self: center; }
   .tool { gap: 4px; padding: 0 9px 0 7px; }
   .tools-sep { margin: 0 4px; }
 }
@@ -356,7 +359,7 @@ body[data-app] .page-head h1 { font-size: 22px; line-height: 1.2; letter-spacing
   transition: border-color .15s, box-shadow .15s, background-color .15s; -webkit-appearance: none; appearance: none;
 }
 .input:focus, .input:focus-visible { outline: none; border-color: var(--focus); box-shadow: 0 0 0 1px var(--focus); }
-.input::placeholder { color: var(--ink-3); opacity: 1; }
+.input::placeholder { color: var(--ink-2); opacity: 1; }
 .input[aria-invalid="true"] { border-color: var(--bad); background-color: var(--bad-soft); }
 .input[aria-invalid="true"]:focus { box-shadow: 0 0 0 1px var(--bad); }
 .input[type="number"] { -moz-appearance: textfield; }
@@ -452,7 +455,7 @@ select.input {
 .result-note { margin-top: 14px; font-size: 17px; font-weight: 600; color: var(--ink); }
 .result-card[data-state="warn"] .result-note, .result-card[data-state="bad"] .result-note { color: var(--bad); }
 .result-card[data-state="empty"] .result-note { color: var(--ink-2); font-weight: 400; }
-.result-meta { margin-top: 4px; font-size: 14px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.result-meta { margin-top: 4px; font-size: 14px; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: pre-line; }
 .result-divider { margin: 20px 0 0; border: 0; border-top: 1px solid var(--hairline); }
 
 details.formula { margin-top: 12px; }
@@ -493,7 +496,7 @@ details.formula p { margin-top: 4px; padding: 12px 14px; border-radius: 11px; ba
 .table tr:last-child td { border-bottom: 0; }
 .table .num { text-align: right; white-space: nowrap; }
 .table tr.is-hit td { font-weight: 600; color: var(--ink); background: var(--parchment); }
-.table .chip[data-grade] { width: 30px; min-height: 30px; padding: 0; justify-content: center; border-radius: 9px; background: var(--fill); color: var(--ink-2); font-weight: 700; }
+.table .chip[data-grade] { width: 30px; min-height: 30px; padding: 0; justify-content: center; border-radius: 9px; background: var(--fill); color: var(--ink-80); font-weight: 700; }
 .table tr.is-hit .chip[data-grade] { background: var(--app-pill); color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
 .table td.good { font-weight: 600; }
 .table td.bad { color: var(--bad); }
@@ -531,9 +534,12 @@ details.formula p { margin-top: 4px; padding: 12px 14px; border-radius: 11px; ba
 .note h2:first-child { margin-top: 0; }
 .note p { margin-top: 8px; font-size: 15px; line-height: 1.6; }
 .note strong { font-weight: 600; color: var(--ink); }
+/* 긴 글은 한 줄이 너무 길어지지 않게: 넓은 화면에서 줄 끝까지 눈이 멀어지지 않도록. 도구 본문과 표는 입력 칸 폭(584px)에 맞춘다 */
+.note p, .note .table-wrap { max-width: 584px; }
+.prose p, .prose li { max-width: 42em; }
 .more-link { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; font-size: 15px; }
 .more-link::after { content: ""; width: 7px; height: 7px; margin-left: 6px; border-top: 1.5px solid currentColor; border-right: 1.5px solid currentColor; transform: rotate(45deg); }
-.examples { display: grid; gap: 4px 24px; margin-top: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.examples { display: grid; gap: 14px 24px; margin-top: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
 .examples h3 { font-size: 15px; color: var(--ink); }
 .examples p { margin-top: 2px; font-size: 15px; }
 details.faq { border-top: 1px solid var(--divider); }
@@ -825,8 +831,8 @@ details.faq p { padding: 0 0 16px; margin: 0; font-size: 15px; line-height: 1.6;
 /* ── 길찾기(휴대폰): 제목 아래 같은 묶음 도구를 글자 탭으로. 지금 도구만 진하게 + 밑줄 ── */
 .tool-seg { display: grid; grid-template-columns: repeat(var(--n), auto); margin: -4px 0 28px; border-bottom: 1px solid var(--hairline); }
 .tool-seg a {
-  display: grid; place-items: center; min-width: 0; min-height: 44px; padding: 0 2px;
-  color: var(--ink-2); font-size: clamp(12px, 3.6vw, 15px); letter-spacing: -.02em; white-space: nowrap; box-shadow: inset 0 -2px 0 transparent; transition: color .2s, box-shadow .2s;
+  display: grid; place-items: center; min-width: 40px; min-height: 44px; padding: 0 2px;
+  color: var(--ink-2); font-size: clamp(12px, 3.7vw, 15px); letter-spacing: -.02em; white-space: nowrap; box-shadow: inset 0 -2px 0 transparent; transition: color .2s, box-shadow .2s;
 }
 .tool-seg a:hover { text-decoration: none; color: var(--ink); }
 .tool-seg a[aria-current="page"] { color: var(--ink); font-weight: 600; box-shadow: inset 0 -2px 0 var(--ink); }
@@ -838,15 +844,16 @@ a.season:hover { text-decoration: none; border-color: var(--divider); }
 a.season::after { content: ""; flex: none; width: 7px; height: 7px; margin-left: 2px; border-top: 1.5px solid var(--ink-3); border-right: 1.5px solid var(--ink-3); transform: rotate(45deg); }
 .season-tag { flex: none; padding: 5px 10px; border-radius: 999px; background: var(--chip); font-size: 13px; font-weight: 600; line-height: 1.2; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .season-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 아주 좁은 폰: 긴 문구를 말줄임으로 자르지 않고 두 줄로 */
+@media (max-width: 359px) { .season-text { white-space: normal; } }
 .tool-seg + .season { margin-top: -12px; }
 @media (min-width: 960px) { .tool-seg + .season { margin-top: 0; } }
 
-/* ── 수능 최저 계산기: 영역 줄은 이름 | 원점수 | 등급, 등급 칸은 늘 3열에 맞춘다 ── */
-.sn-rows { display: grid; gap: 8px; }
+/* ── 수능 최저 계산기: 영역 줄은 이름 | 등급 | 원점수. 등급 칸을 이름 바로 옆 한 세로줄에 둔다 ── */
+.sn-rows { display: grid; gap: 8px; max-width: 584px; }
 .sn-row { display: grid; grid-template-columns: 52px minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: center; }
-.sn-row > select { grid-column: 3; }
 .sn-name { font-size: 15px; font-weight: 600; color: var(--ink-80); white-space: nowrap; }
-.sn-fields { display: grid; gap: 16px; }
+.sn-fields { display: grid; gap: 16px; max-width: 584px; }
 .sn-rule { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 15px; color: var(--ink-80); }
 .sn-rule .input { flex: none; width: 72px; }
 .sn-rule #ruleMode { width: 104px; }
@@ -857,6 +864,15 @@ a.season::after { content: ""; flex: none; width: 7px; height: 7px; margin-left:
 .grade[data-status="met"] { background: color-mix(in srgb, var(--good) 14%, transparent); color: var(--good); }
 .grade[data-status="unmet"] { background: var(--bad-soft); color: var(--bad); }
 .note .table tr.is-hit td { background: var(--fill); }
+/* 하단 바 알약도 상태 색으로: 라이트·다크 같은 모양, 흰 글씨 대비 5:1 */
+.bar-badge[data-status="met"] { background: #008009; }
+.bar-badge[data-status="unmet"] { background: #D70015; }
+/* 흔한 안드로이드 폭(360)에서도 기준 문장이 한 줄에 들어가게 */
+@media (max-width: 389px) {
+  .sn-rule, .sn-keep { gap: 6px; }
+  .sn-rule .input { width: 62px; padding: 0 24px 0 12px; }
+  .sn-rule #ruleMode { width: 94px; }
+}
 
 /* ── 앱 알리기: 안드로이드 브라우저에서 페이지 끝 카드(출시 후 site-nav.js의 PLAY_ID를 채우면 보인다) ── */
 .app-promo { display: flex; align-items: center; gap: 12px; margin-top: 40px; padding: 12px 12px 12px 16px; border: 1px solid var(--hairline); border-radius: 18px; background: var(--canvas); }
@@ -874,7 +890,7 @@ a.season::after { content: ""; flex: none; width: 7px; height: 7px; margin-left:
 }
 .site-footer::before { content: ""; display: block; height: 1px; margin-bottom: 12px; background: var(--divider); }
 .footer-links { display: flex; flex-wrap: wrap; align-items: center; }
-.footer-links a { display: inline-flex; align-items: center; min-height: 36px; color: var(--ink-80); font-size: 12px; }
+.footer-links a { display: inline-flex; align-items: center; min-height: 40px; color: var(--ink-80); font-size: 12px; }
 .footer-links a + a::before { content: ""; width: 1px; height: 12px; margin: 0 10px; background: var(--divider); }
 /* 좁은 화면에서는 링크가 두 줄로 넘어가 줄 첫머리에 구분선이 남으므로 구분선 대신 간격을 둔다 */
 @media (max-width: 733px) { .footer-links { column-gap: 20px; } .footer-links a + a::before { content: none; } }

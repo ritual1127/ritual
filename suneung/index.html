@@ -20,10 +20,10 @@
   <link rel="icon" href="../icon-192.png?v=6">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="../styles.css?v=20261105a">
-  <script src="../site-nav.js?v=20261105a"></script>
-  <script src="../season.js?v=20261105a" defer></script>
-  <script src="../assistant.js?v=20261105a" defer></script>
+  <link rel="stylesheet" href="../styles.css?v=20261105b">
+  <script src="../site-nav.js?v=20261105b"></script>
+  <script src="../season.js?v=20261105b" defer></script>
+  <script src="../assistant.js?v=20261105b" defer></script>
 </head>
 <body data-app="suneung">
   <a class="skip-link" href="#main">본문 바로가기</a>
@@ -64,8 +64,8 @@
           <div class="sn-rows">
             <div class="sn-row"><span class="sn-name">국어</span><select class="input" data-grade="kor" aria-label="국어 등급"></select></div>
             <div class="sn-row"><span class="sn-name">수학</span><select class="input" data-grade="math" aria-label="수학 등급"></select></div>
-            <div class="sn-row"><span class="sn-name">영어</span><span class="input-wrap"><input class="input" data-raw="eng" type="number" min="0" step="1" inputmode="numeric" enterkeyhint="next" placeholder="원점수" aria-label="영어 원점수"><span class="unit">점</span></span><select class="input" data-grade="eng" aria-label="영어 등급"></select></div>
-            <div class="sn-row"><span class="sn-name">한국사</span><span class="input-wrap"><input class="input" data-raw="hist" type="number" min="0" step="1" inputmode="numeric" enterkeyhint="next" placeholder="원점수" aria-label="한국사 원점수"><span class="unit">점</span></span><select class="input" data-grade="hist" aria-label="한국사 등급"></select></div>
+            <div class="sn-row"><span class="sn-name">영어</span><select class="input" data-grade="eng" aria-label="영어 등급"></select><span class="input-wrap"><input class="input" data-raw="eng" type="number" min="0" step="1" inputmode="numeric" enterkeyhint="next" placeholder="원점수" aria-label="영어 원점수"><span class="unit">점</span></span></div>
+            <div class="sn-row"><span class="sn-name">한국사</span><select class="input" data-grade="hist" aria-label="한국사 등급"></select><span class="input-wrap"><input class="input" data-raw="hist" type="number" min="0" step="1" inputmode="numeric" enterkeyhint="next" placeholder="원점수" aria-label="한국사 원점수"><span class="unit">점</span></span></div>
             <div class="sn-row"><span class="sn-name">탐구 1</span><select class="input" data-grade="inq1" aria-label="탐구 1 등급"></select></div>
             <div class="sn-row"><span class="sn-name">탐구 2</span><select class="input" data-grade="inq2" aria-label="탐구 2 등급"></select></div>
           </div>
@@ -117,7 +117,7 @@
 
     <section class="note" aria-labelledby="howTitle">
       <h2 id="howTitle">수능 최저학력기준 계산법</h2>
-      <p>수능 최저학력기준은 수시 합격에 필요한 최소 수능 등급이에요. 보통 <strong>국어·수학·영어·탐구 중 3개 영역 등급 합 6 이내</strong>처럼 정해지고, 좋은 등급부터 골라 더한 값을 기준과 비교해요. 대학·전형마다 조건이 다르니 모집요강을 그대로 옮겨 넣으세요.</p>
+      <p>수능 최저학력기준은 수시 합격에 필요한 최소 수능 등급이에요. 보통 <strong>국어·수학·영어·탐구 중 3개 영역 등급 합 6 이내</strong>처럼 정해지고, 좋은 등급부터 골라 더한 값을 기준과 비교해요. 대학과 전형마다 조건이 다르니 모집요강을 그대로 옮겨 넣으세요.</p>
       <div class="examples"><article><h3>3개 합 6</h3><p>국어 2, 수학 4, 영어 2, 탐구 1이면 좋은 셋의 합이 5라서 충족이에요.</p></article><article><h3>탐구 평균 버림</h3><p>탐구가 2등급·3등급이면 평균 2.5, 버리면 2예요. 국어 2, 영어 2와 더해 합 6이에요.</p></article><article><h3>수학 포함 2개 합 4</h3><p>국어 1, 수학 3이면 수학 3에 가장 좋은 국어 1을 더해 합 4로 충족이에요.</p></article></div>
 
       <h2 id="absTitle">영어·한국사 절대평가 등급</h2>
@@ -184,7 +184,7 @@
     <p class="copyright">© 2026 성적 계산기</p>
   </footer>
 
-  <script src="../calc-core.js?v=20261105a"></script>
+  <script src="../calc-core.js?v=20261105b"></script>
   <script>
     (() => {
       const $ = id => document.getElementById(id);
@@ -288,6 +288,7 @@
           card.classList.add('is-fresh');
         }
         setMiniResult(mini);
+        document.querySelector('.bar-badge').dataset.status = status;
       }
 
       function pendingNote({ missing, need, have }) {
@@ -324,9 +325,9 @@
         const unsetText = result.gap > 0 && result.histOk !== false && unset.length ? `${unset.join('·')} 등급을 넣으면 달라질 수 있어요` : '';
         const shownParts = each ? parts.join(' · ') : sumText;
         const note = lacking || (result.histOk === false ? histText : shownParts);
-        const metaItems = lacking || result.histOk === false ? [shownParts, ruleText] : [ruleText];
-        if (histText && note !== histText) metaItems.push(histText);
-        if (unsetText) metaItems.push(unsetText);
+        // 풀이·한국사·안내를 한 줄에 이어 붙이면 끊어 읽기 어려워 항목마다 줄을 나눈다.
+        const solved = each ? [shownParts, ruleText] : [`${shownParts} · ${ruleText}`];
+        const metaLines = [...(lacking || result.histOk === false ? solved : [ruleText]), note === histText ? '' : histText, unsetText].filter(Boolean);
         cheer(met);
         show('done', {
           label: each ? `${rule.limit}등급 이내 영역` : `등급 합 (${rule.count}개 영역)`,
@@ -334,7 +335,7 @@
           unit: each ? '개' : '',
           status: result.status,
           note,
-          meta: metaItems.join(' · '),
+          meta: metaLines.join('\n'),
           mini: `${each ? `${result.within}개` : `합 ${formatNumber(result.sum)}`} · ${met ? '충족' : '미충족'}`
         });
       }

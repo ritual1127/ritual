@@ -169,7 +169,7 @@ const guides = [
     title: '수능 영어·한국사 절대평가 등급표',
     description: '수능 영어는 원점수 10점 간격, 한국사는 5점 간격으로 등급이 정해집니다. 등급별 원점수 구간표와 제2외국어·한문 기준, 표준점수가 없는 이유, 대학 반영 방식을 정리합니다.',
     tagline: '영어·한국사는 다른 수험생 성적과 상관없이 원점수 구간만으로 등급이 정해집니다.',
-    intro: '국어·수학·탐구는 전체 응시자 안에서의 위치로 등급을 매기는 상대평가지만, 영어·한국사·제2외국어·한문은 정해진 점수를 넘으면 그 등급을 받는 절대평가입니다. 그래서 가채점만 해도 등급을 바로 알 수 있습니다.',
+    intro: '국어·수학·탐구는 전체 응시자 안에서의 위치로 등급을 매기는 상대평가지만, 영어, 한국사, 제2외국어·한문은 정해진 점수를 넘으면 그 등급을 받는 절대평가입니다. 그래서 가채점만 해도 등급을 바로 알 수 있습니다.',
     sections: [
       ['영어 등급표(100점 만점)', `<p>10점 간격입니다. 90점 이상이면 1등급, 80점 이상이면 2등급이고 20점 미만은 9등급입니다.</p>${gradeTable([90, 80, 70, 60, 50, 40, 30, 20], 100)}`],
       ['한국사 등급표(50점 만점)', `<p>5점 간격입니다. 40점 이상이면 1등급이고 5점 미만은 9등급입니다.</p>${gradeTable([40, 35, 30, 25, 20, 15, 10, 5], 50)}`],
@@ -257,10 +257,10 @@ function render(g) {
   <link rel="icon" href="../../icon-192.png?v=6">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="../../styles.css?v=20261105a">
-  <script src="../../site-nav.js?v=20261105a"></script>
-  <script src="../../season.js?v=20261105a" defer></script>
-  <script src="../../assistant.js?v=20261105a" defer></script>
+  <link rel="stylesheet" href="../../styles.css?v=20261105b">
+  <script src="../../site-nav.js?v=20261105b"></script>
+  <script src="../../season.js?v=20261105b" defer></script>
+  <script src="../../assistant.js?v=20261105b" defer></script>
   <script type="application/ld+json">${schema}</script>
 </head>
 <body>
