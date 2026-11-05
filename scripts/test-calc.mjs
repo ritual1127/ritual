@@ -112,4 +112,36 @@ r = m({ kor: 1, math: 1, eng: 1 }, { areas: ['kor', 'math'], count: 3 }); assert
 // 꺼진 영역은 등급이 있어도 고르지 않는다
 r = m({ kor: 1, math: 9, eng: 1, inq1: 1 }, { areas: ['kor', 'math', 'inq'], count: 2, limit: 2 }); assert.equal(r.status, 'met'); assert.deepEqual(r.picked.map(p => p.area), ['kor', 'inq']);
 
+// 시즌 안내·수능 D-day(season.js는 document가 없으면 화면을 건드리지 않는다)
+const sctx = vm.createContext({});
+vm.runInContext(fs.readFileSync(new URL('../season.js', import.meta.url), 'utf8'), sctx);
+const s = vm.runInContext('({ SUNEUNG_DATES, seasonFor, suneungLine })', sctx);
+for (const [exam, score] of s.SUNEUNG_DATES) { assert.equal(new Date(exam + 'T00:00').getDay(), 4); assert.equal(new Date(score + 'T00:00').getDay(), 5); assert.ok(score > exam); }
+const sf = d => plain(s.seasonFor(d));
+assert.deepEqual(sf('2026-11-05'), { tag: 'D-14', text: '수능 가채점·최저 계산기', href: '/suneung/' });
+assert.equal(sf('2026-10-20').tag, 'D-30'); assert.equal(sf('2026-10-19'), null); assert.equal(sf('2026-11-18').tag, 'D-1');
+assert.equal(sf('2026-11-19').tag, '오늘'); assert.equal(sf('2026-11-20').tag, '가채점'); assert.equal(sf('2026-11-23').tag, '가채점');
+assert.deepEqual(sf('2026-11-24'), { tag: '기말', text: '기말고사 목표 점수 계산', href: '/target-score/' });
+assert.equal(sf('2026-12-10').tag, '기말');
+assert.equal(sf('2026-12-11').tag, '발표'); assert.equal(sf('2026-12-14').tag, '발표'); assert.equal(sf('2026-12-15').href, '/rank/');
+assert.equal(sf('2027-01-15'), null); assert.equal(sf('2027-03-25').href, '/suneung/'); assert.equal(sf('2027-04-11').tag, '중간');
+assert.equal(sf('2027-06-12').tag, '모평'); assert.equal(sf('2027-06-13').tag, '기말'); assert.equal(sf('2027-07-31').href, '/rank/');
+assert.equal(sf('2027-08-20').tag, '모평'); assert.equal(sf('2027-10-18').tag, '중간'); assert.equal(sf('2027-10-19').tag, 'D-30');
+assert.equal(sf('2027-11-22').tag, '가채점'); assert.equal(sf('2027-11-23'), null); assert.equal(sf('2027-12-13').tag, '발표'); assert.equal(sf('2027-12-14').href, '/rank/');
+const sl = (...a) => plain(s.suneungLine(new Date(...a)));
+assert.deepEqual(sl(2026, 10, 5, 9), { tag: 'D-14', text: '2027학년도 수능 · 11월 19일(목)', period: null });
+assert.deepEqual(sl(2026, 10, 19, 7, 30), { tag: '오늘', text: '08:10까지 입실', period: 'enter' });
+assert.deepEqual(sl(2026, 10, 19, 8, 10), { tag: '오늘', text: '다음 1교시 국어 08:40', period: '1' });
+assert.deepEqual(sl(2026, 10, 19, 10, 15), { tag: '오늘', text: '다음 2교시 수학 10:30', period: '2' });
+assert.deepEqual(sl(2026, 10, 19, 10, 45), { tag: '오늘', text: '지금 2교시 수학 · 12:10 종료', period: '2' });
+assert.deepEqual(sl(2026, 10, 19, 12, 30), { tag: '오늘', text: '다음 3교시 영어 13:10', period: 'lunch' });
+assert.equal(sl(2026, 10, 19, 13, 5).period, '3');
+assert.deepEqual(sl(2026, 10, 19, 16, 36), { tag: '오늘', text: '지금 4교시 한국사·탐구 · 16:37 종료', period: '4' });
+assert.deepEqual(sl(2026, 10, 19, 17, 44), { tag: '오늘', text: '지금 5교시 제2외국어·한문 · 17:45 종료', period: '5' });
+assert.deepEqual(sl(2026, 10, 19, 17, 45), { tag: '오늘', text: '시험 끝 · 수고했어요', period: 'done' });
+assert.deepEqual(sl(2026, 10, 20, 9), { tag: 'D-21', text: '수능 성적 통지 · 12월 11일(금)', period: null });
+assert.deepEqual(sl(2026, 11, 11, 9), { tag: '오늘', text: '수능 성적 통지일', period: null });
+assert.deepEqual(sl(2026, 11, 12, 9), { tag: 'D-341', text: '2028학년도 수능 · 2027년 11월 18일(목)', period: null });
+assert.equal(s.suneungLine(new Date(2027, 11, 11, 9)), null);
+
 console.log('계산 함수 자체 점검 통과');
