@@ -6,7 +6,7 @@ const context = vm.createContext({});
 vm.runInContext(fs.readFileSync(new URL('../calc-core.js', import.meta.url), 'utf8'), context);
 // vm 안에서 만든 객체는 프로토타입이 달라 deepEqual 전에 현재 realm 객체로 옮긴다.
 const plain = value => JSON.parse(JSON.stringify(value));
-const c = vm.runInContext('({ formatNumber, fixedNumber, gradeFor, nextGradeGap, weightedSum, ceil2, requiredScore, rankPercentile, rankGrade, rankTier, rankRowStatus, mapGrade, gpaSummary, convertGpa, projectedScore })', context);
+const c = vm.runInContext('({ formatNumber, fixedNumber, gradeFor, nextGradeGap, weightedSum, ceil2, requiredScore, rankPercentile, rankGrade, rankTier, rankRowStatus, mapGrade, gpaSummary, convertGpa, projectedScore, absGrade, suneungMinimum })', context);
 
 // 수행·지필
 assert.equal(c.weightedSum([{ score: 90, weight: 40 }, { score: 80, weight: 30 }, { score: 70, weight: 30 }]), 81);
@@ -71,5 +71,45 @@ assert.equal(c.convertGpa(1, 0, 4.3), null);
 assert.equal(c.projectedScore(51, 40, 97.5), 90);
 assert.equal(c.projectedScore(51, 40, 100), 91);
 assert.equal(c.projectedScore(51, 40, 0), 51);
+
+// 수능: 절대평가 등급
+assert.equal(c.absGrade('english', 100), 1); assert.equal(c.absGrade('english', 90), 1); assert.equal(c.absGrade('english', 89), 2);
+assert.equal(c.absGrade('english', 20), 8); assert.equal(c.absGrade('english', 19), 9); assert.equal(c.absGrade('english', 0), 9);
+assert.equal(c.absGrade('english', 101), null); assert.equal(c.absGrade('english', null), null); assert.equal(c.absGrade('english', NaN), null);
+assert.equal(c.absGrade('history', 50), 1); assert.equal(c.absGrade('history', 40), 1); assert.equal(c.absGrade('history', 39), 2);
+assert.equal(c.absGrade('history', 5), 8); assert.equal(c.absGrade('history', 4), 9); assert.equal(c.absGrade('history', 51), null); assert.equal(c.absGrade('history', -1), null);
+
+// 수능: 최저 충족
+const G = o => ({ kor: null, math: null, eng: null, hist: null, inq1: null, inq2: null, ...o });
+const R = o => ({ areas: ['kor', 'math', 'eng', 'inq'], count: 3, mode: 'sum', limit: 6, inq: 'best', must: '', hist: 0, ...o });
+const m = (g, r) => plain(c.suneungMinimum(G(g), R(r)));
+let r = m({ kor: 2, math: 4, eng: 2, inq1: 1, inq2: 3 });
+assert.equal(r.status, 'met'); assert.equal(r.sum, 5); assert.deepEqual(r.picked.map(p => p.area), ['inq', 'kor', 'eng']);
+r = m({ kor: 3, math: 4, eng: 3, inq1: 3 }); assert.equal(r.status, 'unmet'); assert.equal(r.gap, 3);
+// 탐구 평균·버림
+r = m({ kor: 2, eng: 2, inq1: 2, inq2: 3 }, { inq: 'avgFloor' }); assert.equal(r.status, 'met'); assert.equal(r.sum, 6); assert.equal(r.inqValue, 2);
+r = m({ kor: 2, eng: 2, inq1: 2, inq2: 3 }, { inq: 'avg' }); assert.equal(r.status, 'unmet'); assert.equal(r.sum, 6.5); assert.equal(r.gap, 0.5);
+r = m({ kor: 2, eng: 1, inq1: 2, inq2: 3 }, { inq: 'avg' }); assert.equal(r.sum, 5.5); assert.equal(r.status, 'met');
+// 평균은 두 과목이 다 있어야 한다: 한 과목으로 몰래 계산하지 않는다
+r = m({ kor: 1, math: 2, eng: 2, inq1: 1 }, { inq: 'avg' }); assert.equal(r.status, 'met'); assert.ok(!r.picked.some(p => p.area === 'inq'));
+r = m({ kor: 1, eng: 2, inq1: 1 }, { inq: 'avg' }); assert.equal(r.status, 'pending'); assert.ok(r.missing.includes('inq'));
+// 필수 영역
+r = m({ kor: 1, math: 3, eng: 1, inq1: 1 }, { count: 2, limit: 4, must: 'math' }); assert.equal(r.status, 'met'); assert.deepEqual(r.picked.map(p => p.area), ['math', 'kor']);
+r = m({ kor: 1, math: 3, eng: 1, inq1: 1 }, { count: 2, limit: 3, must: 'math' }); assert.equal(r.status, 'unmet'); assert.equal(r.gap, 1);
+r = m({ kor: 1, eng: 1, inq1: 1 }, { count: 2, must: 'math' }); assert.equal(r.status, 'pending'); assert.ok(r.missing.includes('must'));
+r = m({ kor: 1, eng: 1 }, { areas: ['kor', 'eng'], count: 2, limit: 2, must: 'math' }); assert.equal(r.status, 'met'); // 꺼진 영역은 필수로 치지 않는다
+// 각각 조건
+r = m({ kor: 1, math: 3, eng: 2, inq1: 2 }, { mode: 'each', limit: 2 }); assert.equal(r.status, 'met'); assert.equal(r.within, 3);
+r = m({ kor: 1, math: 3, eng: 3, inq1: 2 }, { mode: 'each', limit: 2 }); assert.equal(r.status, 'unmet'); assert.equal(r.within, 2); assert.equal(r.gap, 1);
+// 한국사 조건
+r = m({ kor: 1, math: 1, eng: 1, inq1: 1, hist: 5 }, { hist: 4 }); assert.equal(r.status, 'unmet'); assert.equal(r.histOk, false);
+r = m({ kor: 1, math: 1, eng: 1, inq1: 1 }, { hist: 4 }); assert.equal(r.status, 'pending'); assert.ok(r.missing.includes('hist'));
+r = m({ kor: 1, math: 1, eng: 1, inq1: 1, hist: 4 }, { hist: 4 }); assert.equal(r.status, 'met'); assert.equal(r.histOk, true);
+r = m({ kor: 1, math: 1, eng: 1, inq1: 1, hist: 9 }); assert.equal(r.status, 'met'); assert.equal(r.histOk, null); // 조건 없으면 한국사는 보지 않는다
+// 입력 부족·잘못된 조건
+r = m({ kor: 2, eng: 2 }); assert.equal(r.status, 'pending'); assert.ok(r.missing.includes('count')); assert.equal(r.need, 3); assert.equal(r.have, 2);
+r = m({ kor: 1, math: 1, eng: 1 }, { areas: ['kor', 'math'], count: 3 }); assert.equal(r.status, 'invalid');
+// 꺼진 영역은 등급이 있어도 고르지 않는다
+r = m({ kor: 1, math: 9, eng: 1, inq1: 1 }, { areas: ['kor', 'math', 'inq'], count: 2, limit: 2 }); assert.equal(r.status, 'met'); assert.deepEqual(r.picked.map(p => p.area), ['kor', 'inq']);
 
 console.log('계산 함수 자체 점검 통과');

@@ -84,3 +84,54 @@ function convertGpa(value, fromScale, toScale) {
   if (![value, fromScale, toScale].every(Number.isFinite) || fromScale <= 0 || toScale <= 0 || value < 0 || value > fromScale) return null;
   return value / fromScale * toScale;
 }
+
+// 수능 절대평가: 1~8등급 원점수 하한(그 아래는 9등급).
+const SUNEUNG_ABS = {
+  english: { max: 100, cuts: [90, 80, 70, 60, 50, 40, 30, 20] },
+  history: { max: 50, cuts: [40, 35, 30, 25, 20, 15, 10, 5] }
+};
+
+function absGrade(subject, score) {
+  const table = SUNEUNG_ABS[subject];
+  if (!table || typeof score !== 'number' || !(score >= 0 && score <= table.max)) return null;
+  const index = table.cuts.findIndex(min => score >= min);
+  return index === -1 ? 9 : index + 1;
+}
+
+// 수능 최저 충족 여부. 켠 영역에서 필수 영역을 먼저 넣고 나머지는 좋은 등급부터 count개를 고른다.
+// 탐구 평균은 두 과목이 다 있어야 값이 생긴다(한 과목으로 몰래 계산하지 않는다).
+function suneungMinimum(grades, rule) {
+  const areas = ['kor', 'math', 'eng', 'inq'].filter(area => rule.areas.includes(area));
+  if (!(rule.count >= 1) || rule.count > areas.length) return { status: 'invalid' };
+  const inqs = [grades.inq1, grades.inq2].filter(Boolean);
+  let inqValue = null;
+  if (rule.inq === 'best' && inqs.length) inqValue = Math.min(...inqs);
+  else if (rule.inq !== 'best' && inqs.length === 2) {
+    inqValue = (inqs[0] + inqs[1]) / 2;
+    if (rule.inq === 'avgFloor') inqValue = Math.floor(inqValue);
+  }
+  const value = area => (area === 'inq' ? inqValue : grades[area]) || null;
+  const must = areas.includes(rule.must) ? rule.must : '';
+  const ready = areas.filter(area => value(area) !== null);
+
+  const missing = [];
+  const pending = ready.length < rule.count || (must && value(must) === null) || (rule.hist > 0 && !grades.hist);
+  if (pending) {
+    if (areas.includes('inq') && rule.inq !== 'best' && inqs.length === 1) missing.push('inq');
+    if (must && value(must) === null) missing.push('must');
+    if (ready.length < rule.count) missing.push('count');
+    if (rule.hist > 0 && !grades.hist) missing.push('hist');
+    return { status: 'pending', missing, need: rule.count, have: ready.length };
+  }
+
+  // sort는 안정 정렬이라 같은 등급이면 국어·수학·영어·탐구 순서가 유지된다.
+  const rest = ready.filter(area => area !== must).sort((a, b) => value(a) - value(b));
+  const picked = (must ? [must, ...rest] : rest).slice(0, rule.count).map(area => ({ area, grade: value(area) }));
+  const sum = roundFloat(picked.reduce((total, item) => total + item.grade, 0));
+  const within = picked.filter(item => item.grade <= rule.limit).length;
+  const each = rule.mode === 'each';
+  const gap = each ? rule.count - within : roundFloat(Math.max(0, sum - rule.limit));
+  const histOk = rule.hist > 0 ? grades.hist <= rule.hist : null;
+  const passed = each ? within === rule.count : sum <= rule.limit;
+  return { status: passed && histOk !== false ? 'met' : 'unmet', picked, sum, within, gap, histOk, inqValue };
+}
