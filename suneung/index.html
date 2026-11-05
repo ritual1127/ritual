@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+  <title>수능 최저 계산기 - 2027 수능 가채점 등급·최저 충족 확인 | 성적 계산기</title>
+  <meta name="description" content="2027학년도 수능은 11월 19일(목)이에요. 가채점 등급을 넣으면 수시 수능 최저학력기준을 채웠는지 바로 확인해요. 영어·한국사는 원점수로 등급 자동 계산, D-day와 시간표까지 무료예요.">
+  <meta name="keywords" content="수능 최저 계산기, 수능 최저학력기준, 수능 가채점, 가채점 등급, 3합 6, 수능 D-day, 수능 시간표, 2027 수능, 수능 영어 등급, 수능 한국사 등급">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://naver1.cloud/suneung/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="수능 최저 계산기 - 가채점 등급으로 최저 충족 확인">
+  <meta property="og:description" content="가채점 등급을 고르면 수시 최저 충족 여부를 바로 확인해요. 영어·한국사 원점수 자동 등급, D-day·시간표 포함.">
+  <meta property="og:url" content="https://naver1.cloud/suneung/">
+  <meta property="og:image" content="https://naver1.cloud/og.png?v=6">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="수능 최저 계산기 - 가채점 등급으로 최저 충족 확인"><meta name="twitter:description" content="등급만 고르면 수시 최저 충족 여부를 바로 확인해요."><meta name="twitter:image" content="https://naver1.cloud/og.png?v=6">
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebApplication","name":"수능 최저 계산기","url":"https://naver1.cloud/suneung/","applicationCategory":"EducationalApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"가채점 등급은 어떻게 알아요?","acceptedAnswer":{"@type":"Answer","text":"시험이 끝나면 정답과 입시기관의 예상 등급컷이 나와요. 국어·수학·탐구는 내 점수를 그 컷과 비교해 예상 등급을 고르고, 영어·한국사는 원점수를 넣으면 등급이 바로 정해져요. 예상 등급컷은 실제와 다를 수 있어요."}},{"@type":"Question","name":"탐구 ‘평균 버림’이 뭐예요?","acceptedAnswer":{"@type":"Answer","text":"탐구 2과목 등급의 평균에서 소수점을 버린 값을 한 영역 등급으로 쓰는 방식이에요. 2등급과 3등급이면 평균 2.5, 버리면 2예요. 버리지 않는 대학도 있으니 모집요강을 확인하세요."}},{"@type":"Question","name":"성적표에는 원점수가 없는데요?","acceptedAnswer":{"@type":"Answer","text":"맞아요. 성적표에는 표준점수·백분위·등급이 나오고, 영어·한국사는 등급만 나와요. 성적표를 받은 뒤에는 원점수 칸을 비우고 등급만 고르면 돼요."}},{"@type":"Question","name":"모의고사 등급으로도 쓸 수 있나요?","acceptedAnswer":{"@type":"Answer","text":"네. 학력평가나 모의평가 등급을 넣으면 지금 성적으로 최저를 채우는지 미리 볼 수 있어요."}},{"@type":"Question","name":"결과를 믿어도 되나요?","acceptedAnswer":{"@type":"Answer","text":"입력한 등급과 조건으로 계산한 참고 결과예요. 실제 충족 여부는 지원 대학의 모집요강과 성적통지표로 확인하세요. 제2외국어·한문을 탐구 한 과목으로 인정하는 규칙은 계산에 넣지 않았어요."}}]}]</script>
+  <meta name="theme-color" content="#F5F5F7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="../icon-192.png?v=6">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="../styles.css?v=20261105a">
+  <script src="../site-nav.js?v=20261105a"></script>
+  <script src="../season.js?v=20261105a" defer></script>
+  <script src="../assistant.js?v=20261105a" defer></script>
+</head>
+<body data-app="suneung">
+  <a class="skip-link" href="#main">본문 바로가기</a>
+  <header class="appbar">
+    <div class="appbar-inner glass" data-mini="false">
+      <a class="logo" href="/"><img class="logo-icon" src="/favicon.png?v=6" alt="" width="28" height="28"><span class="logo-text">성적계산기</span></a>
+      <button type="button" class="tool-menu-btn" aria-expanded="false" aria-controls="toolMenu" aria-label="도구 메뉴"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.8"/></svg></button>
+      <nav class="tools glass" id="toolMenu" aria-label="도구">
+        <a class="tool" href="/"><span class="app-icon" data-app="score" aria-hidden="true"></span><span class="tool-name">수행·지필</span></a>
+        <a class="tool" href="/target-score/"><span class="app-icon" data-app="target" aria-hidden="true"></span><span class="tool-name">목표점수</span></a>
+        <a class="tool" href="/rank/"><span class="app-icon" data-app="rank" aria-hidden="true"></span><span class="tool-name">내신등급</span></a>
+        <a class="tool" href="/suneung/" aria-current="page"><span class="app-icon" data-app="suneung" aria-hidden="true"></span><span class="tool-name">수능</span></a>
+        <a class="tool" href="/gpa/"><span class="app-icon" data-app="gpa" aria-hidden="true"></span><span class="tool-name">학점</span></a>
+        <a class="tool" href="/gpa-converter/"><span class="app-icon" data-app="convert" aria-hidden="true"></span><span class="tool-name">GPA 환산</span></a>
+        <span class="tools-sep" aria-hidden="true"></span>
+        <a class="tool" href="/todayfood/"><span class="app-icon" data-app="food" aria-hidden="true"></span><span class="tool-name">급식</span></a>
+        <a class="tool" href="/todayclass/"><span class="app-icon" data-app="class" aria-hidden="true"></span><span class="tool-name">시간표</span></a>
+      </nav>
+      <button type="button" class="bar-main" data-label="수능"><span class="bar-text"><span class="bar-label">수능</span><span class="bar-value"></span></span><span class="bar-badge" hidden></span></button>
+      <button type="button" class="theme-toggle" aria-pressed="false" aria-label="다크 모드">
+        <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
+        <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main" class="page">
+    <header class="page-head">
+      <h1>수능 최저 계산기</h1>
+      <button type="button" class="btn-ghost btn-sm reset-btn" id="resetBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3.5 4v5h5"/></svg>초기화</button>
+    </header>
+    <p class="season" id="dday"><span class="season-tag">2027학년도 수능</span><span class="season-text">2026년 11월 19일(목) · 성적 통지 12월 11일(금)</span></p>
+
+    <div class="calc">
+      <form class="input-stack" id="suneungForm" novalidate>
+        <section class="card step" aria-labelledby="gradeTitle">
+          <div class="card-head"><div><h2 id="gradeTitle">영역별 등급</h2></div></div>
+          <div class="sn-rows">
+            <div class="sn-row"><span class="sn-name">국어</span><select class="input" data-grade="kor" aria-label="국어 등급"></select></div>
+            <div class="sn-row"><span class="sn-name">수학</span><select class="input" data-grade="math" aria-label="수학 등급"></select></div>
+            <div class="sn-row"><span class="sn-name">영어</span><span class="input-wrap"><input class="input" data-raw="eng" type="number" min="0" step="1" inputmode="numeric" enterkeyhint="next" placeholder="원점수" aria-label="영어 원점수"><span class="unit">점</span></span><select class="input" data-grade="eng" aria-label="영어 등급"></select></div>
+            <div class="sn-row"><span class="sn-name">한국사</span><span class="input-wrap"><input class="input" data-raw="hist" type="number" min="0" step="1" inputmode="numeric" enterkeyhint="next" placeholder="원점수" aria-label="한국사 원점수"><span class="unit">점</span></span><select class="input" data-grade="hist" aria-label="한국사 등급"></select></div>
+            <div class="sn-row"><span class="sn-name">탐구 1</span><select class="input" data-grade="inq1" aria-label="탐구 1 등급"></select></div>
+            <div class="sn-row"><span class="sn-name">탐구 2</span><select class="input" data-grade="inq2" aria-label="탐구 2 등급"></select></div>
+          </div>
+          <p class="field-hint mt-sm">영어·한국사는 원점수만 넣어도 등급이 정해져요.</p>
+          <p class="row-error mt-sm" id="rawError" hidden>영어는 0~100점, 한국사는 0~50점으로 넣어 주세요.</p>
+        </section>
+
+        <section class="card step" aria-labelledby="ruleTitle">
+          <div class="card-head"><div><h2 id="ruleTitle">최저 조건</h2></div></div>
+          <div class="sn-fields">
+            <div class="field">
+              <span class="field-label" id="areaLabel">반영 영역</span>
+              <div class="seg" role="group" aria-labelledby="areaLabel">
+                <button type="button" data-area="kor" aria-pressed="true">국어</button>
+                <button type="button" data-area="math" aria-pressed="true">수학</button>
+                <button type="button" data-area="eng" aria-pressed="true">영어</button>
+                <button type="button" data-area="inq" aria-pressed="true">탐구</button>
+              </div>
+            </div>
+            <div class="field">
+              <span class="field-label">기준</span>
+              <div class="sn-rule">
+                <select class="input" id="ruleCount" aria-label="영역 개수"></select><span>개 영역</span>
+                <select class="input" id="ruleMode" aria-label="기준 방식"><option value="sum">등급 합</option><option value="each">각각</option></select>
+                <select class="input" id="ruleLimit" aria-label="기준 값"></select><span>이내</span>
+              </div>
+            </div>
+            <div class="sn-opts">
+              <label class="field"><span class="field-label">탐구 반영</span><select class="input" id="ruleInq"><option value="best">상위 1과목</option><option value="avg">2과목 평균</option><option value="avgFloor">2과목 평균(소수점 버림)</option></select></label>
+              <label class="field"><span class="field-label">필수 영역</span><select class="input" id="ruleMust"></select></label>
+              <label class="field"><span class="field-label">한국사</span><select class="input" id="ruleHist"></select></label>
+            </div>
+          </div>
+        </section>
+      </form>
+
+      <section class="card result-card" id="resultCard" data-state="empty" aria-labelledby="resLabel">
+        <div class="result-head">
+          <p class="result-label" id="resLabel">최저 충족 여부</p>
+        </div>
+        <div class="result-main">
+          <p class="result-number"><span class="result-value"><span class="marker" id="resValue">—</span></span><span class="result-unit" id="resUnit"></span></p>
+          <span class="grade" id="resStatus" hidden></span>
+        </div>
+        <p class="result-note" id="resNote">등급을 고르면 바로 확인돼요.</p>
+        <p class="result-meta" id="resMeta"></p>
+      </section>
+    </div>
+
+    <section class="note" aria-labelledby="howTitle">
+      <h2 id="howTitle">수능 최저학력기준 계산법</h2>
+      <p>수능 최저학력기준은 수시 합격에 필요한 최소 수능 등급이에요. 보통 <strong>국어·수학·영어·탐구 중 3개 영역 등급 합 6 이내</strong>처럼 정해지고, 좋은 등급부터 골라 더한 값을 기준과 비교해요. 대학·전형마다 조건이 다르니 모집요강을 그대로 옮겨 넣으세요.</p>
+      <div class="examples"><article><h3>3개 합 6</h3><p>국어 2, 수학 4, 영어 2, 탐구 1이면 좋은 셋의 합이 5라서 충족이에요.</p></article><article><h3>탐구 평균 버림</h3><p>탐구가 2등급·3등급이면 평균 2.5, 버리면 2예요. 국어 2, 영어 2와 더해 합 6이에요.</p></article><article><h3>수학 포함 2개 합 4</h3><p>국어 1, 수학 3이면 수학 3에 가장 좋은 국어 1을 더해 합 4로 충족이에요.</p></article></div>
+
+      <h2 id="absTitle">영어·한국사 절대평가 등급</h2>
+      <div class="table-wrap">
+        <table class="table" aria-labelledby="absTitle">
+          <thead><tr><th scope="col">등급</th><th scope="col" class="num">영어(100점)</th><th scope="col" class="num">한국사(50점)</th></tr></thead>
+          <tbody>
+            <tr><td>1등급</td><td class="num">90~100</td><td class="num">40~50</td></tr>
+            <tr><td>2등급</td><td class="num">80~89</td><td class="num">35~39</td></tr>
+            <tr><td>3등급</td><td class="num">70~79</td><td class="num">30~34</td></tr>
+            <tr><td>4등급</td><td class="num">60~69</td><td class="num">25~29</td></tr>
+            <tr><td>5등급</td><td class="num">50~59</td><td class="num">20~24</td></tr>
+            <tr><td>6등급</td><td class="num">40~49</td><td class="num">15~19</td></tr>
+            <tr><td>7등급</td><td class="num">30~39</td><td class="num">10~14</td></tr>
+            <tr><td>8등급</td><td class="num">20~29</td><td class="num">5~9</td></tr>
+            <tr><td>9등급</td><td class="num">0~19</td><td class="num">0~4</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="timeTitle">2027학년도 수능 시간표</h2>
+      <div class="table-wrap">
+        <table class="table" aria-labelledby="timeTitle">
+          <thead><tr><th scope="col">교시</th><th scope="col">영역</th><th scope="col" class="num">시간</th></tr></thead>
+          <tbody>
+            <tr data-period="enter"><td>입실</td><td></td><td class="num">08:10까지</td></tr>
+            <tr data-period="1"><td>1교시</td><td>국어</td><td class="num">08:40~10:00</td></tr>
+            <tr data-period="2"><td>2교시</td><td>수학</td><td class="num">10:30~12:10</td></tr>
+            <tr data-period="lunch"><td>점심</td><td></td><td class="num">12:10~13:00</td></tr>
+            <tr data-period="3"><td>3교시</td><td>영어</td><td class="num">13:10~14:20</td></tr>
+            <tr data-period="4"><td>4교시</td><td>한국사·탐구</td><td class="num">14:50~16:37</td></tr>
+            <tr data-period="5"><td>5교시</td><td>제2외국어·한문</td><td class="num">17:05~17:45</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>올해부터 수험표 뒷면에 가채점표가 인쇄돼요. 시험 시간 중에만 적을 수 있고, 종료령이 울린 뒤에 적으면 부정행위예요.</p>
+
+      <h2 id="dateTitle">2027학년도 수능 일정</h2>
+      <div class="table-wrap">
+        <table class="table" aria-labelledby="dateTitle">
+          <tbody>
+            <tr><td>시험일</td><td class="num">2026년 11월 19일(목)</td></tr>
+            <tr><td>이의신청</td><td class="num">11월 19일(목)~23일(월)</td></tr>
+            <tr><td>정답 확정</td><td class="num">12월 1일(화) 17시</td></tr>
+            <tr><td>성적 통지</td><td class="num">12월 11일(금)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>2028학년도 수능은 2027년 11월 18일(목), 성적 통지는 12월 10일(금)이에요.</p>
+
+      <h2>자주 묻는 질문</h2>
+      <details class="faq"><summary>가채점 등급은 어떻게 알아요?</summary><p>시험이 끝나면 정답과 입시기관의 예상 등급컷이 나와요. 국어·수학·탐구는 내 점수를 그 컷과 비교해 예상 등급을 고르고, 영어·한국사는 원점수를 넣으면 등급이 바로 정해져요. 예상 등급컷은 실제와 다를 수 있어요.</p></details>
+      <details class="faq"><summary>탐구 ‘평균 버림’이 뭐예요?</summary><p>탐구 2과목 등급의 평균에서 소수점을 버린 값을 한 영역 등급으로 쓰는 방식이에요. 2등급과 3등급이면 평균 2.5, 버리면 2예요. 버리지 않는 대학도 있으니 모집요강을 확인하세요.</p></details>
+      <details class="faq"><summary>성적표에는 원점수가 없는데요?</summary><p>맞아요. 성적표에는 표준점수·백분위·등급이 나오고, 영어·한국사는 등급만 나와요. 성적표를 받은 뒤에는 원점수 칸을 비우고 등급만 고르면 돼요.</p></details>
+      <details class="faq"><summary>모의고사 등급으로도 쓸 수 있나요?</summary><p>네. 학력평가나 모의평가 등급을 넣으면 지금 성적으로 최저를 채우는지 미리 볼 수 있어요.</p></details>
+      <details class="faq"><summary>결과를 믿어도 되나요?</summary><p>입력한 등급과 조건으로 계산한 참고 결과예요. 실제 충족 여부는 지원 대학의 모집요강과 성적통지표로 확인하세요. 제2외국어·한문을 탐구 한 과목으로 인정하는 규칙은 계산에 넣지 않았어요.</p></details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>입력값은 이 기기에만 저장돼요. 계산 결과는 참고용이에요. 실제 최저 기준은 대학 모집요강을 확인하세요.</p>
+    <nav class="footer-links" aria-label="사이트 정보"><a href="/blog/">계산 가이드</a><a href="/faq/">자주 묻는 질문</a><a href="/guide/">사용법</a><a href="/privacy/">개인정보처리방침</a><a href="/service-intro.pdf" download="성적계산기_서비스소개서.pdf">서비스 소개서(PDF)</a></nav>
+    <p class="copyright">© 2026 성적 계산기</p>
+  </footer>
+
+  <script src="../calc-core.js?v=20261105a"></script>
+  <script>
+    (() => {
+      const $ = id => document.getElementById(id);
+      const form = $('suneungForm');
+      const card = $('resultCard');
+      const NAMES = { kor: '국어', math: '수학', eng: '영어', inq: '탐구' };
+      const AREAS = Object.keys(NAMES);
+      const SLOTS = ['kor', 'math', 'eng', 'hist', 'inq1', 'inq2'];
+      const RAW = { eng: 'english', hist: 'history' };
+      const range = (min, max) => Array.from({ length: max - min + 1 }, (_, i) => min + i);
+      const cheer = achievement(card, '최저 충족');
+
+      const blank = () => ({
+        grades: { kor: null, math: null, eng: null, hist: null, inq1: null, inq2: null },
+        raw: { eng: '', hist: '' },
+        rule: { areas: [...AREAS], count: 3, mode: 'sum', limit: 6, inq: 'best', must: '', hist: 0 }
+      });
+
+      const clampInt = (value, min, max, fallback) => (Number.isInteger(value) ? Math.min(max, Math.max(min, value)) : fallback);
+      const limitRange = rule => (rule.mode === 'each' ? [1, 9] : [rule.count, rule.count * 9]);
+      // 영역을 끄거나 개수를 바꿔도 조건이 늘 말이 되게 범위 안으로 당긴다.
+      function normalize(rule) {
+        if (!rule.areas.length) rule.areas = [...AREAS];
+        rule.count = clampInt(rule.count, 1, rule.areas.length, Math.min(3, rule.areas.length));
+        if (!rule.areas.includes(rule.must)) rule.must = '';
+        rule.limit = clampInt(rule.limit, ...limitRange(rule), rule.mode === 'each' ? 2 : rule.count * 2);
+        rule.hist = clampInt(rule.hist, 0, 9, 0);
+      }
+
+      function load() {
+        const data = blank();
+        let saved = null;
+        try { saved = JSON.parse(localStorage.getItem('suneungCalc')); } catch {}
+        if (!saved || typeof saved !== 'object') return data;
+        for (const slot of SLOTS) {
+          const grade = saved.grades?.[slot];
+          data.grades[slot] = Number.isInteger(grade) && grade >= 1 && grade <= 9 ? grade : null;
+        }
+        for (const [key, subject] of Object.entries(RAW)) {
+          const raw = saved.raw?.[key];
+          const grade = typeof raw === 'string' && raw !== '' ? absGrade(subject, Number(raw)) : null;
+          if (grade) { data.raw[key] = raw; data.grades[key] = grade; }
+        }
+        const rule = saved.rule || {};
+        data.rule = {
+          areas: Array.isArray(rule.areas) ? AREAS.filter(area => rule.areas.includes(area)) : [...AREAS],
+          count: rule.count, mode: rule.mode === 'each' ? 'each' : 'sum', limit: rule.limit,
+          inq: ['best', 'avg', 'avgFloor'].includes(rule.inq) ? rule.inq : 'best', must: rule.must, hist: rule.hist
+        };
+        normalize(data.rule);
+        return data;
+      }
+      let state = load();
+
+      const fill = (select, pairs, value) => {
+        select.replaceChildren(...pairs.map(([optionValue, label]) => new Option(label, optionValue)));
+        select.value = String(value);
+      };
+      form.querySelectorAll('[data-grade]').forEach(select => fill(select, [['', '선택'], ...range(1, 9).map(n => [n, `${n}등급`])], ''));
+      fill($('ruleHist'), [[0, '조건 없음'], ...range(1, 9).map(n => [n, `${n}등급 이내`])], 0);
+
+      function renderInputs() {
+        const { grades, raw, rule } = state;
+        form.querySelectorAll('[data-grade]').forEach(select => { select.value = String(grades[select.dataset.grade] ?? ''); });
+        let bad = false;
+        for (const [key, subject] of Object.entries(RAW)) {
+          const input = form.querySelector(`[data-raw="${key}"]`);
+          if (input.value !== raw[key]) input.value = raw[key];
+          const invalid = raw[key] !== '' && absGrade(subject, Number(raw[key])) === null;
+          input.setAttribute('aria-invalid', String(invalid));
+          bad = bad || invalid;
+        }
+        $('rawError').hidden = !bad;
+        form.querySelectorAll('[data-area]').forEach(button => button.setAttribute('aria-pressed', String(rule.areas.includes(button.dataset.area))));
+        fill($('ruleCount'), range(1, rule.areas.length).map(n => [n, n]), rule.count);
+        $('ruleMode').value = rule.mode;
+        const [min, max] = limitRange(rule);
+        fill($('ruleLimit'), range(min, max).map(n => [n, rule.mode === 'each' ? `${n}등급` : n]), rule.limit);
+        $('ruleInq').value = rule.inq;
+        $('ruleInq').disabled = !rule.areas.includes('inq');
+        fill($('ruleMust'), [['', '없음'], ...rule.areas.map(area => [area, `${NAMES[area]} 포함`])], rule.must);
+        $('ruleHist').value = String(rule.hist);
+      }
+
+      function show(stateName, { label = '최저 충족 여부', value = '—', unit = '', status = '', note = '', meta = '', mini = '' }) {
+        const wasDone = card.dataset.state === 'done';
+        card.dataset.state = stateName;
+        $('resLabel').textContent = label;
+        rollNumber($('resValue'), value);
+        $('resUnit').textContent = unit;
+        const pill = $('resStatus');
+        pill.hidden = !status;
+        pill.dataset.status = status;
+        pill.textContent = status === 'met' ? '충족' : '미충족';
+        $('resNote').textContent = note;
+        $('resMeta').textContent = meta;
+        if (stateName === 'done' && !wasDone) {
+          card.classList.remove('is-fresh');
+          void card.offsetWidth;
+          card.classList.add('is-fresh');
+        }
+        setMiniResult(mini);
+      }
+
+      function pendingNote({ missing, need, have }) {
+        if (missing.includes('inq')) return '탐구 2과목 평균은 두 과목 등급이 모두 필요해요.';
+        if (missing.includes('must')) return `${NAMES[state.rule.must]} 등급이 필요해요(필수 영역).`;
+        if (missing.includes('count')) return `${need}개 영역 등급이 필요해요(지금 ${have}개).`;
+        return '한국사 등급이 필요해요.';
+      }
+
+      function update() {
+        try { localStorage.setItem('suneungCalc', JSON.stringify(state)); } catch {}
+        renderInputs();
+        const { grades, rule } = state;
+        if (!SLOTS.some(slot => grades[slot])) {
+          cheer(false);
+          return show('empty', { note: '등급을 고르면 바로 확인돼요.' });
+        }
+        const result = suneungMinimum(grades, rule);
+        if (result.status === 'pending') {
+          cheer(false);
+          return show('empty', { note: pendingNote(result) });
+        }
+        const met = result.status === 'met';
+        const each = rule.mode === 'each';
+        const inqName = { best: '탐구', avg: '탐구(평균)', avgFloor: '탐구(평균 버림)' }[rule.inq];
+        const parts = result.picked.map(item => `${item.area === 'inq' ? inqName : NAMES[item.area]} ${formatNumber(item.grade)}`);
+        const sumText = `${parts.join(' + ')} = ${formatNumber(result.sum)}`;
+        const ruleText = each ? `${rule.limit}등급 이내 ${result.within}개 · ${rule.count}개 필요` : `최저 ${rule.limit} 이내`;
+        const lacking = result.gap > 0 ? (each ? `${result.gap}개 더 필요해요` : `합을 ${formatNumber(result.gap)} 더 낮춰야 해요`) : '';
+        const histText = rule.hist ? `한국사 ${grades.hist}등급 · ${rule.hist}등급 이내 ${result.histOk ? '충족' : '미달'}` : '';
+        // 아직 안 넣은 영역이 있으면 미충족이 뒤집힐 수 있으니 알려 준다(논술·면접 응시를 정하는 값이라).
+        const unset = rule.areas.filter(area => (area === 'inq' ? result.inqValue : grades[area]) === null).map(area => NAMES[area]);
+        const unsetText = !met && unset.length ? `${unset.join('·')} 등급을 넣으면 달라질 수 있어요` : '';
+        const shownParts = each ? parts.join(' · ') : sumText;
+        const note = lacking || (result.histOk === false ? histText : shownParts);
+        const metaItems = lacking || result.histOk === false ? [shownParts, ruleText] : [ruleText];
+        if (histText && note !== histText) metaItems.push(histText);
+        if (unsetText) metaItems.push(unsetText);
+        cheer(met);
+        show('done', {
+          label: each ? `${rule.limit}등급 이내 영역` : `등급 합 (${rule.count}개 영역)`,
+          value: formatNumber(each ? result.within : result.sum),
+          unit: each ? '개' : '',
+          status: result.status,
+          note,
+          meta: metaItems.join(' · '),
+          mini: `${each ? `${result.within}개` : `합 ${formatNumber(result.sum)}`} · ${met ? '충족' : '미충족'}`
+        });
+      }
+
+      form.addEventListener('submit', event => event.preventDefault());
+      form.addEventListener('input', event => {
+        const el = event.target;
+        const { rule, grades, raw } = state;
+        if (el.dataset.raw) {
+          // 범위 밖 원점수는 등급을 바꾸지 않고 칸만 오류로 표시한다(max를 두지 않아 공용 blur 보정이 몰래 고치지 않는다).
+          const key = el.dataset.raw;
+          raw[key] = el.value;
+          const grade = el.value === '' ? null : absGrade(RAW[key], Number(el.value));
+          if (el.value === '' || grade !== null) grades[key] = grade;
+        } else if (el.dataset.grade) {
+          const slot = el.dataset.grade;
+          grades[slot] = el.value ? Number(el.value) : null;
+          if (slot in raw) raw[slot] = '';
+        } else if (el.id === 'ruleCount') rule.count = Number(el.value);
+        else if (el.id === 'ruleMode') { rule.mode = el.value; rule.limit = el.value === 'each' ? 2 : rule.count * 2; }
+        else if (el.id === 'ruleLimit') rule.limit = Number(el.value);
+        else if (el.id === 'ruleInq') rule.inq = el.value;
+        else if (el.id === 'ruleMust') rule.must = el.value;
+        else if (el.id === 'ruleHist') rule.hist = Number(el.value);
+        else return;
+        normalize(rule);
+        update();
+      });
+      form.addEventListener('click', event => {
+        const button = event.target.closest('[data-area]');
+        if (!button) return;
+        const { rule } = state;
+        const area = button.dataset.area;
+        const on = rule.areas.includes(area);
+        if (on && rule.areas.length === 1) return; // 마지막 하나는 끄지 않는다
+        rule.areas = AREAS.filter(item => (item === area ? !on : rule.areas.includes(item)));
+        normalize(rule);
+        update();
+      });
+      $('resetBtn').addEventListener('click', () => {
+        const before = JSON.stringify(state);
+        state = blank();
+        update();
+        showToast('입력을 초기화했어요', { action: '되돌리기', onAction: () => { state = JSON.parse(before); update(); } });
+      });
+
+      update();
+    })();
+  </script>
+</body>
+</html>

@@ -130,6 +130,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
 [data-app="convert"] { --app-ink: #00808F; --app-a: #5EF0D8; --app-b: #00A3B5; --app-glow: rgba(0, 163, 181, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8.5h15M15 4.5l4 4-4 4M20 15.5H5M9 11.5l-4 4 4 4'/%3E%3C/svg%3E"); }
 [data-app="food"] { --app-ink: #1E8A38; --app-a: #7BE38A; --app-b: #2BB14A; --app-glow: rgba(43, 177, 74, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 3v6.5a2 2 0 0 0 4 0V3M9 11.5V21M17 21V3c-2.2 1.4-3 4.2-3 7h3'/%3E%3C/svg%3E"); }
 [data-app="class"] { --app-ink: #4B49C8; --app-a: #9D9FFF; --app-b: #5856D6; --app-glow: rgba(88, 86, 214, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='5' width='17' height='15' rx='3'/%3E%3Cpath d='M3.5 10h17M8 3v4M16 3v4'/%3E%3C/svg%3E"); }
+[data-app="suneung"] { --app-ink: #855700; --app-a: #FFD54A; --app-b: #F2A500; --app-glow: rgba(242, 165, 0, .55); --app-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='3.5' width='14' height='17' rx='2.5'/%3E%3Cpath d='M8.5 10.5l2.2 2.2 4.8-4.8M8.5 16.5h7'/%3E%3C/svg%3E"); }
 /* 도구 색 알약 바탕(등급·배지·선택 칩 공용). 흰 글씨 대비를 지키려고 도구 색의 진한 쪽(--app-ink)으로 당긴다: 위 3.5:1, 아래 4.5:1 안팎 */
 [data-app] { --app-pill: linear-gradient(160deg, color-mix(in srgb, var(--app-b) 50%, var(--app-ink)), var(--app-ink)); }
 .app-icon {
@@ -824,6 +825,30 @@ details.faq p { padding: 0 0 16px; margin: 0; font-size: 15px; line-height: 1.6;
 .tool-seg a:hover { text-decoration: none; color: var(--ink); }
 .tool-seg a[aria-current="page"] { color: var(--ink); font-weight: 600; box-shadow: inset 0 -2px 0 var(--ink); }
 @media (min-width: 960px) { .tool-seg { display: none; } }
+
+/* ── 시즌 안내 한 줄: 제목 아래 단색 캡슐. 지금 시기에 맞는 도구 하나를 가리킨다(season.js) ── */
+.season { display: flex; align-items: center; gap: 8px; width: fit-content; max-width: 100%; min-height: 40px; margin: 0 0 24px; padding: 4px 14px 4px 5px; border: 1px solid var(--hairline); border-radius: 999px; background: var(--canvas); color: var(--ink); font-size: 14px; letter-spacing: -.01em; }
+a.season:hover { text-decoration: none; border-color: var(--divider); }
+a.season::after { content: ""; flex: none; width: 7px; height: 7px; margin-left: 2px; border-top: 1.5px solid var(--ink-3); border-right: 1.5px solid var(--ink-3); transform: rotate(45deg); }
+.season-tag { flex: none; padding: 5px 10px; border-radius: 999px; background: var(--chip); font-size: 13px; font-weight: 600; line-height: 1.2; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.season-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tool-seg + .season { margin-top: -12px; }
+@media (min-width: 960px) { .tool-seg + .season { margin-top: 0; } }
+
+/* ── 수능 최저 계산기: 영역 줄은 이름 | 원점수 | 등급, 등급 칸은 늘 3열에 맞춘다 ── */
+.sn-rows { display: grid; gap: 8px; }
+.sn-row { display: grid; grid-template-columns: 52px minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: center; }
+.sn-row > select { grid-column: 3; }
+.sn-name { font-size: 15px; font-weight: 600; color: var(--ink-80); white-space: nowrap; }
+.sn-fields { display: grid; gap: 16px; }
+.sn-rule { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 15px; color: var(--ink-80); }
+.sn-rule .input { flex: none; width: 84px; }
+.sn-rule #ruleMode { width: 112px; }
+.sn-opts { display: grid; gap: 16px 8px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.grade[data-status] { font-size: 17px; text-shadow: none; box-shadow: none; }
+.grade[data-status="met"] { background: color-mix(in srgb, var(--good) 14%, transparent); color: var(--good); }
+.grade[data-status="unmet"] { background: var(--bad-soft); color: var(--bad); }
+.note .table tr.is-hit td { background: var(--fill); }
 
 /* ── 앱 알리기: 안드로이드 브라우저에서 페이지 끝 카드(출시 후 site-nav.js의 PLAY_ID를 채우면 보인다) ── */
 .app-promo { display: flex; align-items: center; gap: 12px; margin-top: 40px; padding: 12px 12px 12px 16px; border: 1px solid var(--hairline); border-radius: 18px; background: var(--canvas); }
