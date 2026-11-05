@@ -320,7 +320,8 @@
         const histText = rule.hist ? `한국사 ${grades.hist}등급 · ${rule.hist}등급 이내 ${result.histOk ? '충족' : '미달'}` : '';
         // 아직 안 넣은 영역이 있으면 미충족이 뒤집힐 수 있으니 알려 준다(논술·면접 응시를 정하는 값이라).
         const unset = rule.areas.filter(area => (area === 'inq' ? result.inqValue : grades[area]) === null).map(area => NAMES[area]);
-        const unsetText = !met && unset.length ? `${unset.join('·')} 등급을 넣으면 달라질 수 있어요` : '';
+        // 한국사 조건 미달은 다른 영역을 더 넣어도 그대로라 알리지 않는다.
+        const unsetText = result.gap > 0 && result.histOk !== false && unset.length ? `${unset.join('·')} 등급을 넣으면 달라질 수 있어요` : '';
         const shownParts = each ? parts.join(' · ') : sumText;
         const note = lacking || (result.histOk === false ? histText : shownParts);
         const metaItems = lacking || result.histOk === false ? [shownParts, ruleText] : [ruleText];
