@@ -341,7 +341,7 @@
     addEventListener('load', () => navigator.serviceWorker.register('/app-sw.js').catch(() => {}));
   }
 
-  // 길찾기(휴대폰): 제목 아래에 같은 묶음(계산기 5개, 급식·시간표 2개)만 글자로 보여 준다. 목록은 내비게이션에서 가져온다.
+  // 길찾기(휴대폰): 제목 아래에 같은 묶음(계산기 6개, 급식·시간표 2개)만 글자로 보여 준다. 목록은 내비게이션에서 가져온다.
   function setupToolLinks() {
     const nav = document.getElementById('toolMenu');
     const head = document.querySelector('.page-head');

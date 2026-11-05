@@ -3,8 +3,8 @@ importScripts('./neis-common.js');
 // 오프라인: 계산기 페이지와 안내 화면을 미리 담아 두고, 인터넷이 끊기면 담아 둔 화면을 보여 준다(앱으로 감싸도 공룡 화면이 안 뜨게).
 // 페이지는 늘 네트워크 먼저라 배포하면 바로 새 화면이 나온다. ?v=가 붙은 공용 파일은 버전이 바뀌면 주소가 달라지므로 캐시 먼저.
 // 이 파일을 바꾸면 CACHE 이름도 바꾼다(옛 캐시는 activate에서 지운다).
-const CACHE = 'app-20261025';
-const PAGES = ['/', '/target-score/', '/rank/', '/gpa/', '/gpa-converter/', '/offline.html'];
+const CACHE = 'app-20261105';
+const PAGES = ['/', '/target-score/', '/rank/', '/suneung/', '/gpa/', '/gpa-converter/', '/offline.html'];
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
