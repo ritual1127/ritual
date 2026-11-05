@@ -1,6 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+// 절대평가 등급표: 1~8등급 원점수 하한과 만점으로 표를 만든다. 함수 선언이라 아래 guides에서 바로 쓸 수 있다.
+function gradeTable(cuts, max) {
+  const rows = [...cuts, 0].map((min, i) => `<tr><td>${i + 1}등급</td><td class="num">${min}~${i ? cuts[i - 1] - 1 : max}</td></tr>`).join('');
+  return `<div class="table-wrap"><table class="table"><thead><tr><th scope="col">등급</th><th scope="col" class="num">원점수</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
 const guides = [
   {
     slug: 'performance-exam-weight',
@@ -137,6 +143,43 @@ const guides = [
     cta: '/gpa-converter/', ctaText: 'GPA 만점 환산하기',
     related: [['/blog/gpa-average/','학점 가중평균 계산'], ['/gpa/','GPA 계산기']],
     faqs: [['비례 환산값을 공식 지원서에 써도 되나요?','제출처가 요구한 공식 환산 방식이 있다면 반드시 그 방식을 사용하세요.'], ['4.5 만점 점수가 4.3으로 바꾸면 손해인가요?','만점과 점수가 함께 바뀌므로 숫자 크기만 비교하면 안 됩니다. 비율은 동일하게 유지됩니다.']]
+  },
+  {
+    slug: 'suneung-minimum',
+    date: '2026-11-05',
+    title: '수능 최저학력기준 계산법: 등급 합·탐구 평균·한국사',
+    description: '수시 수능 최저학력기준을 계산하는 순서를 3개 합 6 예시로 설명합니다. 탐구 2과목 평균과 버림, 각각 조건, 필수 영역, 한국사 조건, 가채점으로 미리 보는 방법까지 정리합니다.',
+    tagline: '좋은 등급부터 정해진 개수만큼 골라 더한 값이 기준 안에 들면 최저를 채운 것입니다.',
+    intro: '수시 모집요강에 적힌 ‘국·수·영·탐 중 3개 합 6’ 같은 문구가 수능 최저학력기준입니다. 논술이나 면접을 잘 봐도 이 기준을 못 채우면 합격하기 어려워서, 수능 직후 가채점으로 먼저 확인하고 남은 대학별 고사 응시 여부를 정하는 학생이 많습니다.',
+    sections: [
+      ['기본 공식', '<strong>반영 영역에서 좋은 등급부터 N개를 골라 더한 합 ≤ 기준</strong>이면 충족입니다. 등급은 숫자가 작을수록 좋으므로 합도 작을수록 유리합니다. 영어처럼 절대평가인 영역도 등급 숫자를 그대로 더합니다.'],
+      ['예시: 3개 합 6', '국어 2, 수학 4, 영어 2, 탐구 1등급이고 기준이 ‘국·수·영·탐 중 3개 합 6’이면 좋은 세 영역인 탐구 1, 국어 2, 영어 2를 골라 합 <strong>5</strong>가 됩니다. 6 이내이므로 충족입니다. 고르지 않은 수학 4등급은 결과에 영향을 주지 않습니다.'],
+      ['탐구는 1과목? 2과목 평균?', '탐구 반영 방식은 대학마다 다릅니다. <strong>상위 1과목</strong>이면 두 과목 중 좋은 등급을 씁니다. <strong>2과목 평균</strong>이면 두 등급의 평균을 한 영역 값으로 쓰는데, 2등급과 3등급의 평균은 2.5입니다. <strong>소수점 버림</strong> 규정이 있으면 2로 계산합니다. 같은 성적이어도 국어 2, 영어 2와 더한 합이 평균이면 6.5로 미충족, 버림이면 6으로 충족이 되어 결과가 갈립니다.'],
+      ['‘각각’ 조건과 필수 영역', '‘2개 영역 각각 2등급 이내’는 합이 아니라 고른 영역 하나하나가 기준 안에 들어야 합니다. 국어 1, 수학 3, 영어 2라면 2등급 이내가 국어와 영어 2개이므로 충족입니다. ‘수학 포함 2개 합 4’처럼 필수 영역이 있으면 그 영역을 먼저 넣고 나머지를 좋은 순서로 고릅니다. 국어 1, 수학 3이면 수학 3 + 국어 1 = 4로 충족입니다.'],
+      ['한국사 조건은 따로 봅니다', '‘한국사 4등급 이내’ 같은 조건은 합에 더하지 않고 별도로 확인합니다. 다른 영역이 기준을 채워도 한국사가 5등급이면 미충족입니다. 한국사는 필수 영역이라 응시하지 않으면 수능 성적 자체가 무효가 됩니다.'],
+      ['가채점으로 미리 확인하기', '올해부터 수험표 뒷면에 가채점표가 인쇄되어 시험 시간 중에 답을 옮겨 적을 수 있습니다. 종료령이 울린 뒤에 적으면 부정행위이니 주의하세요. 시험이 끝나면 정답으로 채점한 뒤 영어·한국사는 원점수 구간으로 등급을 정하고, 국어·수학·탐구는 입시기관의 예상 등급컷으로 어림합니다. 예상 컷은 실제와 다를 수 있으므로 경계에 걸리면 넉넉하게 판단하고, 최종 확인은 12월 11일 성적통지표로 합니다. 학력평가·모의평가 등급을 넣어 지금 성적으로 최저를 채우는지 미리 점검할 수도 있습니다.']
+    ],
+    cta: '/suneung/', ctaText: '내 등급으로 최저 확인하기',
+    related: [['/blog/suneung-absolute-grade/','수능 영어·한국사 절대평가 등급표'], ['/rank/','내신 석차등급 계산기']],
+    faqs: [['최저 기준은 어디에서 확인하나요?','지원 대학의 수시 모집요강에 전형별로 적혀 있습니다. 같은 대학도 전형·학과마다 다를 수 있으니 요강 문구를 그대로 확인하세요.'], ['수능 최저를 못 채우면 어떻게 되나요?','최저학력기준이 있는 전형은 다른 평가가 좋아도 불합격 처리되는 것이 일반적입니다. 세부 처리는 모집요강을 따릅니다.']]
+  },
+  {
+    slug: 'suneung-absolute-grade',
+    date: '2026-11-05',
+    title: '수능 영어·한국사 절대평가 등급표',
+    description: '수능 영어는 원점수 10점 간격, 한국사는 5점 간격으로 등급이 정해집니다. 등급별 원점수 구간표와 제2외국어·한문 기준, 표준점수가 없는 이유, 대학 반영 방식을 정리합니다.',
+    tagline: '영어·한국사는 다른 수험생 성적과 상관없이 원점수 구간만으로 등급이 정해집니다.',
+    intro: '국어·수학·탐구는 전체 응시자 안에서의 위치로 등급을 매기는 상대평가지만, 영어·한국사·제2외국어·한문은 정해진 점수를 넘으면 그 등급을 받는 절대평가입니다. 그래서 가채점만 해도 등급을 바로 알 수 있습니다.',
+    sections: [
+      ['영어 등급표(100점 만점)', `<p>10점 간격입니다. 90점 이상이면 1등급, 80점 이상이면 2등급이고 20점 미만은 9등급입니다.</p>${gradeTable([90, 80, 70, 60, 50, 40, 30, 20], 100)}`],
+      ['한국사 등급표(50점 만점)', `<p>5점 간격입니다. 40점 이상이면 1등급이고 5점 미만은 9등급입니다.</p>${gradeTable([40, 35, 30, 25, 20, 15, 10, 5], 50)}`],
+      ['제2외국어·한문은 50점 만점 5점 간격', '제2외국어·한문도 절대평가입니다. 45점 이상이 1등급이고 5점씩 내려가 10점 미만은 9등급입니다. 일부 대학은 제2외국어·한문을 탐구 한 과목 대신 인정하기도 하니 모집요강을 확인하세요.'],
+      ['표준점수·백분위가 없는 이유', '표준점수와 백분위는 응시자 집단 안에서의 상대적인 위치를 나타내는 값입니다. 절대평가 영역은 정해진 점수 구간으로만 평가하므로 성적통지표에 등급만 적힙니다. 원점수도 적히지 않아서, 성적표를 받은 뒤에는 등급으로만 확인할 수 있습니다.'],
+      ['대학은 등급을 어떻게 반영하나요?', '수시 최저학력기준에서는 영어 등급 숫자를 그대로 합에 넣습니다. 한국사는 보통 ‘4등급 이내’처럼 따로 조건을 둡니다. 정시에서는 대학마다 영어 등급별 환산 점수표를 쓰거나 점수를 더하고 빼는 가감점 방식을 씁니다. 같은 2등급이라도 대학에 따라 점수 차이가 다르니 지원 대학의 정시 요강을 확인하세요.']
+    ],
+    cta: '/suneung/', ctaText: '원점수로 등급 확인하기',
+    related: [['/blog/suneung-minimum/','수능 최저학력기준 계산법'], ['/blog/raw-score-and-grade/','원점수와 A~E·내신등급의 차이']],
+    faqs: [['영어 89점이면 몇 등급인가요?','80점 이상 90점 미만이므로 2등급입니다. 1점 차이로 등급이 갈리는 구간이니 가채점할 때 문항 배점을 꼼꼼히 확인하세요.'], ['절대평가 영역의 1등급 비율은 정해져 있나요?','정해져 있지 않습니다. 정해진 점수를 넘은 학생 모두가 그 등급을 받으므로 시험 난이도에 따라 비율이 해마다 달라집니다.']]
   }
 ];
 
@@ -173,16 +216,19 @@ const FOOTER = `  <footer class="site-footer">
 
 function render(g) {
   const url = `https://naver1.cloud/blog/${g.slug}/`;
+  const date = g.date || '2026-08-09';
+  // 표처럼 이미 블록인 본문은 <p>로 감싸지 않는다.
+  const block = body => (body.startsWith('<p>') ? body : `<p>${body}</p>`);
   const sections = g.sections.map(([heading, body]) => heading.includes('공식')
-    ? `      <section class="formula-box">\n        <h2>${heading}</h2>\n        <p>${body}</p>\n      </section>`
-    : `      <h2>${heading}</h2>\n      <p>${body}</p>`).join('\n\n');
+    ? `      <section class="formula-box">\n        <h2>${heading}</h2>\n        ${block(body)}\n      </section>`
+    : `      <h2>${heading}</h2>\n      ${block(body)}`).join('\n\n');
   const related = g.related.map(([href, label]) => `        <li><a href="${href}">${label}</a></li>`).join('\n');
   const faqs = g.faqs.map(([q, a]) => `      <details class="faq"><summary>${q}</summary><p>${a}</p></details>`).join('\n');
   const schema = JSON.stringify({
     '@context': 'https://schema.org', '@type': 'BlogPosting', headline: g.title,
     description: g.description, url, image: 'https://naver1.cloud/og.png',
     mainEntityOfPage: {'@type': 'WebPage', '@id': url},
-    datePublished: '2026-08-09', dateModified: '2026-08-09',
+    datePublished: date, dateModified: date,
     author: {'@type': 'Organization', name: '성적 계산기'},
     publisher: {'@type': 'Organization', name: '성적 계산기'}
   });
@@ -225,7 +271,7 @@ ${SHELL}
       <a class="back-link" href="/blog/">← 계산 가이드</a>
       <h1>${g.title}</h1>
       <p class="lede">${g.tagline}</p>
-      <p class="updated">게시·수정 2026-08-09</p>
+      <p class="updated">게시·수정 ${date}</p>
       <p class="article-lead">${g.intro}</p>
 
 ${sections}
@@ -249,7 +295,9 @@ ${FOOTER}
 }
 
 for (const guide of guides) {
-  fs.writeFileSync(path.join(process.cwd(), 'blog', guide.slug, 'index.html'), render(guide));
+  const dir = path.join(process.cwd(), 'blog', guide.slug);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, 'index.html'), render(guide));
 }
 
 console.log(`${guides.length}개 가이드 재작성 완료`);

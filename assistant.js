@@ -3,12 +3,12 @@
 // 엔진(assistant-core.js)·계산(calc-core.js)·지식(assistant/kb.json)은 패널을 처음 열 때만 불러온다.
 (function () {
   if (location.pathname.startsWith('/admin')) return;
-  const V = '20261025g';
+  const V = '20261105a';
   const API = window.SITE_API || 'https://seongjeok-feedback-api.smilepea.workers.dev';
   const STORE = 'assistChat';
   const SUGGEST = ['200명 중 15등이면 몇 등급?', '5등급제 등급 비율 알려줘', '내일 급식 뭐야?', '기말에서 몇 점 받아야 A야?'];
   const PLACES = {
-    '/': '성적 계산기', '/target-score/': '목표 점수 계산기', '/rank/': '석차등급 계산기', '/gpa/': '학점 계산기',
+    '/': '성적 계산기', '/target-score/': '목표 점수 계산기', '/rank/': '석차등급 계산기', '/suneung/': '수능 최저 계산기', '/gpa/': '학점 계산기',
     '/gpa-converter/': 'GPA 환산기', '/todayfood/': '오늘의 급식', '/todayclass/': '오늘의 시간표', '/blog/': '계산법 가이드',
     '/faq/': 'FAQ', '/guide/': '사용법 안내', '/privacy/': '개인정보처리방침'
   };
@@ -68,7 +68,7 @@
   const save = () => { try { sessionStorage.setItem(STORE, JSON.stringify(messages.slice(-30))); } catch {} };
 
   // ── 답 글자: **굵게**, - 목록, [글](/경로), 사이트 경로만 링크로 만든다(HTML은 해석하지 않는다) ──
-  const PATH = /\/(?:target-score|rank|gpa-converter|gpa|todayfood|todayclass|faq|guide|privacy|blog(?:\/[a-z-]+)?)\//;
+  const PATH = /\/(?:target-score|rank|suneung|gpa-converter|gpa|todayfood|todayclass|faq|guide|privacy|blog(?:\/[a-z-]+)?)\//;
   function inline(parent, text) {
     const re = new RegExp(String.raw`\*\*(.+?)\*\*|\[([^\]]+)\]\((\/(?!\/)[\w\-/#]*)\)|(` + PATH.source + ')', 'g');
     let last = 0, m;

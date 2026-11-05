@@ -43,7 +43,7 @@ async function semanticSearch(env, q) {
     .map(m => ({ id: m.id, t: clip(m.metadata.t, 120), u: cleanUrl(m.metadata.u), x: clip(m.metadata.x, 900) }));
 }
 
-const TOOLS = '[성적 계산기](/)(수행·지필 반영 점수), [목표 점수 계산기](/target-score/), [석차등급 계산기](/rank/)(내신 등급·평균 등급), [학점 계산기](/gpa/)(대학 GPA), [GPA 환산기](/gpa-converter/), [오늘의 급식](/todayfood/), [오늘의 시간표](/todayclass/)';
+const TOOLS = '[성적 계산기](/)(수행·지필 반영 점수), [목표 점수 계산기](/target-score/), [석차등급 계산기](/rank/)(내신 등급·평균 등급), [수능 최저 계산기](/suneung/)(수능 등급으로 수시 최저 충족 확인·D-day·시간표), [학점 계산기](/gpa/)(대학 GPA), [GPA 환산기](/gpa-converter/), [오늘의 급식](/todayfood/), [오늘의 시간표](/todayclass/)';
 
 export function buildMessages(q, history, docs, today) {
   const refs = docs.map((d, i) => `[자료 ${i + 1}] ${d.t}${d.u ? ` (${d.u})` : ''}\n${d.x}`).join('\n\n');

@@ -3,9 +3,23 @@
   <channel>
     <title>성적 계산기 가이드</title>
     <link>https://naver1.cloud/blog/</link>
-    <description>내신, 목표점수, 석차백분율과 GPA 계산을 숫자 예시로 설명합니다.</description>
+    <description>내신, 목표점수, 석차백분율, 수능 최저와 GPA 계산을 숫자 예시로 설명합니다.</description>
     <language>ko</language>
-    <lastBuildDate>Sun, 09 Aug 2026 20:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 05 Nov 2026 09:00:00 +0900</lastBuildDate>
+    <item>
+      <title>수능 최저학력기준 계산법: 등급 합·탐구 평균·한국사</title>
+      <link>https://naver1.cloud/blog/suneung-minimum/</link>
+      <guid>https://naver1.cloud/blog/suneung-minimum/</guid>
+      <pubDate>Thu, 05 Nov 2026 09:00:00 +0900</pubDate>
+      <description>3개 합 6 예시로 수능 최저 계산 순서와 탐구 평균, 각각 조건, 필수 영역, 한국사 조건을 설명합니다.</description>
+    </item>
+    <item>
+      <title>수능 영어·한국사 절대평가 등급표</title>
+      <link>https://naver1.cloud/blog/suneung-absolute-grade/</link>
+      <guid>https://naver1.cloud/blog/suneung-absolute-grade/</guid>
+      <pubDate>Thu, 05 Nov 2026 09:00:00 +0900</pubDate>
+      <description>영어 10점 간격, 한국사 5점 간격 원점수 등급표와 제2외국어·한문 기준을 정리합니다.</description>
+    </item>
     <item>
       <title>수행평가·지필고사 반영비율 계산법</title>
       <link>https://naver1.cloud/blog/performance-exam-weight/</link>

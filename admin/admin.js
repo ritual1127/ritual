@@ -12,7 +12,7 @@
   };
   const num = n => Number(n || 0).toLocaleString('ko-KR');
   const PAGES = {
-    '/': ['수행·지필', 'score'], '/target-score/': ['목표 점수', 'target'], '/rank/': ['석차등급', 'rank'], '/gpa/': ['학점', 'gpa'],
+    '/': ['수행·지필', 'score'], '/target-score/': ['목표 점수', 'target'], '/rank/': ['석차등급', 'rank'], '/suneung/': ['수능 최저', 'suneung'], '/gpa/': ['학점', 'gpa'],
     '/gpa-converter/': ['GPA 환산', 'convert'], '/todayfood/': ['급식', 'food'], '/todayclass/': ['시간표', 'class'],
     '/blog/': ['가이드 목록'], '/faq/': ['FAQ'], '/guide/': ['사용법'], '/privacy/': ['개인정보처리방침']
   };
