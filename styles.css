@@ -248,6 +248,12 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user
   .tools-sep { display: block; width: 1px; height: 18px; margin: 0 10px; background: var(--divider); }
   .theme-toggle { justify-self: end; width: 40px; height: 40px; }
 }
+/* 좁은 PC: 도구 8개가 로고·다크 모드 버튼을 밀어내지 않게 간격만 줄인다 */
+@media (min-width: 960px) and (max-width: 1179px) {
+  .tools { gap: 0; }
+  .tool { gap: 4px; padding: 0 9px 0 7px; }
+  .tools-sep { margin: 0 4px; }
+}
 
 /* ── 페이지 골격 ──────────────────────────────── */
 .page { max-width: 1080px; margin: 0 auto; padding: calc(24px + env(safe-area-inset-top, 0px)) 16px 40px; }
@@ -817,7 +823,7 @@ details.faq p { padding: 0 0 16px; margin: 0; font-size: 15px; line-height: 1.6;
 }
 
 /* ── 길찾기(휴대폰): 제목 아래 같은 묶음 도구를 글자 탭으로. 지금 도구만 진하게 + 밑줄 ── */
-.tool-seg { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); margin: -4px 0 28px; border-bottom: 1px solid var(--hairline); }
+.tool-seg { display: grid; grid-template-columns: repeat(var(--n), auto); margin: -4px 0 28px; border-bottom: 1px solid var(--hairline); }
 .tool-seg a {
   display: grid; place-items: center; min-width: 0; min-height: 44px; padding: 0 2px;
   color: var(--ink-2); font-size: clamp(12px, 3.6vw, 15px); letter-spacing: -.02em; white-space: nowrap; box-shadow: inset 0 -2px 0 transparent; transition: color .2s, box-shadow .2s;
@@ -842,9 +848,11 @@ a.season::after { content: ""; flex: none; width: 7px; height: 7px; margin-left:
 .sn-name { font-size: 15px; font-weight: 600; color: var(--ink-80); white-space: nowrap; }
 .sn-fields { display: grid; gap: 16px; }
 .sn-rule { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 15px; color: var(--ink-80); }
-.sn-rule .input { flex: none; width: 84px; }
-.sn-rule #ruleMode { width: 112px; }
-.sn-opts { display: grid; gap: 16px 8px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.sn-rule .input { flex: none; width: 72px; }
+.sn-rule #ruleMode { width: 104px; }
+.sn-keep { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.sn-opts { display: grid; gap: 16px 8px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.sn-opts > :first-child { grid-column: 1 / -1; }
 .grade[data-status] { font-size: 17px; text-shadow: none; box-shadow: none; }
 .grade[data-status="met"] { background: color-mix(in srgb, var(--good) 14%, transparent); color: var(--good); }
 .grade[data-status="unmet"] { background: var(--bad-soft); color: var(--bad); }

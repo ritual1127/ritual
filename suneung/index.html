@@ -88,9 +88,9 @@
             <div class="field">
               <span class="field-label">기준</span>
               <div class="sn-rule">
-                <select class="input" id="ruleCount" aria-label="영역 개수"></select><span>개 영역</span>
+                <span class="sn-keep"><select class="input" id="ruleCount" aria-label="영역 개수"></select>개 영역</span>
                 <select class="input" id="ruleMode" aria-label="기준 방식"><option value="sum">등급 합</option><option value="each">각각</option></select>
-                <select class="input" id="ruleLimit" aria-label="기준 값"></select><span>이내</span>
+                <span class="sn-keep"><select class="input" id="ruleLimit" aria-label="기준 값"></select><span id="limitUnit">이내</span></span>
               </div>
             </div>
             <div class="sn-opts">
@@ -195,7 +195,7 @@
       const SLOTS = ['kor', 'math', 'eng', 'hist', 'inq1', 'inq2'];
       const RAW = { eng: 'english', hist: 'history' };
       const range = (min, max) => Array.from({ length: max - min + 1 }, (_, i) => min + i);
-      const cheer = achievement(card, '최저 충족');
+      const cheer = achievement(card, ''); // 충족 표시는 상태 알약이 맡는다. 스티커 없이 축하만.
 
       const blank = () => ({
         grades: { kor: null, math: null, eng: null, hist: null, inq1: null, inq2: null },
@@ -262,7 +262,8 @@
         fill($('ruleCount'), range(1, rule.areas.length).map(n => [n, n]), rule.count);
         $('ruleMode').value = rule.mode;
         const [min, max] = limitRange(rule);
-        fill($('ruleLimit'), range(min, max).map(n => [n, rule.mode === 'each' ? `${n}등급` : n]), rule.limit);
+        fill($('ruleLimit'), range(min, max).map(n => [n, n]), rule.limit);
+        $('limitUnit').textContent = rule.mode === 'each' ? '등급 이내' : '이내';
         $('ruleInq').value = rule.inq;
         $('ruleInq').disabled = !rule.areas.includes('inq');
         fill($('ruleMust'), [['', '없음'], ...rule.areas.map(area => [area, `${NAMES[area]} 포함`])], rule.must);
